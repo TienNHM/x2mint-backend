@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const app = express();
 const authRoute = require("./src/routers/authRoutes");
 const questionRoute = require("./src/routers/questionRoutes");
+const answerRoute = require("./src/routers/answerRoutes");
 
 //Config env
 dotenv.config({ path: "./config.env" });
@@ -39,6 +40,7 @@ connectDB();
 /* ---------------------------------- Route --------------------------------- */
 app.use(`${api}/auths`, authRoute);
 app.use(`${api}/questions`, questionRoute);
+app.use(`${api}/answers`, answerRoute);
 
 app.get("/", (req, res) => res.send("Hello world"));
 const PORT = 5000;
