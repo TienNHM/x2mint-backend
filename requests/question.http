@@ -1,0 +1,25 @@
+
+# @name login
+###Login  
+POST http://localhost:5000/app/api/v1/auths/login
+Content-Type: application/json
+
+{
+    "password" : "12345",
+    "username": "minhhoang"
+}
+
+###
+@authToken = {{login.response.body.token}}
+###
+
+POST http://localhost:5000/app/api/v1/questions/new/1234
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJ1c2VyIn0sImlhdCI6MTYzNjYyODkwNH0.PBSIDCjRTgTmqZvRTAUAtVfgz1UUq4Ey3MF5L19M0JQ
+
+{
+    "order": 1,
+    "type" : "TN",
+    "content": "EEST API with a single POST operation to the ‘/signup’ URL. The URL accepts JSON passed in the body of the request. If there is no body?"
+     
+}

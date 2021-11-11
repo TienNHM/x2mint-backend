@@ -3,13 +3,20 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
 const app = express();
+const authRoute = require("./src/routers/authRoutes");
+const questionRoute = require("./src/routers/questionRoutes");
+
+//Config env
+dotenv.config({ path: "./config.env" });
 
 //Config CORS
 const cors = require("cors");
 app.options("*", cors());
+app.use(express.json());
 
-//Config env
-dotenv.config({ path: "./config.env" });
+//Base url: no slash at the end
+const api = process.env.API_URL;
+
 //Connect DB
 const connectDB = async () => {
   try {
@@ -28,6 +35,10 @@ const connectDB = async () => {
 };
 
 connectDB();
+
+/* ---------------------------------- Route --------------------------------- */
+app.use(`${api}/auths`, authRoute);
+app.use(`${api}/questions`, questionRoute);
 
 app.get("/", (req, res) => res.send("Hello world"));
 const PORT = 5000;
