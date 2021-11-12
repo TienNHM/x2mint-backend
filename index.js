@@ -6,6 +6,7 @@ const app = express();
 const authRoute = require("./src/routers/authRoutes");
 const questionRoute = require("./src/routers/questionRoutes");
 const answerRoute = require("./src/routers/answerRoutes");
+const userRoute = require("./src/routers/userRoutes");
 
 //Config env
 dotenv.config({ path: "./config.env" });
@@ -41,6 +42,7 @@ connectDB();
 app.use(`${api}/auths`, authRoute);
 app.use(`${api}/questions`, questionRoute);
 app.use(`${api}/answers`, answerRoute);
+app.use(`${api}/users`, userRoute);
 
 app.get("/", (req, res) => res.send("Hello world"));
 const PORT = 5000;

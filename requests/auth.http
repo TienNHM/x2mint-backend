@@ -5,10 +5,12 @@ POST http://localhost:5000/app/api/v1/auths/register
 Content-Type: application/json
 
 {
-    "email": "nguyenhoang@gmail.com",
+    "email": "nguyenhoang1@gmail.com",
     "password" : "12345",
-    "fullname": "Nguyen Minh Hoang",
-    "username": "minhhoang"
+    "fullname": "Nguyen Anh Tin",
+    "username": "minhhoang22",
+    "role": "admin",
+    "phone": "124567891"
 }
 
 # @name login

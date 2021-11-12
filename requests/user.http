@@ -1,0 +1,18 @@
+###Login  
+POST http://localhost:5000/app/api/v1/auths/login
+Content-Type: application/json
+
+{
+    "password" : "12345",
+    "username": "minhhoang"
+}
+
+###Get all users
+GET  http://localhost:5000/app/api/v1/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZDM1YzA3YTQxNjVkY2YwMmY3YjAzIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzIyIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTYzNjY0NDI4OX0.nRnN1Mbpyt2OER-Ub-MFR6-7MDMQ2JYkSJrjtKdp6fQ
+
+###Get all users
+GET  http://localhost:5000/app/api/v1/users/info/618cf188c40326b238e9da3f
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZDM1YzA3YTQxNjVkY2YwMmY3YjAzIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzIyIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTYzNjY0NDI4OX0.nRnN1Mbpyt2OER-Ub-MFR6-7MDMQ2JYkSJrjtKdp6fQ

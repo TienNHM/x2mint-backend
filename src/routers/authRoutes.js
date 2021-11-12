@@ -6,10 +6,11 @@ const User = require("../models/User");
 const Account = require("../models/Account");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
+const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./config.env" });
 
 //@route GET v1/auth/register
-//@desc Register Usẻ
+//@desc Register User
 //@access public
 //@role any
 router.post("/register", async (req, res) => {
@@ -19,7 +20,7 @@ router.post("/register", async (req, res) => {
       .status(400)
       .json({ success: false, message: "Body request not found" });
 
-  const { username, password, email, fullname, phone, address, school } =
+  const { username, password, role, email, fullname, phone, address, school } =
     req.body;
   //simple validation
   if (!username || !password) {
@@ -46,24 +47,26 @@ router.post("/register", async (req, res) => {
       username,
       password: hashedPassword,
       email,
+      role: role ? role : ROLES.USER,
     });
 
     newAccount = await newAccount.save();
     let newUser = new User({
       fullname,
-      phone,
+      phone: req.body.phone,
       address,
       school,
+      account: newAccount._id,
     });
     newUser = await newUser.save();
     //Return token
     const accessToken = jwt.sign(
       {
         verifyAccount: {
-          id: account._id,
-          isHidden: account.isHidden,
-          username: account.username,
-          role: account.role,
+          id: newAccount._id,
+          isHidden: newAccount.isHidden,
+          username: newAccount.username,
+          role: newAccount.role,
         },
       },
       process.env.ACCESS_TOKEN_SECRET
@@ -131,6 +134,22 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+router.get("/verify", verifyToken, async (req, res) => {
+  try {
+    return res.status(200).json({
+      message: "Token is valid",
+      success: true,
+      user: req.body.verifyAccount,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal error server",
+    });
   }
 });
 
