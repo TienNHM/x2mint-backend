@@ -18,8 +18,10 @@ router.get("/", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-      req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR
+      !(
+        req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR
+      )
     ) {
       return res
         .status(401)
@@ -36,7 +38,7 @@ router.get("/", verifyToken, async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Questions does not exist",
+        message: "Questions do not exist",
       });
     }
   } catch (error) {
@@ -56,8 +58,10 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
     //Check permission
 
     if (
-      req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR
+      !(
+        req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR
+      )
     ) {
       return res
         .status(401)
@@ -103,8 +107,10 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-      req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR
+      !(
+        req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR
+      )
     ) {
       return res
         .status(401)
