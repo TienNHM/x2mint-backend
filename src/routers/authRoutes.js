@@ -53,7 +53,7 @@ router.post("/register", async (req, res) => {
     newAccount = await newAccount.save();
     let newUser = new User({
       fullname,
-      phone: req.body.phone,
+      phone,
       address,
       school,
       account: newAccount._id,
@@ -76,6 +76,7 @@ router.post("/register", async (req, res) => {
       success: true,
       message: "Account created successfully",
       accessToken: "Bearer " + accessToken,
+      user: newUser,
     });
   } catch (error) {
     console.log(error);
@@ -104,7 +105,6 @@ router.post("/login", async (req, res) => {
         .status(400)
         .json({ success: false, message: "Incorrect username or password" });
 
-    console.log(account);
     // Username found
     const passwordValid = await argon2.verify(account.password, password);
     if (!passwordValid)
@@ -113,6 +113,8 @@ router.post("/login", async (req, res) => {
         .json({ success: false, message: "Incorrect username or password" });
     console.log(passwordValid);
     //All good
+    const userInfo = await User.findOne({ account: account._id });
+
     //return token
     const accessToken = jwt.sign(
       {
@@ -129,7 +131,8 @@ router.post("/login", async (req, res) => {
     res.json({
       success: true,
       message: "User logged successfully",
-      accessToken: "Bearer " + accessToken,
+      accessToken: accessToken,
+      user: userInfo,
     });
   } catch (error) {
     console.log(error);

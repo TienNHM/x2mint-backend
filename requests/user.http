@@ -10,9 +10,34 @@ Content-Type: application/json
 ###Get all users
 GET  http://localhost:5000/app/api/v1/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZDM1YzA3YTQxNjVkY2YwMmY3YjAzIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzIyIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTYzNjY0NDI4OX0.nRnN1Mbpyt2OER-Ub-MFR6-7MDMQ2JYkSJrjtKdp6fQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZGNlYThhNjExZjQzNDAyOTYzMjhjIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzEiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM2Njg0MjM5fQ.MD8t_BLLkC4_deWf4Aj8VjRiim1Uaro-CyJHxcr-MEE
 
 ###Get all users
 GET  http://localhost:5000/app/api/v1/users/info/618cf188c40326b238e9da3f
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZDM1YzA3YTQxNjVkY2YwMmY3YjAzIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzIyIiwicm9sZSI6ImFkbWluIn0sImlhdCI6MTYzNjY0NDI4OX0.nRnN1Mbpyt2OER-Ub-MFR6-7MDMQ2JYkSJrjtKdp6fQ
+
+### Reset password
+PUT  http://localhost:5000/app/api/v1/users/resetPassword
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2MzY3MTI0MzV9.pU6TuLwcehrq_rsYMACf85uLypQ4fDp-l64jjduF0m0
+
+{
+    "oldPassword": "123456",
+    "newPassword": "12345"
+}
+
+### Update user Info
+PUT  http://localhost:5000/app/api/v1/users/info/618d35c07a4165dcf02f7b05
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2MzY3MTI0MzV9.pU6TuLwcehrq_rsYMACf85uLypQ4fDp-l64jjduF0m0
+
+{
+    "fullname": "Nguyen Anh Tin",
+    "address": "Q9 ,TP Hồ Chí Minh",
+    "school": "ĐH Sư Phạm Kỹ Thuật",
+    "dod": "",
+    "phone": "124567891",
+    "avatar": "",
+    "isHidden": false
+}

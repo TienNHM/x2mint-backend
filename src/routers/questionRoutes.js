@@ -33,7 +33,7 @@ router.get("/", verifyToken, async (req, res) => {
       res.json({
         success: true,
         message: "Get all question successfully ",
-        data: questions,
+        questions,
       });
     } else {
       res.json({
@@ -91,7 +91,7 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
     res.json({
       success: true,
       message: "Question created successfully",
-      data: question,
+      question: question,
     });
   } catch (error) {
     console.log(error);
@@ -122,16 +122,30 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
         success: false,
         message: "Body request not found",
       });
-
-    let question = {
-      order: req.body.order,
-      content: req.body.content,
-      type: req.body.type,
-      answers: req.body.answers,
-      correctAnswer: req.body.correctAnswer,
-      embededMedia: req.body.embededMedia,
-      updatedAt: formatTimeUTC(),
-    };
+    let question;
+    if (req.body.isHidden != null) {
+      question = {
+        order: req.body.order,
+        content: req.body.content,
+        type: req.body.type,
+        answers: req.body.answers,
+        correctAnswer: req.body.correctAnswer,
+        embededMedia: req.body.embededMedia,
+        updatedAt: formatTimeUTC(),
+        isHidden: req.body.isHidden,
+      };
+    } else {
+      question = {
+        order: req.body.order,
+        content: req.body.content,
+        type: req.body.type,
+        answers: req.body.answers,
+        correctAnswer: req.body.correctAnswer,
+        embededMedia: req.body.embededMedia,
+        updatedAt: formatTimeUTC(),
+        isHidden: req.body.isHidden,
+      };
+    }
 
     const updatedQuestion = await Question.findOneAndUpdate(
       { _id: req.params.questionId },
