@@ -163,4 +163,42 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
   }
 });
 
+
+//@route GET v1/questions/:questionId/answers
+//@desc get all answers by question id
+//@access private
+//@role admin/creator/user
+router.get("/:questionId/answers", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (
+      req.body.verifyAccount.role === ROLES.ADMIN ||
+      req.body.verifyAccount.role === ROLES.CREATOR ||
+      req.body.verifyAccount.role === ROLES.USER
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const question  = await Question.findById(req.params.questionId)
+    if (question) {
+      res.json({
+        success: true,
+        message: "Get all answer by question id successfully ",
+        data:  question.answers,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Answers does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+
 module.exports = router;
