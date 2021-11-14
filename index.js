@@ -7,6 +7,8 @@ const authRoute = require("./src/routers/authRoutes");
 const questionRoute = require("./src/routers/questionRoutes");
 const answerRoute = require("./src/routers/answerRoutes");
 const userRoute = require("./src/routers/userRoutes");
+const testRoute= require("./src/routers/testRoutes");
+const contestRoute = require("./src/routers/contestRoutes");
 
 //Config env
 dotenv.config({ path: "./config.env" });
@@ -43,6 +45,8 @@ app.use(`${api}/auths`, authRoute);
 app.use(`${api}/questions`, questionRoute);
 app.use(`${api}/answers`, answerRoute);
 app.use(`${api}/users`, userRoute);
+app.use(`${api}/tests`, testRoute);
+app.use(`${api}/contests`, contestRoute);
 
 app.get("/", (req, res) => res.send("Hello world"));
 const PORT = 5000;

@@ -12,11 +12,6 @@ const answerSchema = mongoose.Schema({
       require: true,
       default: null,
     },
-    // status: {
-    //   type: String,
-    //   require: true,
-    //   default: null,
-    // },
     isHidden: {
       type: Boolean,
       default: false,
