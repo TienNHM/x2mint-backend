@@ -31,11 +31,6 @@ const contestSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-//   status: {
-//     type: String,
-//     require: true,
-//     default: null,
-//   },
   tests: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -55,6 +50,12 @@ const contestSchema = mongoose.Schema({
     type: Date,
     default: formatTimeUTC,
   },
+  embededMedia: 
+    {
+      type: String,
+      default: null,
+    },
+  
 });
 
 contestSchema.method("toJSON", function () {

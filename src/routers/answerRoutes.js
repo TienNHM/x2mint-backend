@@ -6,8 +6,8 @@ const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./config.env" });
 const Answer = require("../models/Answer");
 const Question = require("../models/Question");
-
-//@route Post v1/questions/new  
+const {formatTimeUTC} = require("../utils/Timezone")
+//@route Post v1/answers  
 //@desc Create a question
 //@access private
 //@role admin/creator
@@ -63,8 +63,8 @@ router.get("", verifyToken, async (req, res) => {
     try {
       //Check permission
       if (
-        req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR
+        !(req.body.verifyAccount.role === ROLES.ADMIN ||
+          req.body.verifyAccount.role === ROLES.CREATOR)
       ) {
         return res
           .status(401)
@@ -98,10 +98,11 @@ router.get("/:answerId", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-      req.body.verifyAccount.role === ROLES.ADMIN ||
+     !(req.body.verifyAccount.role === ROLES.ADMIN ||
       req.body.verifyAccount.role === ROLES.CREATOR || 
-      req.body.verifyAccount.role === ROLES.USER
-    ) {
+      req.body.verifyAccount.role === ROLES.USER)
+    ) 
+    {
       return res
         .status(401)
         .json({ success: false, message: "Permission denied" });
@@ -110,7 +111,7 @@ router.get("/:answerId", verifyToken, async (req, res) => {
     const answer  = await Answer.findById(req.params.answerId);
     if (answer) {
       res.json({
-        success: true,
+        success: true,  
         message: "Get answer by id successfully ",
         data: answer,
       });
@@ -135,8 +136,8 @@ router.put("/:answerId", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-      req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR
+     !(req.body.verifyAccount.role === ROLES.ADMIN ||
+      req.body.verifyAccount.role === ROLES.CREATOR)
     ) {
       return res
         .status(401)
@@ -180,8 +181,8 @@ router.put("/:answerId/delete", verifyToken, async (req, res) => {
     try {
       //Check permission
       if (
-        req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR
+       !( req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR)
       ) {
         return res
           .status(401)

@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./config.env" });
 const Contest = require("../models/Contest")
-const { formatTimeUTC_} = require("../utils/Timezone");
+const { formatTimeUTC_, formatTimeUTC} = require("../utils/Timezone");
 
 
 //@route GET v1/contests/
@@ -46,7 +46,7 @@ router.get("/creator/:creatorId", verifyToken, async (req, res) => {
   });
 
 //@route GET v1/contests/
-//@desc get all test
+//@desc get all contest
 //@access private
 //@role admin/creator
 router.get("", verifyToken, async (req, res) => {
@@ -109,8 +109,9 @@ router.get("", verifyToken, async (req, res) => {
           message: "Body request not found",
         });
   
-      //Create new question
+      //Create new contest
       let contest = new Contest({
+        
           name: req.body.name,
           creatorId: req.body.creatorId,
           description: req.body.description,
@@ -118,6 +119,7 @@ router.get("", verifyToken, async (req, res) => {
           startTime: formatTimeUTC_(req.body.startTime),
           endTime: formatTimeUTC_(req.body.endTime),
           url: req.body.url,
+          embededMedia: req.body.embededMedia,
           isHidden: false
       });
   
@@ -127,7 +129,7 @@ router.get("", verifyToken, async (req, res) => {
   
       res.json({
         success: true,
-        message: "Test created successfully",
+        message: "Contest created successfully",
         contest: contest,
       });
     } catch (error) {
@@ -161,10 +163,10 @@ router.get("", verifyToken, async (req, res) => {
           message: "Body request not found",
         });
   
-      //update new question
-      let contest = await Contest.findOneAndUpdate({_id:req.params.contestId}, {
-        tests:req.body.tests
-      })
+      //update new contest
+      let contest = await Contest.findOneAndUpdate({_id:req.params.contestId}, {"$set":{
+        tests:req.body.tests, updatedAt: formatTimeUTC()
+      }}, {new: true})
 
       res.json({
         success: true,
@@ -200,7 +202,8 @@ router.get("", verifyToken, async (req, res) => {
           success: false,
           message: "Body request not found",
         });
-        let contest = new Contest({
+        let contest;
+        contest = {
             name: req.body.name,
             creatorId: req.body.creatorId,
             description: req.body.description,
@@ -208,8 +211,10 @@ router.get("", verifyToken, async (req, res) => {
             startTime: formatTimeUTC_(req.body.startTime),
             endTime: formatTimeUTC_(req.body.endTime),
             url: req.body.url,
-            isHidden: false
-        });
+            isHidden: false,
+            embededMedia: req.body.embededMedia,
+            updatedAt:formatTimeUTC()
+        };
   
       const updatedContest = await Contest.findOneAndUpdate(
         { _id: req.params.contestId },
@@ -254,7 +259,7 @@ router.get("", verifyToken, async (req, res) => {
    
       const deletedContest = await Contest.findOneAndUpdate(
         { _id: req.params.contestId },
-        {isHidden:true}
+        {"$set":{isHidden:true,updatedAt: formatTimeUTC()}}, {new: true}
       );
       res.json({
         success: true,

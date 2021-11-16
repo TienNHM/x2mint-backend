@@ -5,10 +5,10 @@ const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./config.env" });
 const Test = require("../models/Test")
-const { formatTimeUTC_} = require("../utils/Timezone");
+const { formatTimeUTC_, formatTimeUTC} = require("../utils/Timezone");
 
 
-//@route GET v1/tests/
+//@route GET v1/tests/creator/:creatorId
 //@desc get all test
 //@access private
 //@role admin/creator
@@ -165,8 +165,8 @@ router.get("", verifyToken, async (req, res) => {
   
       //update new question
       let test = await Test.findOneAndUpdate({_id:req.params.testId}, {
-        questions:req.body.questions
-      })
+       "$set": {questions:req.body.questions, updatedAt: formatTimeUTC()}
+      }, {new: true})
 
       res.json({
         success: true,
@@ -212,7 +212,8 @@ router.get("", verifyToken, async (req, res) => {
           endTime: formatTimeUTC_(req.body.endTime),
           url: req.body.url,
           duration: req.body.duration,
-          isHidden: false
+          isHidden: false,
+          updatedAt: formatTimeUTC()
         };
   
       const updatedTest = await Test.findOneAndUpdate(
@@ -258,7 +259,8 @@ router.get("", verifyToken, async (req, res) => {
    
       const deletedTest = await Test.findOneAndUpdate(
         { _id: req.params.testId },
-        {isHidden:true}
+        {"$set":{isHidden:true, updatedAt: formatTimeUTC_(new Date())}},
+        { new: true }
       );
       res.json({
         success: true,
