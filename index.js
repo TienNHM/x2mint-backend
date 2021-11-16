@@ -19,8 +19,8 @@ app.options("*", cors());
 app.use(express.json());
 
 //Base url: no slash at the end
-const api = process.env.API_URL;
-
+//const api = process.env.API_URL;
+const api = '/app/api/v1';
 //Connect DB
 const connectDB = async () => {
   try {

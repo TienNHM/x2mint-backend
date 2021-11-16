@@ -172,9 +172,9 @@ router.get("/:questionId/answers", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-      req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR ||
-      req.body.verifyAccount.role === ROLES.USER
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER)
     ) {
       return res
         .status(401)
@@ -186,7 +186,7 @@ router.get("/:questionId/answers", verifyToken, async (req, res) => {
       res.json({
         success: true,
         message: "Get all answer by question id successfully ",
-        data:  question.answers,
+        answers:  question.answers,
       });
     } else {
       res.json({
