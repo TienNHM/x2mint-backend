@@ -80,7 +80,8 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
       content: req.body.content,
       type: req.body.type,
       answers: req.body.answers,
-      correctAnswer: req.body.correctAnswer,
+      correctAnswers: req.body.correctAnswers,
+      choosenAnswers: req.body.choosenAnswers,
       embededMedia: req.body.embededMedia,
     });
 
@@ -123,29 +124,17 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
         message: "Body request not found",
       });
     let question;
-    if (req.body.isHidden != null) {
-      question = {
-        order: req.body.order,
-        content: req.body.content,
-        type: req.body.type,
-        answers: req.body.answers,
-        correctAnswer: req.body.correctAnswer,
-        embededMedia: req.body.embededMedia,
-        updatedAt: formatTimeUTC(),
-        isHidden: req.body.isHidden,
-      };
-    } else {
-      question = {
-        order: req.body.order,
-        content: req.body.content,
-        type: req.body.type,
-        answers: req.body.answers,
-        correctAnswer: req.body.correctAnswer,
-        embededMedia: req.body.embededMedia,
-        updatedAt: formatTimeUTC(),
-        isHidden: req.body.isHidden,
-      };
-    }
+    question = {
+      order: req.body.order,
+      content: req.body.content,
+      type: req.body.type,
+      answers: req.body.answers,
+      correctAnswers: req.body.correctAnswers,
+      choosenAnswers: req.body.choosenAnswers,
+      embededMedia: req.body.embededMedia,
+      updatedAt: formatTimeUTC(),
+      isHidden: req.body.isHidden,
+    };
 
     const updatedQuestion = await Question.findOneAndUpdate(
       { _id: req.params.questionId },

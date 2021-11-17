@@ -24,17 +24,24 @@ const questionSchema = mongoose.Schema({
       default: null,
     },
   ],
-  correctAnswer: {
-    type: Number,
-    require: true,
-    default: 0,
-  },
-  embededMedia: [
+  correctAnswers: [
     {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "answers",
       default: null,
     },
   ],
+  choosenAnswers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "answers",
+      default: null,
+    },
+  ],
+  embededMedia: {
+    type: String,
+    default: null,
+  },
   isHidden: {
     type: Boolean,
     default: false,
