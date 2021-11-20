@@ -4,7 +4,7 @@ const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const Question = require("../models/Question");
 const Account = require("../models/Account");
-
+const Test = require("../models/Test");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
@@ -28,7 +28,11 @@ router.get("/", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const questions = await Question.find();
+    const questions = await Question.find()
+      .populate("answers")
+      .populate("correctAnswers")
+      .populate("choosenAnswers")
+      .exec();
     if (questions) {
       res.json({
         success: true,
@@ -47,7 +51,7 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-//TODO: Get all questions of  a test by testId for isHidden = false OR true
+
 
 //@route Post v1/questions/new/:testId
 //@desc Create a question
@@ -80,14 +84,20 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
       content: req.body.content,
       type: req.body.type,
       answers: req.body.answers,
-      correctAnswer: req.body.correctAnswer,
+      correctAnswers: req.body.correctAnswers,
+      choosenAnswers: req.body.choosenAnswers,
       embededMedia: req.body.embededMedia,
     });
 
     //Send to Database
     question = await question.save();
     //TODO: Updating for Test Collection : Question list
-
+    let test = await Test.findById(req.params.testId);
+    console.log(test);
+    if (test) {
+      test.questions.push(question.id.toString());
+      test = await Test.findOneAndUpdate({ _id: test.id }, test, { new: true });
+    }
     res.json({
       success: true,
       message: "Question created successfully",
@@ -123,29 +133,17 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
         message: "Body request not found",
       });
     let question;
-    if (req.body.isHidden != null) {
-      question = {
-        order: req.body.order,
-        content: req.body.content,
-        type: req.body.type,
-        answers: req.body.answers,
-        correctAnswer: req.body.correctAnswer,
-        embededMedia: req.body.embededMedia,
-        updatedAt: formatTimeUTC(),
-        isHidden: req.body.isHidden,
-      };
-    } else {
-      question = {
-        order: req.body.order,
-        content: req.body.content,
-        type: req.body.type,
-        answers: req.body.answers,
-        correctAnswer: req.body.correctAnswer,
-        embededMedia: req.body.embededMedia,
-        updatedAt: formatTimeUTC(),
-        isHidden: req.body.isHidden,
-      };
-    }
+    question = {
+      order: req.body.order,
+      content: req.body.content,
+      type: req.body.type,
+      answers: req.body.answers,
+      correctAnswers: req.body.correctAnswers,
+      choosenAnswers: req.body.choosenAnswers,
+      embededMedia: req.body.embededMedia,
+      updatedAt: formatTimeUTC(),
+      isHidden: req.body.isHidden,
+    };
 
     const updatedQuestion = await Question.findOneAndUpdate(
       { _id: req.params.questionId },
@@ -163,30 +161,20 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
   }
 });
 
-
 //@route GET v1/questions/:questionId/answers
 //@desc get all answers by question id
 //@access private
 //@role admin/creator/user
 router.get("/:questionId/answers", verifyToken, async (req, res) => {
   try {
-    //Check permission
-    if (
-      !(req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR ||
-        req.body.verifyAccount.role === ROLES.USER)
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
-    }
-
-    const question  = await Question.findById(req.params.questionId)
+    const question = await Question.findById(req.params.questionId).populate(
+      "answers"
+    );
     if (question) {
       res.json({
         success: true,
         message: "Get all answer by question id successfully ",
-        answers:  question.answers,
+        answers: question.answers,
       });
     } else {
       res.json({
@@ -199,6 +187,5 @@ router.get("/:questionId/answers", verifyToken, async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
-
 
 module.exports = router;
