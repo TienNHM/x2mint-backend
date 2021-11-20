@@ -43,12 +43,29 @@ router.post("/register", async (req, res) => {
 
   try {
     //Check for existing username
-    const account = await Account.findOne({ username });
+    const account = await Account.findOne({
+      $or: [{ username }, { email }],
+    });
 
-    if (account)
+    const user = await User.findOne({ phone });
+
+    if (account) {
+      if (account.username === username)
+        return res
+          .status(400)
+          .json({ success: false, message: "Username already taken" });
+      else if (account.email === email) {
+        console.log("Account: ", account);
+        return res
+          .status(400)
+          .json({ success: false, message: "Email already taken" });
+      }
+    }
+    if (user) {
       return res
         .status(400)
-        .json({ success: false, message: "Username already taken" });
+        .json({ success: false, message: "Phone already taken" });
+    }
 
     const hashedPassword = await argon2.hash(
       password,

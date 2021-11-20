@@ -23,3 +23,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50I
     "content": "EEST API with a single POST operation to the ‘/signup’ URL. The URL accepts JSON passed in the body of the request. If there is no body?"
      
 }
+###Get all questions
+
+GET http://localhost:5000/app/api/v1/questions
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2MzcxNjcwMDZ9.UCEJRMfC8zED2xLmtt-uBZ6kqegXsmgAboF0WPlGIRA
+
+
+###
+
+GET http://localhost:5000/app/api/v1/questions/618cf9baad4b7a24d85cee72/answers
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZGNlYThhNjExZjQzNDAyOTYzMjhjIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzEiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM2Njg0MjM5fQ.MD8t_BLLkC4_deWf4Aj8VjRiim1Uaro-CyJHxcr-MEE
