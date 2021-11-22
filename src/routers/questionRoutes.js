@@ -1,9 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const argon2 = require("argon2");
-const jwt = require("jsonwebtoken");
 const Question = require("../models/Question");
-const Account = require("../models/Account");
 const Test = require("../models/Test");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
@@ -51,8 +48,6 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-
-
 //@route Post v1/questions/new/:testId
 //@desc Create a question
 //@access private
@@ -85,7 +80,6 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
       type: req.body.type,
       answers: req.body.answers,
       correctAnswers: req.body.correctAnswers,
-      choosenAnswers: req.body.choosenAnswers,
       embededMedia: req.body.embededMedia,
     });
 
@@ -139,7 +133,6 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
       type: req.body.type,
       answers: req.body.answers,
       correctAnswers: req.body.correctAnswers,
-      choosenAnswers: req.body.choosenAnswers,
       embededMedia: req.body.embededMedia,
       updatedAt: formatTimeUTC(),
       isHidden: req.body.isHidden,

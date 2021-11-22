@@ -31,13 +31,7 @@ const questionSchema = mongoose.Schema({
       default: null,
     },
   ],
-  choosenAnswers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "answers",
-      default: null,
-    },
-  ],
+
   embededMedia: {
     type: String,
     default: null,
