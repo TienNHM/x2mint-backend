@@ -1,0 +1,23 @@
+
+# @name login
+###Login  
+POST http://localhost:5000/app/api/v1/auths/login
+Content-Type: application/json
+
+{
+    "password" : "12345",
+    "username": "minhhoang"
+}
+
+###
+@authToken = {{login.response.body.token}}
+###
+
+POST http://localhost:5000/app/api/v1/answers
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwidXNlcm5hbWUiOiJtaW5oaG9hbmciLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM3OTgyNTY4fQ.D9r1z7Y4IEdIyIPTPoVzyfsL10_07pShqC9UHeuPAp4
+
+{
+    "name": "D",
+    "content": "Shaker Sort"
+}

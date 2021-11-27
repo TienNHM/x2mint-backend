@@ -31,9 +31,8 @@ const userSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-  isHidden: {
-    type: Boolean,
-    default: false,
+  status: {
+    type: String,
   },
   createdAt: {
     type: Date,

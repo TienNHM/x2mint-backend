@@ -13,15 +13,18 @@ Content-Type: application/json
 @authToken = {{login.response.body.token}}
 ###
 
-POST http://localhost:5000/app/api/v1/questions/new/1234
+POST http://localhost:5000/app/api/v1/questions/new/619413b7101638c5e32ad4eb
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZGNlYThhNjExZjQzNDAyOTYzMjhjIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzEiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM2Njg0MjM5fQ.MD8t_BLLkC4_deWf4Aj8VjRiim1Uaro-CyJHxcr-MEE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwidXNlcm5hbWUiOiJtaW5oaG9hbmciLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM3OTgyNTY4fQ.D9r1z7Y4IEdIyIPTPoVzyfsL10_07pShqC9UHeuPAp4
 
 {
-    "order": 1,
-    "type" : "TN",
-    "content": "EEST API with a single POST operation to the ‘/signup’ URL. The URL accepts JSON passed in the body of the request. If there is no body?"
-     
+    "type": "MULTICHOICE",
+    "content": "Thuật toán sắp xếp nào là nhanh nhất trong số các thuật toán được liệt kê?",
+    "embededMedia": "https://codelearn.io/Upload/Blog/dau-moi-la-thuat-toan-sap-xep-tot-nhat-63743511849.0545.jpg",
+    "answers":["61a1a17c916c8df5e46b30a3", "61a1a1a7916c8df5e46b30a5","61a1a1b9916c8df5e46b30a7","61a1a1ce916c8df5e46b30a9"],
+    "correctAnswers":["A"],
+    "maxPoints": 10,
+    "status": ""
 }
 ###Get all questions
 

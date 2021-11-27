@@ -28,7 +28,6 @@ router.get("/", verifyToken, async (req, res) => {
     const questions = await Question.find()
       .populate("answers")
       .populate("correctAnswers")
-      .populate("choosenAnswers")
       .exec();
     if (questions) {
       res.json({
@@ -75,12 +74,13 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
 
     //Create new question
     let question = new Question({
-      order: req.body.order,
       content: req.body.content,
       type: req.body.type,
       answers: req.body.answers,
       correctAnswers: req.body.correctAnswers,
       embededMedia: req.body.embededMedia,
+      maxPoints: req.body.maxPoints,
+      status: req.body.status,
     });
 
     //Send to Database
@@ -128,14 +128,14 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
       });
     let question;
     question = {
-      order: req.body.order,
       content: req.body.content,
       type: req.body.type,
       answers: req.body.answers,
       correctAnswers: req.body.correctAnswers,
       embededMedia: req.body.embededMedia,
       updatedAt: formatTimeUTC(),
-      isHidden: req.body.isHidden,
+      status: req.body.status,
+      maxPoints: req.body.maxPoints,
     };
 
     const updatedQuestion = await Question.findOneAndUpdate(

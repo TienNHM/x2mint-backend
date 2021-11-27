@@ -29,9 +29,8 @@ const accountSchema = mongoose.Schema({
     type: Date,
     default: formatTimeUTC,
   },
-  isHidden: {
-    type: Boolean,
-    default: false,
+  status: {
+    type: String,
   },
 });
 
