@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
 
 const questionSchema = mongoose.Schema({
-  order: {
-    type: Number,
-    require: true,
-    default: 0,
-  },
+  // order: {
+  //   type: Number,
+  //   require: true,
+  //   default: 0,
+  // },
   type: {
     type: String,
     require: true,
@@ -26,19 +26,19 @@ const questionSchema = mongoose.Schema({
   ],
   correctAnswers: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "answers",
+      type: String,
       default: null,
     },
   ],
-
   embededMedia: {
     type: String,
     default: null,
   },
-  isHidden: {
-    type: Boolean,
-    default: false,
+  status: {
+    type: String,
+  },
+  maxPoints: {
+    type: Number,
   },
   createdAt: {
     type: Date,

@@ -29,6 +29,39 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50I
     "point": 8,
     "status": true
 }
+###
+POST http://localhost:5000/app/api/v1/takeTest
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2Mzc1NjU1NTh9.fVTFZvcLWmFCRpYn36ifI29UhdslzbdGa4rOSrmm0v4
+
+{
+    "test": "61a24367bede4808fa123667",
+    "testUrl": "https://fb.com",
+    "user": "61989c1ed1dfd2ed151faa61",
+    "status": "DRAFT",
+    "points": 20, 
+    "submitTime": "2021-11-13T00:00",
+    "chooseAnswers": [
+        {
+            "questionId": "61a1a379e67d0c10b161117c",
+            "answers": ["A", "D"],
+            "correctAnswers": ["A"],
+            "maxPoints": 10 
+        },
+        {
+            "questionId": "61a24518bede4808fa123671",
+            "answers": ["A"],
+            "correctAnswers": ["D"],
+            "maxPoints": 10
+        }
+      
+    ],
+    "questionsOrder": ["61a1a379e67d0c10b161117c", "61a24518bede4808fa123671"]
+}
+
+
+
+
 
 ###
 GET http://localhost:5001/app/api/v1/takeTest/user/618d35c07a4165dcf02f7b05

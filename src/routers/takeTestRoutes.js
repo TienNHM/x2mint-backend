@@ -27,16 +27,20 @@ router.post("/", verifyToken, async (req, res) => {
     let take_test = new TakeTest({
       test: req.body.test,
       user: user.id,
-      startTime: req.body.startTime,
-      endTime: req.body.endTime,
+      submitTime: req.body.endTime,
       chooseAnswers: req.body.chooseAnswers,
-      point: req.body.point,
+      points: req.body.points,
       status: req.body.status,
+      questionsOrder: req.body.questionsOrder,
     });
 
     //Send to Database
     take_test = await take_test.save();
-
+    await TakeTest.populate(take_test, [
+      "test",
+      "user",
+      "chooseAnswers.questionId",
+    ]);
     res.json({
       success: true,
       message: "Take test created successfully",
@@ -49,7 +53,7 @@ router.post("/", verifyToken, async (req, res) => {
 });
 
 //@route GET v1/takeTest/user/:userId
-//@desc Create a take test
+//@desc Get all take test of a user
 //@access public
 //@role any
 router.get("/user/:userId", verifyToken, async (req, res) => {
@@ -58,8 +62,9 @@ router.get("/user/:userId", verifyToken, async (req, res) => {
 
     let take_tests = [];
     take_tests = await TakeTest.find({ user: req.params.userId })
-      .populate("test")
-      .populate("user")
+      .populate("test", "-__v -createdAt -updatedAt")
+      .populate("user", "-__v -createdAt -updatedAt")
+      .populate("chooseAnswers.questionId", "-__v -createdAt -updatedAt")
       .exec();
 
     res.json({
@@ -83,8 +88,8 @@ router.get("/test/:testId", verifyToken, async (req, res) => {
 
     let take_tests = [];
     take_tests = await TakeTest.find({ test: req.params.testId })
-      .populate("test")
-      .populate("user")
+      .populate("test", "-__v -createdAt -updatedAt")
+      .populate("user", "-__v -createdAt -updatedAt")
       .populate("chooseAnswers.questionId", "-__v -createdAt -updatedAt")
       .exec();
 

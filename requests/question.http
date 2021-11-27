@@ -13,15 +13,18 @@ Content-Type: application/json
 @authToken = {{login.response.body.token}}
 ###
 
-POST http://localhost:5000/app/api/v1/questions/new/1234
+POST http://localhost:5000/app/api/v1/questions/new/61a2476cbede4808fa12367d
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZGNlYThhNjExZjQzNDAyOTYzMjhjIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzEiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM2Njg0MjM5fQ.MD8t_BLLkC4_deWf4Aj8VjRiim1Uaro-CyJHxcr-MEE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwidXNlcm5hbWUiOiJtaW5oaG9hbmciLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM3OTgyNTY4fQ.D9r1z7Y4IEdIyIPTPoVzyfsL10_07pShqC9UHeuPAp4
 
 {
-    "order": 1,
-    "type" : "TN",
-    "content": "EEST API with a single POST operation to the ‘/signup’ URL. The URL accepts JSON passed in the body of the request. If there is no body?"
-     
+    "type": "MULTICHOICE",
+    "content": "Số nguyên tố là gì?",
+    "embededMedia": "https://data.voh.com.vn/voh/thumbnail/2020/11/27/thumb-so-nguyen-to.jp",
+    "answers":["61a247e1bede4808fa123683", "61a247febede4808fa123685","61a24811bede4808fa123687","61a24834bede4808fa123689"],
+    "correctAnswers":["D"],
+    "maxPoints": 20,
+    "status": ""
 }
 ###Get all questions
 

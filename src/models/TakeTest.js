@@ -8,20 +8,18 @@ const takeTestSchema = mongoose.Schema({
     default: null,
     ref: "tests",
   },
+
   user: {
     type: mongoose.SchemaTypes.ObjectId,
     require: true,
     default: null,
     ref: "users",
   },
-  startTime: {
+  submitTime: {
     type: Date,
     default: formatTimeUTC,
   },
-  endTime: {
-    type: Date,
-    default: formatTimeUTC,
-  },
+  questionsOrder: [String],
   chooseAnswers: [
     {
       questionId: {
@@ -30,15 +28,16 @@ const takeTestSchema = mongoose.Schema({
         default: null,
       },
       answers: [String],
+      correctAnswers: [String],
+      maxPoints: Number,
     },
   ],
-  point: {
+  points: {
     type: Number,
     default: 0,
   },
   status: {
-    type: Boolean,
-    default: false,
+    type: String,
   },
   createdAt: {
     type: Date,
