@@ -35,7 +35,9 @@ router.post("", verifyToken, async (req, res) => {
     //Create new question
     let answer = new Answer({
       name: req.body.name,
-      content: req.body.content
+      content: req.body.content,
+      questionId: req.body.questionId,
+      status: req.body.status
     });
 
     //Send to Database
@@ -153,6 +155,8 @@ router.put("/:answerId", verifyToken, async (req, res) => {
     let answer = {
       name: req.body.name,
       content: req.body.content,
+      questionId: req.body.questionId,
+      status: req.body.status,
       updatedAt: formatTimeUTC(),
     };
 
@@ -195,14 +199,9 @@ router.put("/:answerId/delete", verifyToken, async (req, res) => {
           message: "Body request not found",
         });
   
-      let answer = {
-        isHidden: true,
-        updatedAt: formatTimeUTC(),
-      };
-  
       const updatedAnswer = await Answer.findOneAndUpdate(
         { _id: req.params.answerId },
-        {isHidden: true}
+        {status: "DELETE"}
       );
       res.json({
         success: true,

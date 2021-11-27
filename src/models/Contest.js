@@ -22,7 +22,7 @@ const contestSchema = mongoose.Schema({
     default: formatTimeUTC,
   },
 
-  creatorId: {
+  creator_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "accounts",
     default: null,
@@ -34,13 +34,13 @@ const contestSchema = mongoose.Schema({
   tests: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "answers",
+      ref: "tests",
       default: null,
     },
   ],
-  isHidden: {
-    type: Boolean,
-    default: false,
+  status: {
+    type: String,
+    default: "",
   },
   createdAt: {
     type: Date,
