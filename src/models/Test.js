@@ -7,9 +7,9 @@ const testSchema = mongoose.Schema({
     require: true,
     default: 0,
   },
-  creatorId: {
+  creator_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "accounts",
+    // ref: "accounts",
     default: null,
   },
   description: {
@@ -36,20 +36,25 @@ const testSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-//   status: {
-//     type: String,
-//     require: true,
-//     default: null,
-//   },
   duration: {
     type: Number,
     require: true,
     default: null,
   },
+  maxPoints: {
+    type: Number,
+    default: null,
+  },
 
-  isHidden: {
-    type: Boolean,
-    default: false,
+  questions_order: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "questions",
+    default: null,
+  }],
+
+  status: {
+    type: String,
+    default: "",
   },
   createdAt: {
     type: Date,

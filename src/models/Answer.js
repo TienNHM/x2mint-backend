@@ -12,14 +12,19 @@ const answerSchema = mongoose.Schema({
       require: true,
       default: null,
     },
-    isHidden: {
-      type: Boolean,
+    status: {
+      type: String,
       default: false,
+    },
+    questionId: {
+        type: String,
+        require: true
     },
     createdAt: {
       type: Date,
       default: formatTimeUTC,
     },
+
     updatedAt: {
       type: Date,
       default: formatTimeUTC,
