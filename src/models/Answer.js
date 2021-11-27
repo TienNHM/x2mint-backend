@@ -2,30 +2,6 @@ const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
 
 const answerSchema = mongoose.Schema({
-<<<<<<< HEAD
-    name: {
-      type: String,
-      require: true,
-      default: 0,
-    },
-    content: {
-      type: String,
-      require: true,
-      default: null,
-    },
-    status: {
-      type: String,
-      default: "",
-    },
-    questionId: {
-        type: String,
-        require: true
-    },
-    createdAt: {
-      type: Date,
-      default: formatTimeUTC,
-    },
-=======
   name: {
     type: String,
     require: true,
@@ -38,7 +14,7 @@ const answerSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    default: false,
+    default: "",
   },
   questionId: {
     type: String,
@@ -48,7 +24,6 @@ const answerSchema = mongoose.Schema({
     type: Date,
     default: formatTimeUTC,
   },
->>>>>>> fde51c2... fix conflict
 
   updatedAt: {
     type: Date,
