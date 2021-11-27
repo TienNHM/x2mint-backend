@@ -22,9 +22,8 @@ const contestSchema = mongoose.Schema({
     default: formatTimeUTC,
   },
 
-  creator_id: {
+  creatorId: {
     type: mongoose.Schema.Types.ObjectId,
-    // ref: "accounts",
     default: null,
   },
   url: {

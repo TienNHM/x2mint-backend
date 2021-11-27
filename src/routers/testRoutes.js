@@ -26,7 +26,7 @@ router.get("/creator/:creatorId", verifyToken, async (req, res) => {
           .json({ success: false, message: "Permission denied" });
       }
   
-      const tests = await Test.find({creator_id:req.params.creatorId});
+      const tests = await Test.find({creatorId:req.params.creatorId});
       if (tests) {
         res.json({
           success: true,
@@ -113,7 +113,7 @@ router.get("", verifyToken, async (req, res) => {
       //Create new question
       let test = new Test({
         name: req.body.name,
-          creator_id: req.body.creator_id,
+          creatorId: req.body.creatorId,
           description: req.body.description,
           questions: req.body.questions, // can null
           startTime: formatTimeUTC_(req.body.startTime),
@@ -122,7 +122,7 @@ router.get("", verifyToken, async (req, res) => {
           duration: req.body.duration,
           maxPoints: req.body.maxPoints,
           status: req.body.status,
-          questions_order: req.body.questions_order
+          questionsOrder: req.body.questionsOrder
       });
   
       //Send to Database
@@ -207,7 +207,7 @@ router.get("", verifyToken, async (req, res) => {
       let test;
         test = {
           name: req.body.name,
-          creator_id: req.body.creator_id,
+          creatorId: req.body.creatorId,
           description: req.body.description,
           questions: req.body.questions, 
           startTime: formatTimeUTC_(req.body.startTime),
@@ -216,7 +216,7 @@ router.get("", verifyToken, async (req, res) => {
           duration: req.body.duration,
           maxPoints: req.body.maxPoints,
           status: req.body.status,
-          questions_order: req.body.questions_order,
+          questionsOrder: req.body.questionsOrder,
           updatedAt: formatTimeUTC()
         };
   
