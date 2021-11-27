@@ -18,14 +18,47 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwidXNlcm5hbWUiOiJtaW5oaG9hbmciLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM3OTgyNTY4fQ.D9r1z7Y4IEdIyIPTPoVzyfsL10_07pShqC9UHeuPAp4
 
 {
-    "id": "test-1",
-    "name": "Science",
-    "description": "Bài kiểm tra trắc nghiệm trực tuyến về các chủ đề khoa học tự nhiên, khoa học xã hội.",
-    "creator_id": "618d35c07a4165dcf02f7b05",
-    "url": "https://www.google.com",
+    "name": "Math",
+    "description": "Bài kiểm tra trắc nghiệm trực tuyến về toán học.",
+    "creatorId": "618d35c07a4165dcf02f7b05",
+    "url": "ttp://github.com",
     "status": "DRAFT",
-    "startTime": "2021-11-13 00:00",
-    "endTime": "2021-11-19 22:00",
-    "maxPoints": 70,
-    "questions_order": ["question-1", "question-2", "question-3", "question-4", "question-5", "question-6", "question-7"]
+    "startTime": "2021-11-13T08:00",
+    "endTime": "2021-11-29T15:52",
+    "maxPoints": 20,
+    "questionsOrder": []
+}
+###
+
+POST http://localhost:5000/app/api/v1/contests
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwidXNlcm5hbWUiOiJtaW5oaG9hbmciLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM3OTgyNTY4fQ.D9r1z7Y4IEdIyIPTPoVzyfsL10_07pShqC9UHeuPAp4
+
+{
+    "name": "beCod3r",
+    "creatorId": "618d35c07a4165dcf02f7b05",
+    "description": "Cuộc thi học thuật trực tuyến",
+    "tests": ["61941512101638c5e32ad4f8", "61a24367bede4808fa123667"],
+    "startTime": "2021-11-16T00:00",
+    "endTime": "2021-11-17T23:59",
+    "url": "https://www.facebook.com/",
+    "embededMedia": "https://i.pinimg.com/564x/84/c0/46/84c046c4135434214128c7dfec4f6f12.jpg",
+    "status": ""
+}
+###
+
+POST http://localhost:5000/app/api/v1/contests
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwidXNlcm5hbWUiOiJtaW5oaG9hbmciLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM3OTgyNTY4fQ.D9r1z7Y4IEdIyIPTPoVzyfsL10_07pShqC9UHeuPAp4
+
+{
+    "name": "Hackathon",
+    "creatorId": "618d35c07a4165dcf02f7b05",
+    "description": "Cuộc thi học thuật truyền thống",
+    "tests": [],
+    "startTime": "2021-11-16T00:00",
+    "endTime": "2021-11-18T17:00",
+    "url": "https://www.google.com/",
+    "embededMedia": "https://memehay.com/meme/20211010/meo-cam-bong-hoa-nao-tang-ban.jpg",
+    "status": ""
 }

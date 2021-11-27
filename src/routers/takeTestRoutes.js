@@ -29,7 +29,7 @@ router.post("/", verifyToken, async (req, res) => {
       user: user.id,
       submitTime: req.body.endTime,
       chooseAnswers: req.body.chooseAnswers,
-      points: req.body.point,
+      points: req.body.points,
       status: req.body.status,
       questionsOrder: req.body.questionsOrder,
     });

@@ -18,6 +18,6 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwidXNlcm5hbWUiOiJtaW5oaG9hbmciLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM3OTgyNTY4fQ.D9r1z7Y4IEdIyIPTPoVzyfsL10_07pShqC9UHeuPAp4
 
 {
-    "name": "D",
-    "content": "Shaker Sort"
+   "name": "D",
+ "content": "Số nguyên tố là số tự nhiên chỉ có 2 ước số."
 }
