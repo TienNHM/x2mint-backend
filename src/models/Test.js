@@ -7,9 +7,8 @@ const testSchema = mongoose.Schema({
     require: true,
     default: 0,
   },
-  creator_id: {
+  creatorId: {
     type: mongoose.Schema.Types.ObjectId,
-    // ref: "accounts",
     default: null,
   },
   description: {
@@ -46,9 +45,8 @@ const testSchema = mongoose.Schema({
     default: null,
   },
 
-  questions_order: [{
+  questionsOrder: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "questions",
     default: null,
   }],
 

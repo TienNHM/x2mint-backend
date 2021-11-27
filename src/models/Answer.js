@@ -14,7 +14,7 @@ const answerSchema = mongoose.Schema({
     },
     status: {
       type: String,
-      default: false,
+      default: "",
     },
     questionId: {
         type: String,

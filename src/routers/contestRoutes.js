@@ -26,7 +26,7 @@ router.get("/creator/:creatorId", verifyToken, async (req, res) => {
           .json({ success: false, message: "Permission denied" });
       }
   
-      const contests = await Contest.find({creator_id:req.params.creatorId});
+      const contests = await Contest.find({creatorId:req.params.creatorId});
       if (contests) {
         res.json({
           success: true,
@@ -113,7 +113,7 @@ router.get("", verifyToken, async (req, res) => {
       let contest = new Contest({
         
           name: req.body.name,
-          creator_id: req.body.creator_id,
+          creatorId: req.body.creatorId,
           description: req.body.description,
           tests: req.body.tests, // can null
           startTime: formatTimeUTC_(req.body.startTime),
@@ -205,7 +205,7 @@ router.get("", verifyToken, async (req, res) => {
         let contest;
         contest = {
             name: req.body.name,
-            creator_id: req.body.creator_id,
+            creatorId: req.body.creatorId,
             description: req.body.description,
             tests: req.body.tests, // can null
             startTime: formatTimeUTC_(req.body.startTime),
