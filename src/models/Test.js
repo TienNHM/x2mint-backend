@@ -9,7 +9,7 @@ const testSchema = mongoose.Schema({
   },
   creator_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "accounts",
+    // ref: "accounts",
     default: null,
   },
   description: {
