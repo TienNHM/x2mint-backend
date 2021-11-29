@@ -92,7 +92,7 @@ router.get("", verifyToken, async (req, res) => {
     }
   });
 
-  //@route GET v1/answers/:answerId
+//@route GET v1/answers/:answerId
 //@desc get answers by id
 //@access private
 //@role admin/creator/user
