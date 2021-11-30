@@ -82,6 +82,43 @@ router.get("", verifyToken, async (req, res) => {
     }
   });
   
+//@route GET v1/contests/:contestId
+//@desc get answers by id
+//@access private
+//@role admin/creator/user
+router.get("/:contestId", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (
+     !(req.body.verifyAccount.role === ROLES.ADMIN ||
+      req.body.verifyAccount.role === ROLES.CREATOR || 
+      req.body.verifyAccount.role === ROLES.USER)
+    ) 
+    {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const contest  = await Contest.findById(req.params.contestId);
+    if (contest) {
+      res.json({
+        success: true,  
+        message: "Get contest by id successfully ",
+        data: contest,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Contest does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
   //TODO: Get all tests of  a test by testId for isHidden = false OR true
   
   //@route Test v1/contest

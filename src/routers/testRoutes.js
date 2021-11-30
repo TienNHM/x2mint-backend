@@ -81,6 +81,43 @@ router.get("", verifyToken, async (req, res) => {
   }
 });
 
+//@route GET v1/tests/:testId
+//@desc get test by id
+//@access private
+//@role admin/creator/user
+router.get("/:testId", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (
+     !(req.body.verifyAccount.role === ROLES.ADMIN ||
+      req.body.verifyAccount.role === ROLES.CREATOR || 
+      req.body.verifyAccount.role === ROLES.USER)
+    ) 
+    {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const test  = await Test.findById(req.params.testId);
+    if (test) {
+      res.json({
+        success: true,  
+        message: "Get test by id successfully ",
+        data: test,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Test does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 //TODO: Get all tests of  a test by testId for isHidden = false OR true
 
 //@route Test v1/tests/new
