@@ -5,12 +5,9 @@ POST http://localhost:5000/app/api/v1/auths/register
 Content-Type: application/json
 
 {
-    "email": "nguyenhoang99@gmail.com",
-    "password" : "12345",
-    "fullname": "Nguyen Anh Tin",
-    "username": "minhhoang1",
-    "role": "admin",
-    "phone": "124567816"
+    "email": "tadeothien@gmail.com",
+    "password" : "tadeothien",
+    "username": "tadeothien"
 }
 
 # @name login
@@ -19,8 +16,8 @@ POST http://localhost:5000/app/api/v1/auths/login
 Content-Type: application/json
 
 {
-    "password" : "12345",
-    "username": "minhhoang1"
+    "password" : "minhthien123",
+    "username": "minhthien123"
 }
 
 ###
