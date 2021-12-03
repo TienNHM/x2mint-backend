@@ -1,10 +1,29 @@
 const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
+const { ROLES } = require("./enum");
 
 const userSchema = mongoose.Schema({
-  fullname: {
+  username: {
+    type: String,
+    unique: true,
+    require:true, 
+  },
+  email: {
+    type: String,
+    unique: true,
+    require: true,
+  },
+  password: {
     type: String,
     require: true,
+    min: 8,
+  },
+  role: {
+    type: String,
+    default: ROLES.USER,
+  },
+  full_name: {
+    type: String,
     default: null,
   },
   address: {

@@ -3,10 +3,8 @@ const router = express.Router();
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const Account = require("../models/Account");
 const verifyToken = require("../middleware/requireAuth");
 const { OAuth2Client, auth } = require("google-auth-library");
-
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./config.env" });
@@ -26,85 +24,57 @@ const googleAuth = async (token) => {
 //@access public
 //@role any
 router.post("/register", async (req, res) => {
-  console.log(req.body);
-  if (!req.body)
-    return res
-      .status(400)
-      .json({ success: false, message: "Body request not found" });
 
-  const { username, password, email, fullname, phone, address, school } =
-    req.body;
+  const { username, email, password, full_name, phone, address, school } = req.body;
   //simple validation
-  if (!username || !password) {
+  if (!username || !password || !email) {
     return res
       .status(400)
-      .json({ success: false, message: "Missing username and/or password" });
+      .json({ success: false, message: "Missing username, email and/or password" });
   }
-
   try {
     //Check for existing username
-    const account = await Account.findOne({
-      $or: [{ username }, { email }],
-    });
-
-    const user = await User.findOne({ phone });
-
-    if (account) {
-      if (account.username === username)
+    const user = await User.findOne({$or: [{ username}, { email }],});
+    if (user) { // check already account
+      if (user.username === username)
         return res
           .status(400)
           .json({ success: false, message: "Username already taken" });
-      else if (account.email === email) {
-        console.log("Account: ", account);
+      else if (user.email === email) {
+        console.log("User: ", user);
         return res
           .status(400)
           .json({ success: false, message: "Email already taken" });
       }
     }
-    if (user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Phone already taken" });
-    }
-
     const hashedPassword = await argon2.hash(
       password,
       process.env.SECRET_HASH_KEY
     );
 
-    let newAccount = new Account({
+    const newUser = new User({ //create account with username, email and password
       username,
       password: hashedPassword,
       email,
+      full_name, 
+      phone, 
+      address, 
+      school 
     });
-
-    newAccount = await newAccount.save();
-    let newUser = new User({
-      fullname,
-      phone,
-      address,
-      school,
-      account: newAccount._id,
-    });
-    newUser = await newUser.save();
-    //Return token
+    await newUser.save();
+      //Return token
     const accessToken = jwt.sign(
       {
-        verifyAccount: {
-          id: newAccount._id,
-          isHidden: newAccount.isHidden,
-          username: newAccount.username,
-          role: newAccount.role,
-        },
+        id: newUser._id,
+        username: newUser.username,
+        role: newUser.role,
       },
       process.env.ACCESS_TOKEN_SECRET
     );
-
     return res.json({
       success: true,
       message: "Account created successfully",
-      accessToken: "Bearer " + accessToken,
-      user: newUser,
+      accessToken
     });
   } catch (error) {
     console.log(error);
@@ -117,40 +87,36 @@ router.post("/register", async (req, res) => {
 // @access Public
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-
   //simple validation
   if (!username || !password) {
     return res
       .status(400)
       .json({ success: false, message: "Missing username and/or password" });
   }
-
   try {
     //check for existing username
-    const account = await Account.findOne({ username });
-    if (!account)
+    const user = await User.findOne({ username });
+    if (!user)
       return res
         .status(400)
         .json({ success: false, message: "Incorrect username or password" });
 
     // Username found
-    const passwordValid = await argon2.verify(account.password, password);
+    const passwordValid = await argon2.verify(user.password, password);
     if (!passwordValid)
       return res
         .status(400)
         .json({ success: false, message: "Incorrect username or password" });
     console.log(passwordValid);
     //All good
-    const userInfo = await User.findOne({ account: account._id });
 
     //return token
     const accessToken = jwt.sign(
       {
         verifyAccount: {
-          id: account._id,
-          isHidden: account.isHidden,
-          username: account.username,
-          role: account.role,
+          id: user._id,
+          username: user.username,
+          role: user.role,
         },
       },
       process.env.ACCESS_TOKEN_SECRET
@@ -159,8 +125,7 @@ router.post("/login", async (req, res) => {
     res.json({
       success: true,
       message: "User logged successfully",
-      accessToken: accessToken,
-      user: userInfo,
+      accessToken,
     });
   } catch (error) {
     console.log(error);
@@ -261,5 +226,18 @@ router.get("/verify", verifyToken, async (req, res) => {
     });
   }
 });
+
+router.get("/", verifyToken, async (req, res) => {
+  try{
+    const user = await User.findById(req.userId).select('-password')
+    if (!user)
+      return res.status(400).json({success:false, message:'User not found'})
+    res.json({success:true, user})
+    }catch (error) {
+      console.log(error)
+      res.status(500).json({success:false, message:'Internal server error'})
+    }
+})
+
 
 module.exports = router;
