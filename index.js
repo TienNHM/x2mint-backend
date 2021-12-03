@@ -17,10 +17,17 @@ dotenv.config({ path: "./config.env" });
 //Config CORS
 const cors = require("cors");
 const corsOptions = {
+<<<<<<< HEAD
   origin: 'http://localhost:3000',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 app.use(cors());
+=======
+  origin: "http://localhost:3000",
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+app.options("*", cors());
+>>>>>>> 0b14f6c... Update
 app.use(cors(corsOptions));
 app.use(express.json());
 
