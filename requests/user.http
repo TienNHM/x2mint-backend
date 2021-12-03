@@ -3,8 +3,16 @@ POST http://localhost:5000/app/api/v1/auths/login
 Content-Type: application/json
 
 {
-    "password" : "12345",
-    "username": "minhhoang"
+    "username": "hoangnguye",
+    "email":"nguyenhoang@gmail.com",
+    "pssword": "12345678",
+    "fullname": "Nguyen Anh Tin",
+    "address": "Q9 ,TP Hồ Chí Minh",
+    "school": "ĐH Sư Phạm Kỹ Thuật",
+    "dod": "",
+    "phone": "124567891",
+    "avatar": "",
+    "isHidden": false
 }
 
 ###Get all users
@@ -33,6 +41,10 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2MzY3MTI0MzV9.pU6TuLwcehrq_rsYMACf85uLypQ4fDp-l64jjduF0m0
 
 {
+    
+    "username": "hoangnguye",
+    "email":"nguyenhoang@gmail.com",
+    "pssword": "12345678",
     "fullname": "Nguyen Anh Tin",
     "address": "Q9 ,TP Hồ Chí Minh",
     "school": "ĐH Sư Phạm Kỹ Thuật",
