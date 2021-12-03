@@ -25,7 +25,7 @@ router.get("/", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const users = await User.find().populate("account", "email role isHidden");
+    const users = await User.find();
     if (users) {
       res.json({
         success: true,
@@ -128,7 +128,7 @@ router.put("/info/:userId", verifyToken, async (req, res) => {
 
 router.put("/resetPassword", verifyToken, async (req, res) => {
   try {
-    const accountId = req.body.verifyAccount.id;
+    const userId = req.body.verifyAccount.id;
     const { oldPassword, newPassword } = req.body;
     if (!oldPassword || !newPassword) {
       return res
@@ -136,14 +136,14 @@ router.put("/resetPassword", verifyToken, async (req, res) => {
         .json({ success: false, message: "Missing password" });
     }
 
-    const account = await Account.findById(accountId);
-    if (!account)
+    const user = await User.findById(userId);
+    if (!user)
       return res
         .status(401)
         .json({ success: false, message: "Unauthorization" });
 
     // Verify current password to change
-    const passwordValid = await argon2.verify(account.password, oldPassword);
+    const passwordValid = await argon2.verify(user.password, oldPassword);
 
     if (!passwordValid)
       return res
@@ -155,23 +155,19 @@ router.put("/resetPassword", verifyToken, async (req, res) => {
       newPassword,
       process.env.SECRET_HASH_KEY
     );
-    let updatedAccount = {
+    let updatedUser = {
       password: hashedPassword,
       updatedAt: formatTimeUTC(),
     };
 
-    updatedAccount = await Account.findOneAndUpdate(
-      { _id: accountId },
-      updatedAccount,
-      {
-        new: true,
-      }
-    );
+    updatedUser = await User.findOneAndUpdate({ _id: userId }, updatedUser, {
+      new: true,
+    });
 
     res.json({
       success: true,
       message: "Reset password successfully",
-      account: updatedAccount,
+      account: updatedUser,
     });
   } catch (error) {
     console.log(error);

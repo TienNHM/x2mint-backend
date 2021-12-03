@@ -16,8 +16,8 @@ POST http://localhost:5000/app/api/v1/auths/login
 Content-Type: application/json
 
 {
-    "password" : "minhthien123",
-    "username": "minhthien123"
+    "password" : "tadeothien",
+    "username": "tadeothien"
 }
 
 ###
@@ -27,4 +27,10 @@ Content-Type: application/json
 POST http://localhost:5000/app/api/v1/auths/login/google
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4ZGNlYThhNjExZjQzNDAyOTYzMjhjIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZzEiLCJyb2xlIjoiYWRtaW4ifSwiaWF0IjoxNjM2Njg0MjM5fQ.MD8t_BLLkC4_deWf4Aj8VjRiim1Uaro-CyJHxcr-MEE
+
+###
+
+GET http://localhost:5000/app/api/v1/auths
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYWE2MzkzMTNhZWZiNWUzMmQyZDYzNSIsInVzZXJuYW1lIjoiaG9hbmcxMjMiLCJyb2xlIjoidXNlciIsImlhdCI6MTYzODU1NjU2M30.YFdTHKk73S-cxKEC6PTtsey2yXjwxRTas-ToqT4JHFI
 

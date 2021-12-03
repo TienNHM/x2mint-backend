@@ -24,18 +24,20 @@ const googleAuth = async (token) => {
 //@access public
 //@role any
 router.post("/register", async (req, res) => {
-
-  const { username, email, password, full_name, phone, address, school } = req.body;
+  const { username, email, password, full_name, phone, address, school } =
+    req.body;
   //simple validation
   if (!username || !password || !email) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Missing username, email and/or password" });
+    return res.status(400).json({
+      success: false,
+      message: "Missing username, email and/or password",
+    });
   }
   try {
     //Check for existing username
-    const user = await User.findOne({$or: [{ username}, { email }],});
-    if (user) { // check already account
+    const user = await User.findOne({ $or: [{ username }, { email }] });
+    if (user) {
+      // check already account
       if (user.username === username)
         return res
           .status(400)
@@ -52,29 +54,32 @@ router.post("/register", async (req, res) => {
       process.env.SECRET_HASH_KEY
     );
 
-    const newUser = new User({ //create account with username, email and password
+    const newUser = new User({
+      //create account with username, email and password
       username,
       password: hashedPassword,
       email,
-      full_name, 
-      phone, 
-      address, 
-      school 
+      full_name,
+      phone,
+      address,
+      school,
     });
     await newUser.save();
-      //Return token
+    //Return token
     const accessToken = jwt.sign(
       {
-        id: newUser._id,
-        username: newUser.username,
-        role: newUser.role,
+        verifyAccount: {
+          id: newUser.id,
+          username: newUser.username,
+          role: newUser.role,
+        },
       },
       process.env.ACCESS_TOKEN_SECRET
     );
     return res.json({
       success: true,
       message: "Account created successfully",
-      accessToken
+      accessToken,
     });
   } catch (error) {
     console.log(error);
@@ -126,6 +131,7 @@ router.post("/login", async (req, res) => {
       success: true,
       message: "User logged successfully",
       accessToken,
+      user: user,
     });
   } catch (error) {
     console.log(error);
@@ -213,6 +219,7 @@ router.post("/login/google", verifyToken, async (req, res, next) => {
 
 router.get("/verify", verifyToken, async (req, res) => {
   try {
+    console.log(req.body.verifyAccount);
     return res.status(200).json({
       message: "Token is valid",
       success: true,
@@ -228,16 +235,20 @@ router.get("/verify", verifyToken, async (req, res) => {
 });
 
 router.get("/", verifyToken, async (req, res) => {
-  try{
-    const user = await User.findById(req.userId).select('-password')
+  try {
+    const user = await User.findById(req.body.verifyAccount.id).select(
+      "-password"
+    );
+    console.log("Heiii", user);
     if (!user)
-      return res.status(400).json({success:false, message:'User not found'})
-    res.json({success:true, user})
-    }catch (error) {
-      console.log(error)
-      res.status(500).json({success:false, message:'Internal server error'})
-    }
-})
-
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    res.json({ success: true, user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
 
 module.exports = router;

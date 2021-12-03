@@ -92,6 +92,12 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
   try {
     //Check permission
 
+    if (!req.body)
+      res.status(400).json({
+        success: false,
+        message: "Body request not found",
+      });
+
     if (
       !(
         req.body.verifyAccount.role === ROLES.ADMIN ||
@@ -102,12 +108,6 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
         .status(401)
         .json({ success: false, message: "Permission denied" });
     }
-
-    if (!req.body)
-      res.status(400).json({
-        success: false,
-        message: "Body request not found",
-      });
 
     //Create new question
     let question = new Question({
@@ -147,6 +147,12 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
 router.put("/update/:questionId", verifyToken, async (req, res) => {
   try {
     //Check permission
+    if (!req.body)
+      res.status(400).json({
+        success: false,
+        message: "Body request not found",
+      });
+
     if (
       !(
         req.body.verifyAccount.role === ROLES.ADMIN ||
@@ -158,11 +164,6 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    if (!req.body)
-      res.status(400).json({
-        success: false,
-        message: "Body request not found",
-      });
     let question;
     question = {
       content: req.body.content,

@@ -1,14 +1,12 @@
 const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
 const { ROLES } = require("./enum");
-const jwt = require('jsonwebtoken');
-const bcryptjs = require('bcryptjs');
 
 const accountSchema = mongoose.Schema({
   username: {
     type: String,
     unique: true,
-    require:true, 
+    require: true,
   },
   email: {
     type: String,

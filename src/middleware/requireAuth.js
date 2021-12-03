@@ -2,6 +2,7 @@ const { OAuth2Client, auth } = require("google-auth-library");
 const Account = require("../models/Account");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const User = require("../models/User");
 
 dotenv.config({ path: "./config.env" });
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -31,7 +32,7 @@ const verifyToken = async (req, res, next) => {
     const user = await googleAuth(token);
     console.log("Hello");
 
-    let userMap = await Account.findOne({ email: user.email });
+    let userMap = await User.findOne({ email: user.email });
 
     //Checked account is active
     if (!userMap.isHidden) {
@@ -54,17 +55,10 @@ const verifyToken = async (req, res, next) => {
         process.env.ACCESS_TOKEN_SECRET,
         function (err, payload) {
           if (typeof payload != "undefined") {
-            if (!payload.verifyAccount.isHidden) {
-              account = payload.verifyAccount;
-              req.body.verifyAccount = account;
-              req.headers.authorization = token;
-              next();
-            } else {
-              res.status(403).json({
-                message: "Your account is blocked",
-                success: false,
-              });
-            }
+            account = payload.verifyAccount;
+            req.body.verifyAccount = account;
+            req.headers.authorization = token;
+            next();
           } else {
             return res.status(401).json({
               message: "Authentication failed!",
