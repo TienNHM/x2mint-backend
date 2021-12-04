@@ -16,11 +16,23 @@ dotenv.config({ path: "./.env" });
 
 //Config CORS
 const cors = require("cors");
-const corsOptions = {
-  origin: "http://localhost:3000",
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-app.use(cors());
+
+var whitelist = [
+  'http://localhost:3000',
+  'https://x2mint.vercel.app/',
+  'https://x2mint.vercel.app/'
+]
+
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -57,6 +69,6 @@ app.use(`${api}/takeTest`, takeTestRoute);
 
 app.get("/", (req, res) => res.send("Hello world"));
 
-app.listen(process.env.PORT || 5001, function(){
+app.listen(process.env.PORT || 5001, function () {
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
