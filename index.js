@@ -56,6 +56,10 @@ app.use(`${api}/contests`, contestRoute);
 app.use(`${api}/takeTest`, takeTestRoute);
 
 app.get("/", (req, res) => res.send("Hello world"));
-const PORT = 5001;
 
-app.listen(PORT, () => console.log("Server started on port ", PORT));
+// const PORT = 5001;
+// app.listen(PORT, () => console.log("Server started on port ", PORT));
+
+app.listen(process.env.PORT || 5001, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+});
