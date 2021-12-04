@@ -17,7 +17,7 @@ dotenv.config({ path: "./.env" });
 //Config CORS
 const cors = require("cors");
 
-var whitelist = ['https://x2mint.vercel.app/', 'http://localhost:3000']
+var whitelist = ['https://x2mint.vercel.app', 'http://localhost:3000']
 var corsOptions = {
     origin: function (origin, callback) {
       if (whitelist.indexOf(origin) !== -1) {
@@ -28,6 +28,7 @@ var corsOptions = {
     }
   }
 
+app.options('*', cors())
 app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json());
