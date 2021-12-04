@@ -204,7 +204,7 @@ router.get("/:questionId/answers", verifyToken, async (req, res) => {
     if (question) {
       res.json({
         success: true,
-        message: "Get all answer by question id successfully ",
+        message: "Get all answers by question id successfully ",
         answers: question.answers,
       });
     } else {
