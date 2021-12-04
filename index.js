@@ -12,7 +12,7 @@ const contestRoute = require("./src/routers/contestRoutes");
 const takeTestRoute = require("./src/routers/takeTestRoutes");
 
 //Config env
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./.env" });
 
 //Config CORS
 const cors = require("cors");

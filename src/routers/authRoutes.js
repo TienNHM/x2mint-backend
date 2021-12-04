@@ -7,7 +7,7 @@ const verifyToken = require("../middleware/requireAuth");
 const { OAuth2Client, auth } = require("google-auth-library");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./.env" });
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const googleAuth = async (token) => {

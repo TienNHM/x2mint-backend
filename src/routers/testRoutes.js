@@ -3,7 +3,7 @@ const router = express.Router();
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./.env" });
 const Test = require("../models/Test");
 const { formatTimeUTC_, formatTimeUTC } = require("../utils/Timezone");
 
