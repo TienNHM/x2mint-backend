@@ -20,10 +20,10 @@
     "express": "^4.17.1",
     "google-auth-library": "^7.10.2",
     "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.15",
     "mongoose": "^6.0.14"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15",
     "vercel": "^23.1.2"
   }
 }
