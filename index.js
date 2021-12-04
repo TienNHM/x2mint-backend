@@ -17,17 +17,17 @@ dotenv.config({ path: "./.env" });
 //Config CORS
 const cors = require("cors");
 
-var whitelist = ['http://localhost:3000', 'https://x2mint.vercel.app/', 'https://vercel.app/']
+var whitelist = ['https://x2mint.vercel.app/', 'http://localhost:3000']
 var corsOptions = {
-  optionsSuccessStatus: 200,
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    }
+  }
+
 app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -44,7 +44,7 @@ const connectDB = async () => {
         useUnifiedTopology: true,
       })
       .then(() => {
-        console.log(" Mongoose connect ");
+        console.log(" Mongoose connected ");
       });
   } catch (error) {
     console.log("Connect Error :", error.message);
@@ -63,7 +63,7 @@ app.use(`${api}/tests`, testRoute);
 app.use(`${api}/contests`, contestRoute);
 app.use(`${api}/takeTest`, takeTestRoute);
 
-app.get("/", (req, res) => res.send("Hello world"));
+app.get("/", (req, res) => res.send("X2MINT API"));
 
 app.listen(process.env.PORT || 5001, function(){
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
