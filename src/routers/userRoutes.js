@@ -8,7 +8,7 @@ const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 const { formatTimeUTC } = require("../utils/Timezone");
 const mongoose = require("mongoose");
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./.env" });
 
 //@route GET v1/users
 //@desc Get all users

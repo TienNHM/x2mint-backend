@@ -5,7 +5,7 @@ const Test = require("../models/Test");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "./.env" });
 
 //@route GET v1/questions/
 //@desc get all question
