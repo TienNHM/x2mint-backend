@@ -35,11 +35,6 @@ const testSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-  duration: {
-    type: Number,
-    require: true,
-    default: null,
-  },
   maxPoints: {
     type: Number,
     default: null,
