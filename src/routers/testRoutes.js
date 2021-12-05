@@ -89,20 +89,25 @@ router.get("/:testId", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-     !(req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR || 
-      req.body.verifyAccount.role === ROLES.USER)
-    ) 
-    {
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER)
+    ) {
       return res
         .status(401)
         .json({ success: false, message: "Permission denied" });
     }
 
-    const test  = await Test.findById(req.params.testId);
+    const test = await Test.findById(req.params.testId).populate(
+      {
+        path: 'questions',
+        populate: { path: 'answers' }
+      }
+    );
+
     if (test) {
       res.json({
-        success: true,  
+        success: true,
         message: "Get test by id successfully ",
         data: test,
       });
