@@ -19,14 +19,17 @@ const cors = require("cors");
 
 var whitelist = ['https://x2mint.vercel.app', 'http://localhost:3000']
 var corsOptions = {
-    origin: function (origin, callback) {
-      if (whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
-      } else {
-        callback(new Error('Not allowed by CORS'))
-      }
-    }
-  }
+  origin: function (origin, callback) {
+    //TODO: remove 2nd condition when deploy prodution
+    if (whitelist.indexOf(origin) !== -1
+      || origin.includes(process.env.DOMAIN)) {
+      callback(null, true)
+    }
+    else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
 
 app.options('*', cors())
 app.use(cors());
@@ -66,6 +69,6 @@ app.use(`${api}/takeTest`, takeTestRoute);
 
 app.get("/", (req, res) => res.send("X2MINT API"));
 
-app.listen(process.env.PORT || 5001, function(){
+app.listen(process.env.PORT || 5001, function () {
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
