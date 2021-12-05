@@ -65,7 +65,7 @@ router.get("/:questionId", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const question  = await Question.findById(req.params.questionId);
+    const question  = await Question.findById(req.params.questionId).populate("answers");
     if (question) {
       res.json({
         success: true,  
