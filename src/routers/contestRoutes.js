@@ -55,7 +55,8 @@ router.get("", verifyToken, async (req, res) => {
     if (
       !(
         req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR
+        req.body.verifyAccount.role === ROLES.CREATOR || 
+        req.body.verifyAccount.role === ROLES.USER
       )
     ) {
       return res
