@@ -8,7 +8,7 @@ const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 
-//@route GET v1/questions/:questionId
+//@route GET v1/submit/:takeTestId
 //@desc get take test by id
 //@access private
 //@role admin/creator/user
@@ -49,7 +49,7 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
   }
 });
 
-//@route Post v1/takeTest/new
+//@route Post v1/submit/new
 //@desc Create a take test
 //@access public
 //@role user
@@ -70,22 +70,20 @@ router.post("/", verifyToken, async (req, res) => {
       user: user.id,
       submitTime: req.body.endTime,
       chooseAnswers: req.body.chooseAnswers,
-      points: req.body.points,
+      points: req.body.points, //TODO chấm điểm
       status: req.body.status,
       questionsOrder: req.body.questionsOrder,
     });
 
     //Send to Database
     take_test = await take_test.save();
-    // await TakeTest.populate(take_test, [
-    //   "test",
-    //   "user",
-    //   "chooseAnswers.questionId",
-    // ]);
+    const takeTest = await TakeTest.findById(take_test._id)
+      .select("-points -chooseAnswers.correctAnswers").exec();
+
     res.json({
       success: true,
       message: "Take test created successfully",
-      takeTest: take_test,
+      takeTest: takeTest,
     });
   } catch (error) {
     console.log(error);
@@ -93,7 +91,7 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-//@route GET v1/takeTest/user/:userId
+//@route GET v1/submit/user/:userId
 //@desc Get all take test of a user
 //@access public
 //@role any

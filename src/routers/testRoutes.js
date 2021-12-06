@@ -98,12 +98,19 @@ router.get("/:testId", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const test = await Test.findById(req.params.testId).populate(
-      {
-        path: 'questions',
-        populate: { path: 'answers' }
-      }
-    );
+    let test = null
+    if (req.body.verifyAccount.role === ROLES.USER) {
+      test = await Test.findById(req.params.testId)
+      .populate("questions", "-__v -createdAt -updatedAt -correctAnswers")
+      .populate("questions.answers", "-__v -createdAt -updatedAt")
+      .exec();
+    }
+    else {
+      test = await Test.findById(req.params.testId)
+      .populate("questions", "-__v -createdAt -updatedAt")
+      .populate("questions.answers", "-__v -createdAt -updatedAt")
+      .exec();
+    }
 
     if (test) {
       res.json({

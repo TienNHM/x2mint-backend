@@ -65,7 +65,7 @@ app.use(`${api}/answers`, answerRoute);
 app.use(`${api}/users`, userRoute);
 app.use(`${api}/tests`, testRoute);
 app.use(`${api}/contests`, contestRoute);
-app.use(`${api}/takeTest`, takeTestRoute);
+app.use(`${api}/submit`, takeTestRoute);
 
 app.get("/", (req, res) => res.send("X2MINT API"));
 
