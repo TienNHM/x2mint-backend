@@ -93,21 +93,40 @@ router.post("/", verifyToken, async (req, res) => {
     let user = await User.findOne({ acount: accountId });
 
     //Create new
-    const chooseAnswers = req.body.chooseAnswers
-    //TODO Tính điểm
-    
     let take_test = new TakeTest({
       test: req.body.test,
       user: user.id,
       submitTime: req.body.endTime,
       chooseAnswers: req.body.chooseAnswers,
-      points: 0, //calcPoints(req.body.chooseAnswers),
+      points: 0,
       status: req.body.status,
       questionsOrder: req.body.questionsOrder,
     });
 
     //Send to Database
     take_test = await take_test.save();
+
+    // populate để lấy dữ liệu các trường tương ứng
+    let tmp = {...take_test}
+    await TakeTest.populate(take_test, [
+      "test",
+      "user",
+      "chooseAnswers.question",
+    ]);
+
+    // tính điểm đạt được
+    const points = calcPoints(tmp.chooseAnswers)
+    take_test = {
+      ...take_test,
+      points: points
+    }
+
+    // lưu lại bài take test kềm theo điểm số
+    await TakeTest.findOneAndUpdate(
+      { _id: take_test._id },
+      take_test,
+      { new: true }
+    );
 
     res.json({
       success: true,
