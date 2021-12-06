@@ -127,9 +127,18 @@ router.get("/test/:testId", verifyToken, async (req, res) => {
 
     let take_tests = [];
     take_tests = await TakeTest.find({ test: req.params.testId })
-      .populate("test", "-__v -createdAt -updatedAt")
-      .populate("user", "-__v -createdAt -updatedAt")
-      .populate("chooseAnswers.questionId", "-__v -createdAt -updatedAt")
+      .populate({
+        path: 'test',
+        select: "-__v -createdAt -updatedAt",
+      })
+      .populate({
+        path: 'user',
+        select: "-__v -createdAt -updatedAt",
+      })
+      .populate({
+        path: 'chooseAnswers',
+        select: "-__v -createdAt -updatedAt",
+      })
       .exec();
 
     res.json({

@@ -101,15 +101,27 @@ router.get("/:testId", verifyToken, async (req, res) => {
     let test = null
     if (req.body.verifyAccount.role === ROLES.USER) {
       test = await Test.findById(req.params.testId)
-      .populate("questions", "-__v -createdAt -updatedAt -correctAnswers")
-      .populate("questions.answers", "-__v -createdAt -updatedAt")
-      .exec();
+        .populate({
+          path: 'questions',
+          select: "-__v -createdAt -updatedAt -correctAnswers",
+          populate: {
+            path: 'answers',
+            select: "-__v -createdAt -updatedAt"
+          }
+        })
+        .exec();
     }
     else {
       test = await Test.findById(req.params.testId)
-      .populate("questions", "-__v -createdAt -updatedAt")
-      .populate("questions.answers", "-__v -createdAt -updatedAt")
-      .exec();
+        .populate({
+          path: 'questions',
+          select: "-__v -createdAt -updatedAt",
+          populate: {
+            path: 'answers',
+            select: "-__v -createdAt -updatedAt"
+          }
+        })
+        .exec();
     }
 
     if (test) {
