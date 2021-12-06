@@ -127,29 +127,29 @@ router.post("/", verifyToken, async (req, res) => {
     //Send to Database
     take_test = await take_test.save();
 
-    // populate để lấy dữ liệu các trường tương ứng
-    let tmp = {...take_test}
-    await TakeTest.populate(tmp, [
-      "test",
-      "user",
-      "chooseAnswers.question",
-    ]);
+    // // populate để lấy dữ liệu các trường tương ứng
+    // let tmp = {...take_test}
+    // await TakeTest.populate(tmp, [
+    //   "test",
+    //   "user",
+    //   "chooseAnswers.question",
+    // ]);
 
-    console.log(tmp)
+    // console.log(tmp)
 
-    // tính điểm đạt được
-    const points = calcTestPoints(tmp.chooseAnswers)
-    take_test = {
-      ...take_test,
-      points: points
-    }
+    // // tính điểm đạt được
+    // const points = calcTestPoints(tmp.chooseAnswers)
+    // take_test = {
+    //   ...take_test,
+    //   points: points
+    // }
 
-    // lưu lại bài take test kềm theo điểm số
-    await TakeTest.findOneAndUpdate(
-      { _id: take_test._id },
-      take_test,
-      { new: true }
-    );
+    // // lưu lại bài take test kềm theo điểm số
+    // await TakeTest.findOneAndUpdate(
+    //   { _id: take_test._id },
+    //   take_test,
+    //   { new: true }
+    // );
 
     res.json({
       success: true,
