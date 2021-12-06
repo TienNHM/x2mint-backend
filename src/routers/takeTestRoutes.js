@@ -61,20 +61,39 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
   }
 });
 
-const calcPoints = (chooseAnswers) => {
-  const answers = chooseAnswers.answers
-  const correctAnswers = chooseAnswers.question.correctAnswers
-  const maxPoints = chooseAnswers.question.maxPoints
+/**
+ * Tính điểm mà user đạt được cho mỗi câu hỏi
+ * @param {*} choose đối tương lưu answers mà user chọn tương ứng với question
+ * @returns số điểm mà user đạt được cho câu hỏi tương ứng
+ */
+const calcPoints = (choose) => {
+  const answers = choose.answers
+  const correctAnswers = choose.question.correctAnswers
+  const maxPoints = choose.question.maxPoints
 
   const num = answers.filter(c => correctAnswers.includes(c)).length
 
   // Cách tính 1
   // const correct = num / correctAnswers.length
-  // const fail = (chooseAnswers.length - num) / correctAnswers.length
+  // const fail = (choose.length - num) / correctAnswers.length
   // return maxPoints * (correct - fail)
 
   // Cách tính 2: Chỉ tính nếu các đáp án đã chọn trùng khớp hoàn toàn với đáp án đúng
-  return num * 2 === (correctAnswers.length + chooseAnswers.length) ? maxPoints : 0
+  return num * 2 === (correctAnswers.length + answers.length) ? maxPoints : 0
+}
+
+/**
+ * Tính tổng điểm cho bài thi của user
+ * @param {*} chooseAnswers danh sách các câu trả lời của user
+ * @returns số điểm mà user đạt được cho bài thi
+ */
+const calcTestPoints = (chooseAnswers) => {
+  let points = 0
+  for (let i = 0; i < chooseAnswers.length; i++) {
+    points += calcPoints(chooseAnswers[i])
+  }
+
+  return points
 }
 
 //@route Post v1/submit/new
@@ -115,7 +134,7 @@ router.post("/", verifyToken, async (req, res) => {
     ]);
 
     // tính điểm đạt được
-    const points = calcPoints(tmp.chooseAnswers)
+    const points = calcTestPoints(tmp.chooseAnswers)
     take_test = {
       ...take_test,
       points: points
