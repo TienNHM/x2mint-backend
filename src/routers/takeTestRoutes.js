@@ -93,12 +93,15 @@ router.post("/", verifyToken, async (req, res) => {
     let user = await User.findOne({ acount: accountId });
 
     //Create new
+    const chooseAnswers = req.body.chooseAnswers
+    //TODO Tính điểm
+    
     let take_test = new TakeTest({
       test: req.body.test,
       user: user.id,
       submitTime: req.body.endTime,
       chooseAnswers: req.body.chooseAnswers,
-      points: calcPoints(req.body.chooseAnswers),
+      points: 0, //calcPoints(req.body.chooseAnswers),
       status: req.body.status,
       questionsOrder: req.body.questionsOrder,
     });
