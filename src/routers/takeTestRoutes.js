@@ -67,6 +67,7 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
  * @returns số điểm mà user đạt được cho câu hỏi tương ứng
  */
 const calcPoints = (choose) => {
+  console.log(choose);
   const answers = choose.answers
   const correctAnswers = choose.question.correctAnswers
   const maxPoints = choose.question.maxPoints
@@ -88,6 +89,7 @@ const calcPoints = (choose) => {
  * @returns số điểm mà user đạt được cho bài thi
  */
 const calcTestPoints = (chooseAnswers) => {
+  console.log(chooseAnswers)
   let points = 0
   for (let i = 0; i < chooseAnswers.length; i++) {
     points += calcPoints(chooseAnswers[i])
@@ -127,11 +129,13 @@ router.post("/", verifyToken, async (req, res) => {
 
     // populate để lấy dữ liệu các trường tương ứng
     let tmp = {...take_test}
-    await TakeTest.populate(take_test, [
+    await TakeTest.populate(tmp, [
       "test",
       "user",
       "chooseAnswers.question",
     ]);
+
+    console.log(tmp)
 
     // tính điểm đạt được
     const points = calcTestPoints(tmp.chooseAnswers)
