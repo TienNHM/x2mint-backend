@@ -61,6 +61,22 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
   }
 });
 
+const calcPoints = (chooseAnswers) => {
+  const answers = chooseAnswers.answers
+  const correctAnswers = chooseAnswers.question.correctAnswers
+  const maxPoints = chooseAnswers.question.maxPoints
+
+  const num = answers.filter(c => correctAnswers.includes(c)).length
+
+  // Cách tính 1
+  // const correct = num / correctAnswers.length
+  // const fail = (chooseAnswers.length - num) / correctAnswers.length
+  // return maxPoints * (correct - fail)
+
+  // Cách tính 2: Chỉ tính nếu các đáp án đã chọn trùng khớp hoàn toàn với đáp án đúng
+  return num * 2 === (correctAnswers.length + chooseAnswers.length) ? maxPoints : 0
+}
+
 //@route Post v1/submit/new
 //@desc Create a take test
 //@access public
@@ -82,7 +98,7 @@ router.post("/", verifyToken, async (req, res) => {
       user: user.id,
       submitTime: req.body.endTime,
       chooseAnswers: req.body.chooseAnswers,
-      points: req.body.points, //TODO chấm điểm
+      points: calcPoints(req.body.chooseAnswers),
       status: req.body.status,
       questionsOrder: req.body.questionsOrder,
     });

@@ -27,9 +27,7 @@ const takeTestSchema = mongoose.Schema({
         ref: "questions",
         default: null,
       },
-      answers: [String],
-      correctAnswers: [String],
-      maxPoints: Number,
+      answers: [String]
     },
   ],
   points: {
