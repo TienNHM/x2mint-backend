@@ -22,7 +22,7 @@ const takeTestSchema = mongoose.Schema({
   questionsOrder: [String],
   chooseAnswers: [
     {
-      questionId: {
+      question: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "questions",
         default: null,
