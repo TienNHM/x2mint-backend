@@ -8,6 +8,47 @@ const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 
+//@route GET v1/questions/:questionId
+//@desc get take test by id
+//@access private
+//@role admin/creator/user
+router.get("/:takeTestId", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER)
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const takeTest = await TakeTest.findById(req.params.takeTestId)
+      .populate("test", "-__v -createdAt -updatedAt")
+      .populate("user", "-__v -createdAt -updatedAt -password")
+      .populate("chooseAnswers.questionId", "-__v -createdAt -updatedAt")
+      .exec();
+
+    if (takeTest) {
+      res.json({
+        success: true,
+        message: "Get take testby id successfully ",
+        data: takeTest,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Take test does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 //@route Post v1/takeTest/new
 //@desc Create a take test
 //@access public
@@ -36,11 +77,11 @@ router.post("/", verifyToken, async (req, res) => {
 
     //Send to Database
     take_test = await take_test.save();
-    await TakeTest.populate(take_test, [
-      "test",
-      "user",
-      "chooseAnswers.questionId",
-    ]);
+    // await TakeTest.populate(take_test, [
+    //   "test",
+    //   "user",
+    //   "chooseAnswers.questionId",
+    // ]);
     res.json({
       success: true,
       message: "Take test created successfully",
