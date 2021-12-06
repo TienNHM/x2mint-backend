@@ -26,9 +26,21 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
     }
 
     const takeTest = await TakeTest.findById(req.params.takeTestId)
-      .populate("test", "-__v -createdAt -updatedAt")
-      .populate("user", "-__v -createdAt -updatedAt -password")
-      .populate("chooseAnswers.questionId", "-__v -createdAt -updatedAt")
+      .populate({
+        path: 'test',
+        select: "-__v -createdAt -updatedAt"
+      })
+      .populate({
+        path: 'user',
+        select: "-__v -createdAt -updatedAt -password"
+      })
+      .populate({
+        path: 'chooseAnswers',
+        populate: {
+          path: 'questionId',
+          select: "-__v -createdAt -updatedAt"
+        }
+      })
       .exec();
 
     if (takeTest) {
@@ -77,13 +89,11 @@ router.post("/", verifyToken, async (req, res) => {
 
     //Send to Database
     take_test = await take_test.save();
-    const takeTest = await TakeTest.findById(take_test._id)
-      .select("-points -chooseAnswers.correctAnswers").exec();
 
     res.json({
       success: true,
       message: "Take test created successfully",
-      takeTest: takeTest,
+      takeTestId: take_test._id,
     });
   } catch (error) {
     console.log(error);
@@ -137,7 +147,10 @@ router.get("/test/:testId", verifyToken, async (req, res) => {
       })
       .populate({
         path: 'chooseAnswers',
-        select: "-__v -createdAt -updatedAt",
+        populate: {
+          path: 'questionId',
+          select: "-__v -createdAt -updatedAt"
+        }
       })
       .exec();
 
