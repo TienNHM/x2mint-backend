@@ -46,7 +46,7 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
     if (takeTest) {
       res.json({
         success: true,
-        message: "Get take testby id successfully ",
+        message: "Get take test by id successfully ",
         data: takeTest,
       });
     } else {
@@ -67,20 +67,17 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
  * @returns số điểm mà user đạt được cho câu hỏi tương ứng
  */
 const calcPoints = (choose) => {
-  console.log(choose);
   const answers = choose.answers
   const correctAnswers = choose.question.correctAnswers
+
+  // Nếu chọn nhiều hoặc ít hơn số đáp án đúng, thì chắc chắn không có điểm
+  if (answers.length !== correctAnswers.length) {
+    return 0
+  }
+
   const maxPoints = choose.question.maxPoints
-
   const num = answers.filter(c => correctAnswers.includes(c)).length
-
-  // Cách tính 1
-  // const correct = num / correctAnswers.length
-  // const fail = (choose.length - num) / correctAnswers.length
-  // return maxPoints * (correct - fail)
-
-  // Cách tính 2: Chỉ tính nếu các đáp án đã chọn trùng khớp hoàn toàn với đáp án đúng
-  return num * 2 === (correctAnswers.length + answers.length) ? maxPoints : 0
+  return num === correctAnswers.length ? maxPoints : 0
 }
 
 /**
@@ -89,13 +86,18 @@ const calcPoints = (choose) => {
  * @returns số điểm mà user đạt được cho bài thi
  */
 const calcTestPoints = (chooseAnswers) => {
-  console.log(chooseAnswers)
   let points = 0
+  let isCorrect = []
   for (let i = 0; i < chooseAnswers.length; i++) {
-    points += calcPoints(chooseAnswers[i])
+    const p = calcPoints(chooseAnswers[i])
+    points += p
+    isCorrect.push(p > 0)
   }
 
-  return points
+  return {
+    points: points, 
+    isCorrect: isCorrect
+  }
 }
 
 //@route Post v1/submit/new
@@ -128,28 +130,25 @@ router.post("/", verifyToken, async (req, res) => {
     take_test = await take_test.save();
 
     // // populate để lấy dữ liệu các trường tương ứng
-    // let tmp = {...take_test}
-    // await TakeTest.populate(tmp, [
-    //   "test",
-    //   "user",
-    //   "chooseAnswers.question",
-    // ]);
+    let tmp = await TakeTest.findById(take_test._id)
+      .populate({
+        path: 'chooseAnswers',
+        populate: {
+          path: 'question',
+          select: "-__v -createdAt -updatedAt"
+        }
+      })
+      .exec();
 
-    // console.log(tmp)
-
-    // // tính điểm đạt được
-    // const points = calcTestPoints(tmp.chooseAnswers)
-    // take_test = {
-    //   ...take_test,
-    //   points: points
-    // }
+    const {points, isCorrect} = calcTestPoints(tmp.chooseAnswers);
 
     // // lưu lại bài take test kềm theo điểm số
-    // await TakeTest.findOneAndUpdate(
-    //   { _id: take_test._id },
-    //   take_test,
-    //   { new: true }
-    // );
+    await TakeTest.findByIdAndUpdate(take_test._id,
+      {
+        points: points,
+        isCorrect: isCorrect
+      }
+    );
 
     res.json({
       success: true,

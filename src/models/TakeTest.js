@@ -30,6 +30,7 @@ const takeTestSchema = mongoose.Schema({
       answers: [String]
     },
   ],
+  isCorrect: [Boolean],
   points: {
     type: Number,
     default: 0,

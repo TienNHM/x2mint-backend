@@ -127,7 +127,7 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
     question = await question.save();
     //TODO: Updating for Test Collection : Question list
     let test = await Test.findById(req.params.testId);
-    console.log(test);
+    
     if (test) {
       test.questions.push(question.id.toString());
       test = await Test.findOneAndUpdate({ _id: test.id }, test, { new: true });
