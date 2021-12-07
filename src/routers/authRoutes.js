@@ -43,7 +43,6 @@ router.post("/register", async (req, res) => {
           .status(400)
           .json({ success: false, message: "Username already taken" });
       else if (user.email === email) {
-        console.log("User: ", user);
         return res
           .status(400)
           .json({ success: false, message: "Email already taken" });
@@ -112,7 +111,7 @@ router.post("/login", async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Incorrect username or password" });
-    console.log(passwordValid);
+    
     //All good
 
     //return token
@@ -155,8 +154,6 @@ router.post("/login/google", verifyToken, async (req, res, next) => {
     const snapshot = await Account.findOne({
       email: user.email,
     });
-
-    console.log(user);
 
     if (!snapshot) {
       //New account
@@ -219,7 +216,6 @@ router.post("/login/google", verifyToken, async (req, res, next) => {
 
 router.get("/verify", verifyToken, async (req, res) => {
   try {
-    console.log(req.body.verifyAccount);
     return res.status(200).json({
       message: "Token is valid",
       success: true,
@@ -239,7 +235,7 @@ router.get("/", verifyToken, async (req, res) => {
     const user = await User.findById(req.body.verifyAccount.id).select(
       "-password"
     );
-    console.log("Heiii", user);
+
     if (!user)
       return res
         .status(400)
