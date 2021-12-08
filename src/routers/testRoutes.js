@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
-const { ROLES } = require("../models/enum");
+const { ROLES, STATUS } = require("../models/enum");
 dotenv.config({ path: "./.env" });
 const Test = require("../models/Test");
 const { formatTimeUTC_, formatTimeUTC } = require("../utils/Timezone");
@@ -179,7 +179,7 @@ router.post("", verifyToken, async (req, res) => {
       endTime: formatTimeUTC_(req.body.endTime),
       url: req.body.url,
       maxPoints: req.body.maxPoints,
-      status: req.body.status,
+      _status: req.body._status,
       questionsOrder: req.body.questionsOrder,
     });
 
@@ -223,10 +223,9 @@ router.put("/:testId/questions", verifyToken, async (req, res) => {
       });
 
     //update new question
-    let test = await Test.findOneAndUpdate(
-      { _id: req.params.testId },
+    let test = await Test.findByIdAndUpdate(req.params.testId,
       {
-        $set: { questions: req.body.questions, updatedAt: formatTimeUTC() },
+        questions: req.body.questions, updatedAt: formatTimeUTC(),
       },
       { new: true }
     );
@@ -275,7 +274,7 @@ router.put("/:testId", verifyToken, async (req, res) => {
       endTime: formatTimeUTC_(req.body.endTime),
       url: req.body.url,
       maxPoints: req.body.maxPoints,
-      status: req.body.status,
+      _status: req.body._status,
       questionsOrder: req.body.questionsOrder,
       updatedAt: formatTimeUTC(),
     };
@@ -321,8 +320,11 @@ router.put("/:testId/delete", verifyToken, async (req, res) => {
       });
 
     const deletedTest = await Test.findOneAndUpdate(
-      { _id: req.params.testId },
-      { $set: { status: "DELETE", updatedAt: formatTimeUTC_(new Date()) } },
+      req.params.testId,
+      {
+        _status: STATUS.DELETED,
+        updatedAt: formatTimeUTC_(new Date())
+      },
       { new: true }
     );
     res.json({
