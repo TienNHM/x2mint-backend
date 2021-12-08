@@ -122,7 +122,7 @@ router.post("/", verifyToken, async (req, res) => {
       submitTime: req.body.endTime,
       chooseAnswers: req.body.chooseAnswers,
       points: 0,
-      status: req.body.status,
+      _status: req.body._status,
       questionsOrder: req.body.questionsOrder,
     });
 

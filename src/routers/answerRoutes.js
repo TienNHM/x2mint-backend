@@ -2,11 +2,12 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
-const { ROLES } = require("../models/enum");
+const { ROLES, STATUS } = require("../models/enum");
 dotenv.config({ path: "./.env" });
 const Answer = require("../models/Answer");
 const Question = require("../models/Question");
 const {formatTimeUTC} = require("../utils/Timezone")
+
 //@route Post v1/answers  
 //@desc Create a question
 //@access private
@@ -37,7 +38,7 @@ router.post("", verifyToken, async (req, res) => {
       name: req.body.name,
       content: req.body.content,
       questionId: req.body.questionId,
-      status: req.body.status
+      _status: req.body._status
     });
 
     //Send to Database
@@ -130,7 +131,7 @@ router.get("/:answerId", verifyToken, async (req, res) => {
 });
 
 
-//@route PUT v1/answers/update/:answerId
+//@route PUT v1/answers/:answerId
 //@desc Update a answers by answer Id
 //@access private
 //@role admin/creator
@@ -156,7 +157,7 @@ router.put("/:answerId", verifyToken, async (req, res) => {
       name: req.body.name,
       content: req.body.content,
       questionId: req.body.questionId,
-      status: req.body.status,
+      _status: req.body._status,
       updatedAt: formatTimeUTC(),
     };
 
@@ -201,7 +202,7 @@ router.put("/:answerId/delete", verifyToken, async (req, res) => {
   
       const updatedAnswer = await Answer.findOneAndUpdate(
         { _id: req.params.answerId },
-        {status: "DELETE"}
+        {_status: STATUS.DELETED}
       );
       res.json({
         success: true,
