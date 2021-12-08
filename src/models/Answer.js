@@ -12,7 +12,7 @@ const answerSchema = mongoose.Schema({
     require: true,
     default: null,
   },
-  status: {
+  _status: {
     type: String,
     default: "",
   },

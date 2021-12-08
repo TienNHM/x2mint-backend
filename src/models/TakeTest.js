@@ -35,7 +35,7 @@ const takeTestSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  status: {
+  _status: {
     type: String,
   },
   createdAt: {

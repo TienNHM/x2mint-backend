@@ -34,7 +34,7 @@ const questionSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-  status: {
+  _status: {
     type: String,
   },
   maxPoints: {
