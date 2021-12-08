@@ -30,7 +30,7 @@ const accountSchema = mongoose.Schema({
     type: Date,
     default: formatTimeUTC,
   },
-  status: {
+  _status: {
     type: String,
   },
 });

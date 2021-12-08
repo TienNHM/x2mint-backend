@@ -12,13 +12,9 @@ const answerSchema = mongoose.Schema({
     require: true,
     default: null,
   },
-  status: {
+  _status: {
     type: String,
     default: "",
-  },
-  questionId: {
-    type: String,
-    require: true,
   },
   createdAt: {
     type: Date,

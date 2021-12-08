@@ -2,11 +2,12 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
-const { ROLES } = require("../models/enum");
+const { ROLES, STATUS } = require("../models/enum");
 dotenv.config({ path: "./.env" });
 const Answer = require("../models/Answer");
 const Question = require("../models/Question");
-const {formatTimeUTC} = require("../utils/Timezone")
+const { formatTimeUTC } = require("../utils/Timezone")
+
 //@route Post v1/answers  
 //@desc Create a question
 //@access private
@@ -36,18 +37,27 @@ router.post("", verifyToken, async (req, res) => {
     let answer = new Answer({
       name: req.body.name,
       content: req.body.content,
-      questionId: req.body.questionId,
-      status: req.body.status
+      _status: req.body._status
     });
 
     //Send to Database
     answer = await answer.save();
-    //TODO: Updating for Test Collection : Question list
+
+    // Update: add answer into question
+    let question = await Question.findById(req.body.questionId);
+
+    if (question) {
+      question.answers.push(answer.id.toString());
+      question = await Question.findByIdAndUpdate(question.id, question, { new: true })
+        .populate("answers")
+        .exec();
+    }
 
     res.json({
       success: true,
       message: "Answer created successfully",
       answer: answer,
+      question: question
     });
   } catch (error) {
     console.log(error);
@@ -62,35 +72,35 @@ router.post("", verifyToken, async (req, res) => {
 //@access private
 //@role admin/creator
 router.get("", verifyToken, async (req, res) => {
-    try {
-      //Check permission
-      if (
-        !(req.body.verifyAccount.role === ROLES.ADMIN ||
-          req.body.verifyAccount.role === ROLES.CREATOR)
-      ) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Permission denied" });
-      }
-  
-      const answers  = await Answer.find();
-      if (answers) {
-        res.json({
-          success: true,
-          message: "Get all answer successfully ",
-          data: answers,
-        });
-      } else {
-        res.json({
-          success: false,
-          message: "Answers does not exist",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+  try {
+    //Check permission
+    if (
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR)
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
     }
-  });
+
+    const answers = await Answer.find();
+    if (answers) {
+      res.json({
+        success: true,
+        message: "Get all answer successfully ",
+        data: answers,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Answers does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
 
 //@route GET v1/answers/:answerId
 //@desc get answers by id
@@ -100,20 +110,19 @@ router.get("/:answerId", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-     !(req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR || 
-      req.body.verifyAccount.role === ROLES.USER)
-    ) 
-    {
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER)
+    ) {
       return res
         .status(401)
         .json({ success: false, message: "Permission denied" });
     }
 
-    const answer  = await Answer.findById(req.params.answerId);
+    const answer = await Answer.findById(req.params.answerId);
     if (answer) {
       res.json({
-        success: true,  
+        success: true,
         message: "Get answer by id successfully ",
         data: answer,
       });
@@ -130,7 +139,7 @@ router.get("/:answerId", verifyToken, async (req, res) => {
 });
 
 
-//@route PUT v1/answers/update/:answerId
+//@route PUT v1/answers/:answerId
 //@desc Update a answers by answer Id
 //@access private
 //@role admin/creator
@@ -138,8 +147,8 @@ router.put("/:answerId", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-     !(req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR)
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR)
     ) {
       return res
         .status(401)
@@ -155,13 +164,12 @@ router.put("/:answerId", verifyToken, async (req, res) => {
     let answer = {
       name: req.body.name,
       content: req.body.content,
-      questionId: req.body.questionId,
-      status: req.body.status,
+      _status: req.body._status,
       updatedAt: formatTimeUTC(),
     };
 
-    const updatedAnswer = await Answer.findOneAndUpdate(
-      { _id: req.params.answerId },
+    const updatedAnswer = await Answer.findByIdAndUpdate(
+      req.params.answerId,
       answer,
       { new: true }
     );
@@ -182,38 +190,37 @@ router.put("/:answerId", verifyToken, async (req, res) => {
 //@access private
 //@role admin/creator
 router.put("/:answerId/delete", verifyToken, async (req, res) => {
-    try {
-      //Check permission
-      if (
-       !( req.body.verifyAccount.role === ROLES.ADMIN ||
+  try {
+    //Check permission
+    if (
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
         req.body.verifyAccount.role === ROLES.CREATOR)
-      ) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Permission denied" });
-      }
-  
-      if (!req.body)
-        res.status(400).json({
-          success: false,
-          message: "Body request not found",
-        });
-  
-      const updatedAnswer = await Answer.findOneAndUpdate(
-        { _id: req.params.answerId },
-        {status: "DELETE"}
-      );
-      res.json({
-        success: true,
-        message: "Delete answer successfully",
-        answer: updatedAnswer,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
     }
-  });
-  
+
+    if (!req.body)
+      res.status(400).json({
+        success: false,
+        message: "Body request not found",
+      });
+
+    const updatedAnswer = await Answer.findOneAndUpdate(
+      { _id: req.params.answerId },
+      { _status: STATUS.DELETED }
+    );
+    res.json({
+      success: true,
+      message: "Delete answer successfully",
+      answer: updatedAnswer,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 module.exports = router;
 
-  

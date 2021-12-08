@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
-const { ROLES } = require("../models/enum");
+const { ROLES, STATUS } = require("../models/enum");
 dotenv.config({ path: "./.env" });
 const Contest = require("../models/Contest")
 const { formatTimeUTC_, formatTimeUTC } = require("../utils/Timezone");
@@ -55,7 +55,7 @@ router.get("", verifyToken, async (req, res) => {
     if (
       !(
         req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR || 
+        req.body.verifyAccount.role === ROLES.CREATOR ||
         req.body.verifyAccount.role === ROLES.USER
       )
     ) {
@@ -228,11 +228,13 @@ router.put("/:contestId/tests", verifyToken, async (req, res) => {
       });
 
     //update new contest
-    let contest = await Contest.findOneAndUpdate({ _id: req.params.contestId }, {
-      "$set": {
+    let contest = await Contest.findByIdAndUpdate(req.params.contestId,
+      {
         tests: req.body.tests, updatedAt: formatTimeUTC()
-      }
-    }, { new: true })
+      },
+      { new: true })
+      .populate("tests")
+      .exec();
 
     res.json({
       success: true,
@@ -323,9 +325,13 @@ router.put("/:contestId/delete", verifyToken, async (req, res) => {
         message: "Body request not found",
       });
 
-    const deletedContest = await Contest.findOneAndUpdate(
-      { _id: req.params.contestId },
-      { "$set": { isHidden: true, updatedAt: formatTimeUTC() } }, { new: true }
+    const deletedContest = await Contest.findByIdAndUpdate(
+      req.params.contestId,
+      {
+        status: STATUS.DELETED,
+        updatedAt: formatTimeUTC()
+      },
+      { new: true }
     );
     res.json({
       success: true,

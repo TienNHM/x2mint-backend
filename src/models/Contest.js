@@ -37,7 +37,7 @@ const contestSchema = mongoose.Schema({
       default: null,
     },
   ],
-  status: {
+  _status: {
     type: String,
     default: "",
   },

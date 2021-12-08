@@ -50,7 +50,7 @@ const userSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-  status: {
+  _status: {
     type: String,
   },
   createdAt: {
