@@ -4,7 +4,8 @@ const Question = require("../models/Question");
 const Test = require("../models/Test");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
-const { ROLES } = require("../models/enum");
+const { ROLES, STATUS } = require("../models/enum");
+const { formatTimeUTC_, formatTimeUTC } = require("../utils/Timezone");
 dotenv.config({ path: "./.env" });
 
 //@route GET v1/questions/
@@ -120,7 +121,7 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
       correctAnswers: req.body.correctAnswers,
       embededMedia: req.body.embededMedia,
       maxPoints: req.body.maxPoints,
-      status: req.body.status,
+      _status: req.body._status,
     });
 
     //Send to Database
@@ -130,12 +131,22 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
     
     if (test) {
       test.questions.push(question.id.toString());
-      test = await Test.findOneAndUpdate({ _id: test.id }, test, { new: true });
+      test = await Test.findByIdAndUpdate(test.id, test, { new: true })
+      .populate("questions")
+      .populate({
+        path: "questions",
+        populate: {
+          path: "answers"
+        }
+      })
+      .exec();
     }
+    
     res.json({
       success: true,
       message: "Question created successfully",
       question: question,
+      test: test
     });
   } catch (error) {
     console.log(error);
@@ -143,11 +154,11 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
   }
 });
 
-//@route PUT v1/questions/update/:questionId
+//@route PUT v1/questions/:questionId
 //@desc Update a question by question Id
 //@access private
 //@role admin/creator
-router.put("/update/:questionId", verifyToken, async (req, res) => {
+router.put("/:questionId", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (!req.body)
@@ -168,6 +179,7 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
     }
 
     let question;
+    console.log(req.body)
     question = {
       content: req.body.content,
       type: req.body.type,
@@ -175,12 +187,12 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
       correctAnswers: req.body.correctAnswers,
       embededMedia: req.body.embededMedia,
       updatedAt: formatTimeUTC(),
-      status: req.body.status,
+      _status: req.body._status,
       maxPoints: req.body.maxPoints,
     };
 
-    const updatedQuestion = await Question.findOneAndUpdate(
-      { _id: req.params.questionId },
+    const updatedQuestion = await Question.findByIdAndUpdate(
+      req.params.questionId,
       question,
       { new: true }
     );
@@ -188,6 +200,42 @@ router.put("/update/:questionId", verifyToken, async (req, res) => {
       success: true,
       message: "Update question successfully",
       question: updatedQuestion,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+//@route PUT v1/questions/:questionId/delete
+//@desc Delete a question by question Id
+//@access private
+//@role admin/creator
+router.put("/:questionId/delete", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (!req.body)
+      res.status(400).json({
+        success: false,
+        message: "Body request not found",
+      });
+
+    if (
+      !(
+        req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR
+      )
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const deleteQuestion = await Question.findByIdAndDelete(req.params.questionId);
+    res.json({
+      success: true,
+      message: "Delete question successfully",
+      question: deleteQuestion,
     });
   } catch (error) {
     console.log(error);
