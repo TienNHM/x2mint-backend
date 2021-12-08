@@ -16,10 +16,6 @@ const answerSchema = mongoose.Schema({
     type: String,
     default: "",
   },
-  questionId: {
-    type: String,
-    require: true,
-  },
   createdAt: {
     type: Date,
     default: formatTimeUTC,

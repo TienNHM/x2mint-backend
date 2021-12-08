@@ -37,18 +37,27 @@ router.post("", verifyToken, async (req, res) => {
     let answer = new Answer({
       name: req.body.name,
       content: req.body.content,
-      questionId: req.body.questionId,
       _status: req.body._status
     });
 
     //Send to Database
     answer = await answer.save();
-    //TODO: Updating for Test Collection : Question list
+    
+    // Update: add answer into question
+    let question = await Question.findById(req.body.questionId);
+    
+    if (question) {
+      question.answers.push(answer.id.toString());
+      question = await Question.findByIdAndUpdate(question.id, question, { new: true })
+      .populate("answers")
+      .exec();
+    }
 
     res.json({
       success: true,
       message: "Answer created successfully",
       answer: answer,
+      question: question
     });
   } catch (error) {
     console.log(error);
