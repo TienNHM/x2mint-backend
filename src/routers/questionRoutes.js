@@ -56,23 +56,22 @@ router.get("/:questionId", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
-     !(req.body.verifyAccount.role === ROLES.ADMIN ||
-      req.body.verifyAccount.role === ROLES.CREATOR || 
-      req.body.verifyAccount.role === ROLES.USER)
-    ) 
-    {
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER)
+    ) {
       return res
         .status(401)
         .json({ success: false, message: "Permission denied" });
     }
 
-    const question  = await Question.findById(req.params.questionId)
-    .select("-correctAnswers")
-    .exec();
+    const question = await Question.findById(req.params.questionId)
+      .select("-correctAnswers")
+      .exec();
 
     if (question) {
       res.json({
-        success: true,  
+        success: true,
         message: "Get question by id successfully ",
         data: question,
       });
@@ -128,20 +127,20 @@ router.post("/new/:testId", verifyToken, async (req, res) => {
     question = await question.save();
     //TODO: Updating for Test Collection : Question list
     let test = await Test.findById(req.params.testId);
-    
+
     if (test) {
       test.questions.push(question.id.toString());
       test = await Test.findByIdAndUpdate(test.id, test, { new: true })
-      .populate("questions")
-      .populate({
-        path: "questions",
-        populate: {
-          path: "answers"
-        }
-      })
-      .exec();
+        .populate("questions")
+        .populate({
+          path: "questions",
+          populate: {
+            path: "answers"
+          }
+        })
+        .exec();
     }
-    
+
     res.json({
       success: true,
       message: "Question created successfully",
@@ -179,7 +178,6 @@ router.put("/:questionId", verifyToken, async (req, res) => {
     }
 
     let question;
-    console.log(req.body)
     question = {
       content: req.body.content,
       type: req.body.type,
@@ -191,11 +189,14 @@ router.put("/:questionId", verifyToken, async (req, res) => {
       maxPoints: req.body.maxPoints,
     };
 
+    console.log(question)
     const updatedQuestion = await Question.findByIdAndUpdate(
       req.params.questionId,
       question,
       { new: true }
-    );
+    ).populate("answers")
+      .exec();
+
     res.json({
       success: true,
       message: "Update question successfully",
