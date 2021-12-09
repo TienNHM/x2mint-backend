@@ -7,6 +7,7 @@ const TakeTest = require("../models/TakeTest");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
+const { formatTimeUTC } = require("../utils/Timezone");
 
 //@route GET v1/submit/:takeTestId
 //@desc get take test by id
@@ -154,6 +155,58 @@ router.post("/", verifyToken, async (req, res) => {
       success: true,
       message: "Take test created successfully",
       takeTestId: take_test._id,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+//@route PUT v1/submit/:takeTestId
+//@desc Update takeTest
+//@access private
+//@role admin/creator/user
+router.put("/:takeTestId", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (!req.body)
+      res.status(400).json({
+        success: false,
+        message: "Body request not found",
+      });
+
+    if (
+      !(
+        req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER
+      )
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    let takeTest = {
+      test: req.body.test,
+      questionsOrder: req.body.questionsOrder,
+      chooseAnswers: req.body.chooseAnswers,
+      updatedAt: formatTimeUTC(),
+      _status: req.body._status
+    };
+
+    console.log( req.params.takeTestId)
+
+    const updateTakeTest = await TakeTest.findByIdAndUpdate(
+      req.params.takeTestId,
+      takeTest,
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Update takeTest successfully",
+      takeTest: updateTakeTest,
     });
   } catch (error) {
     console.log(error);

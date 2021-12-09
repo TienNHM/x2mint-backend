@@ -64,7 +64,7 @@ router.get("", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const contests = await Contest.find();
+    const contests = await Contest.find({_status: STATUS.OK});
     if (contests) {
       res.json({
         success: true,
