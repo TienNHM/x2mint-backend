@@ -9,7 +9,7 @@ const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 const { formatTimeUTC } = require("../utils/Timezone");
 
-//@route GET v1/submit/:takeTestId
+//@route GET v1/takeTest/:takeTestId
 //@desc get take test by id
 //@access private
 //@role admin/creator/user
@@ -101,7 +101,7 @@ const calcTestPoints = (chooseAnswers) => {
   }
 }
 
-//@route Post v1/submit/new
+//@route Post v1/takeTest/new
 //@desc Create a take test
 //@access public
 //@role user
@@ -141,15 +141,15 @@ router.post("/", verifyToken, async (req, res) => {
       })
       .exec();
 
-    const {points, isCorrect} = calcTestPoints(tmp.chooseAnswers);
+    // const {points, isCorrect} = calcTestPoints(tmp.chooseAnswers);
 
-    // // lưu lại bài take test kềm theo điểm số
-    await TakeTest.findByIdAndUpdate(take_test._id,
-      {
-        points: points,
-        isCorrect: isCorrect
-      }
-    );
+    // // // lưu lại bài take test kềm theo điểm số
+    // await TakeTest.findByIdAndUpdate(take_test._id,
+    //   {
+    //     points: points,
+    //     isCorrect: isCorrect
+    //   }
+    // );
 
     res.json({
       success: true,
@@ -162,7 +162,7 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-//@route PUT v1/submit/:takeTestId
+//@route PUT v1/takeTest/:takeTestId
 //@desc Update takeTest
 //@access private
 //@role admin/creator/user
@@ -214,7 +214,7 @@ router.put("/:takeTestId", verifyToken, async (req, res) => {
   }
 });
 
-//@route GET v1/submit/user/:userId
+//@route GET v1/takeTest/user/:userId
 //@desc Get all take test of a user
 //@access public
 //@role any
