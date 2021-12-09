@@ -7,5 +7,6 @@ module.exports.ROLES = {
 module.exports.STATUS = {
   DEACTIVE: 'deactive',
   DELETED: 'deleted',
-  OK: 'ok'
+  OK: 'ok',
+  ARCHIVED: 'archived',
 };

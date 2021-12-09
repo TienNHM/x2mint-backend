@@ -7,8 +7,9 @@ const TakeTest = require("../models/TakeTest");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
+const { formatTimeUTC } = require("../utils/Timezone");
 
-//@route GET v1/submit/:takeTestId
+//@route GET v1/takeTest/:takeTestId
 //@desc get take test by id
 //@access private
 //@role admin/creator/user
@@ -95,12 +96,12 @@ const calcTestPoints = (chooseAnswers) => {
   }
 
   return {
-    points: points, 
+    points: points,
     isCorrect: isCorrect
   }
 }
 
-//@route Post v1/submit/new
+//@route Post v1/takeTest/new
 //@desc Create a take test
 //@access public
 //@role user
@@ -119,7 +120,6 @@ router.post("/", verifyToken, async (req, res) => {
     let take_test = new TakeTest({
       test: req.body.test,
       user: user.id,
-      submitTime: req.body.endTime,
       chooseAnswers: req.body.chooseAnswers,
       points: 0,
       _status: req.body._status,
@@ -129,7 +129,7 @@ router.post("/", verifyToken, async (req, res) => {
     //Send to Database
     take_test = await take_test.save();
 
-    // // populate để lấy dữ liệu các trường tương ứng
+    //Populate để lấy dữ liệu các trường tương ứng
     let tmp = await TakeTest.findById(take_test._id)
       .populate({
         path: 'chooseAnswers',
@@ -139,16 +139,6 @@ router.post("/", verifyToken, async (req, res) => {
         }
       })
       .exec();
-
-    const {points, isCorrect} = calcTestPoints(tmp.chooseAnswers);
-
-    // // lưu lại bài take test kềm theo điểm số
-    await TakeTest.findByIdAndUpdate(take_test._id,
-      {
-        points: points,
-        isCorrect: isCorrect
-      }
-    );
 
     res.json({
       success: true,
@@ -161,7 +151,119 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-//@route GET v1/submit/user/:userId
+//@route PUT v1/takeTest/:takeTestId
+//@desc Update takeTest
+//@access private
+//@role admin/creator/user
+router.put("/:takeTestId", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (!req.body)
+      res.status(400).json({
+        success: false,
+        message: "Body request not found",
+      });
+
+    if (
+      !(
+        req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER
+      )
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    let takeTest = {
+      test: req.body.test,
+      questionsOrder: req.body.questionsOrder,
+      chooseAnswers: req.body.chooseAnswers,
+      updatedAt: formatTimeUTC(),
+      _status: req.body._status
+    };
+
+    console.log(req.params.takeTestId)
+
+    const updateTakeTest = await TakeTest.findByIdAndUpdate(
+      req.params.takeTestId,
+      takeTest,
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Update takeTest successfully",
+      takeTest: updateTakeTest,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+//@route PUT v1/takeTest/:takeTestId/submit
+//@desc Submit takeTest
+//@access private
+//@role admin/creator/user
+router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (!req.body)
+      res.status(400).json({
+        success: false,
+        message: "Body request not found",
+      });
+
+    if (
+      !(
+        req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER
+      )
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const takeTest = await TakeTest.findById(req.params.takeTestId)
+      .populate({
+        path: "chooseAnswers",
+        populate: {
+          path: "question"
+        }
+      }).exec();
+
+    const { points, isCorrect } = calcTestPoints(takeTest.chooseAnswers);
+    console.log(points, isCorrect);
+
+    let newTakeTest = {
+      points: points,
+      isCorrect: isCorrect,
+      updatedAt: formatTimeUTC(),
+      submitTime: req.body.endTime,
+    };
+
+    const updateTakeTest = await TakeTest.findByIdAndUpdate(
+      req.params.takeTestId,
+      newTakeTest,
+      { new: true }
+    )
+
+    res.json({
+      success: true,
+      message: "Update takeTest successfully",
+      takeTest: updateTakeTest,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+//@route GET v1/takeTest/user/:userId
 //@desc Get all take test of a user
 //@access public
 //@role any

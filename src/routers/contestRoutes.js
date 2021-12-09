@@ -64,7 +64,7 @@ router.get("", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const contests = await Contest.find();
+    const contests = await Contest.find({_status: STATUS.OK});
     if (contests) {
       res.json({
         success: true,
@@ -119,7 +119,7 @@ router.get("/:contestId", verifyToken, async (req, res) => {
   }
 });
 
-//@route GET v1/contest/:contestId/tests
+//@route GET v1/contests/:contestId/tests
 //@desc get all tests of the contest
 //@access private
 //@role admin/creator
@@ -202,7 +202,7 @@ router.post("", verifyToken, async (req, res) => {
   }
 });
 
-//@route Test v1/contest/:contestId/tests
+//@route Test v1/contests/:contestId/tests
 //@desc update/create new tests for contest
 //@access private
 //@role admin/creator
@@ -247,7 +247,7 @@ router.put("/:contestId/tests", verifyToken, async (req, res) => {
   }
 });
 
-//@route PUT v1/contest/:contestId
+//@route PUT v1/contests/:contestId
 //@desc Update a contest by contest Id
 //@access private
 //@role admin/creator
@@ -284,11 +284,12 @@ router.put("/:contestId", verifyToken, async (req, res) => {
       updatedAt: formatTimeUTC()
     };
 
-    const updatedContest = await Contest.findOneAndUpdate(
-      { _id: req.params.contestId },
+    const updatedContest = await Contest.findByIdAndUpdate(
+      req.params.contestId,
       contest,
       { new: true }
-    );
+    ).populate("tests").exec();
+
     res.json({
       success: true,
       message: "Update contest successfully",
@@ -301,7 +302,7 @@ router.put("/:contestId", verifyToken, async (req, res) => {
 });
 
 
-//@route PUT v1/contest/:contestId/delete
+//@route PUT v1/contests/:contestId/delete
 //@desc Delete a contest by contest Id
 //@access private
 //@role admin/creator
@@ -328,7 +329,7 @@ router.put("/:contestId/delete", verifyToken, async (req, res) => {
     const deletedContest = await Contest.findByIdAndUpdate(
       req.params.contestId,
       {
-        status: STATUS.DELETED,
+        _status: STATUS.ARCHIVED,
         updatedAt: formatTimeUTC()
       },
       { new: true }

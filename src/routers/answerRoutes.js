@@ -9,7 +9,7 @@ const Question = require("../models/Question");
 const { formatTimeUTC } = require("../utils/Timezone")
 
 //@route Post v1/answers  
-//@desc Create a question
+//@desc Create a answer
 //@access private
 //@role admin/creator
 router.post("", verifyToken, async (req, res) => {
