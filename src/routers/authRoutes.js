@@ -67,11 +67,17 @@ router.post("/register", async (req, res) => {
     //Return token
     const accessToken = jwt.sign(
       {
+<<<<<<< HEAD
         verifyAccount: {
           id: newUser.id,
           username: newUser.username,
           role: newUser.role,
         },
+=======
+        id: newUser._id,
+        username: newUser.username,
+        role: newUser.role
+>>>>>>> 369b11b503c78e8abbd72d85196ed89822d123c9
       },
       process.env.ACCESS_TOKEN_SECRET
     );
