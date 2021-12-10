@@ -27,11 +27,6 @@ const googleAuth = async (token) => {
 router.post("/register", async (req, res) => {
   const { username, email, password, full_name, phone, address, school } = req.body;
   //simple validation
-  if (!username || !password || !email) {
-    return res
-      .status(400)
-      .json({ success: false, message: "missing" });
-  }
   try {
     //Check for existing username
     const user = await User.findOne({ $or: [{ username }, { email }] });
@@ -39,11 +34,9 @@ router.post("/register", async (req, res) => {
       // check already account
       if (user.username === username)
         return res
-          .status(400)
           .json({ success: false, message: "username" });
       else if (user.email === email) {
         return res
-          .status(400)
           .json({ success: false, message: "email" });
       }
     }
@@ -62,6 +55,7 @@ router.post("/register", async (req, res) => {
       address,
       school,
     });
+    console.log(newUser)
 
     await newUser.save();
     //Return token
@@ -76,8 +70,8 @@ router.post("/register", async (req, res) => {
       process.env.ACCESS_TOKEN_SECRET
     );
       
-    const url = `${CLIENT_URL}/user/activate/${activation_token}`
-    sendMail(email, url, "Verify your email address")
+    // const url = `${process.env.CLIENT_URL}/auths/register/`
+    // sendMail(email, url, "Verify your email address")
 
     return res.json({
       success: true,
@@ -116,7 +110,6 @@ router.post("/login", async (req, res) => {
   //simple validation
   if (!username || !password) {
     return res
-      .status(400)
       .json({ success: false, message: "missing" });
   }
   try {
@@ -124,14 +117,13 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ username });
     if (!user)
       return res
-        .status(400)
         .json({ success: false, message: "incorrect" });
 
     // Username found
     const passwordValid = await argon2.verify(user.password, password);
     if (!passwordValid)
       return res
-        .status(400)
+
         .json({ success: false, message: "password" });
   
     //All good
