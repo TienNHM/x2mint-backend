@@ -6,16 +6,16 @@ const userSchema = mongoose.Schema({
   username: {
     type: String,
     unique: true,
-    require:true, 
+    require:[true,"Hãy điền Username !!"] 
   },
   email: {
     type: String,
     unique: true,
-    require: true,
+    require: [true,"Hãy điền Email !!"] 
   },
   password: {
     type: String,
-    require: true,
+    require: [true,"Hãy điền Password !!"],
     min: 8,
   },
   role: {
@@ -48,7 +48,7 @@ const userSchema = mongoose.Schema({
   },
   avatar: {
     type: String,
-    default: null,
+    default: "https://res.cloudinary.com/dsy3fbzxg/image/upload/v1639069707/samples/avatar/39e426741c29f67274c8d23734f19aea_bm8bil.jpg",
   },
   status: {
     type: String,

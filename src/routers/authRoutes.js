@@ -9,6 +9,7 @@ const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./config.env" });
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const sendMail = require('./sendMail');
 
 const googleAuth = async (token) => {
   const ticket = await client.verifyIdToken({
@@ -24,13 +25,12 @@ const googleAuth = async (token) => {
 //@access public
 //@role any
 router.post("/register", async (req, res) => {
-
   const { username, email, password, full_name, phone, address, school } = req.body;
   //simple validation
   if (!username || !password || !email) {
     return res
       .status(400)
-      .json({ success: false, message: "Missing username, email and/or password" });
+      .json({ success: false, message: "missing" });
   }
   try {
     //Check for existing username
@@ -39,12 +39,11 @@ router.post("/register", async (req, res) => {
       if (user.username === username)
         return res
           .status(400)
-          .json({ success: false, message: "Username already taken" });
+          .json({ success: false, message: "username" });
       else if (user.email === email) {
-        console.log("User: ", user);
         return res
           .status(400)
-          .json({ success: false, message: "Email already taken" });
+          .json({ success: false, message: "email" });
       }
     }
     const hashedPassword = await argon2.hash(
@@ -61,16 +60,21 @@ router.post("/register", async (req, res) => {
       address, 
       school 
     });
+
     await newUser.save();
       //Return token
     const accessToken = jwt.sign(
       {
         id: newUser._id,
         username: newUser.username,
-        role: newUser.role,
+        role: newUser.role
       },
       process.env.ACCESS_TOKEN_SECRET
     );
+      
+    const url = `${CLIENT_URL}/user/activate/${activation_token}`
+    sendMail(email, url, "Verify your email address")
+
     return res.json({
       success: true,
       message: "Account created successfully",
@@ -82,6 +86,24 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Forgot Password
+router.post("/forgotPassword", async (req, res) => {
+  try {
+      const {email} = req.body
+      const user = await Users.findOne({email})
+      if(!user) return res.status(400).json({msg: "This email does not exist."})
+
+      const access_token = createAccessToken({id: user._id})
+      const url = `${process.env.CLIENT_URL}/user/reset/${access_token}`
+
+      sendMail(email, url, "Reset your password")
+      res.json({msg: "Re-send the password, please check your email."})
+  } catch (err) {
+      return res.status(500).json({msg: err.message})
+  }
+});
+
+
 // @route POST v1/auth/login
 // @desc Login user by username and password
 // @access Public
@@ -91,7 +113,7 @@ router.post("/login", async (req, res) => {
   if (!username || !password) {
     return res
       .status(400)
-      .json({ success: false, message: "Missing username and/or password" });
+      .json({ success: false, message: "missing" });
   }
   try {
     //check for existing username
@@ -99,34 +121,36 @@ router.post("/login", async (req, res) => {
     if (!user)
       return res
         .status(400)
-        .json({ success: false, message: "Incorrect username or password" });
+        .json({ success: false, message: "incorrect" });
 
     // Username found
     const passwordValid = await argon2.verify(user.password, password);
     if (!passwordValid)
       return res
         .status(400)
-        .json({ success: false, message: "Incorrect username or password" });
-    console.log(passwordValid);
+        .json({ success: false, message: "password" });
+  
     //All good
-
     //return token
-    const accessToken = jwt.sign(
+    const accessToken = jwt.sign (
       {
         verifyAccount: {
           id: user._id,
           username: user.username,
           role: user.role,
         },
-      },
-      process.env.ACCESS_TOKEN_SECRET
+      }, process.env.ACCESS_TOKEN_SECRET
     );
 
     res.json({
-      success: true,
-      message: "User logged successfully",
-      accessToken,
-    });
+      accessToken: accessToken,
+      user : user,
+      success:true,
+      message: "User logged successfully"
+    })
+    console.log(accessToken)
+    
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -237,7 +261,6 @@ router.get("/", verifyToken, async (req, res) => {
       console.log(error)
       res.status(500).json({success:false, message:'Internal server error'})
     }
-})
-
+});
 
 module.exports = router;
