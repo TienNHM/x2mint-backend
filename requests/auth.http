@@ -5,9 +5,9 @@ POST http://localhost:5000/app/api/v1/auths/register
 Content-Type: application/json
 
 {
-    "email": "tadeothien@gmail.com",
-    "password" : "tadeothien",
-    "username": "tadeothien"
+    "email": "xxieqmiz@gmail.com",
+    "password" : "xxieqmiz",
+    "username": "xxieqmiz"
 }
 
 # @name login
