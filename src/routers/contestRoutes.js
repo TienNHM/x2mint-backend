@@ -317,7 +317,8 @@ router.put("/:contestId", verifyToken, async (req, res) => {
       url: req.body.url,
       isHidden: false,
       embededMedia: req.body.embededMedia,
-      updatedAt: formatTimeUTC()
+      updatedAt: formatTimeUTC(),
+      _status: req.body._status
     };
 
     const updatedContest = await Contest.findByIdAndUpdate(
