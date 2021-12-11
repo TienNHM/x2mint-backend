@@ -10,6 +10,7 @@ const userRoute = require("./src/routers/userRoutes");
 const testRoute = require("./src/routers/testRoutes");
 const contestRoute = require("./src/routers/contestRoutes");
 const takeTestRoute = require("./src/routers/takeTestRoutes");
+const adminRoute = require("./src/routers/adminRoutes");
 
 //Config env
 dotenv.config({ path: "./.env" });
@@ -66,6 +67,7 @@ app.use(`${api}/users`, userRoute);
 app.use(`${api}/tests`, testRoute);
 app.use(`${api}/contests`, contestRoute);
 app.use(`${api}/takeTest`, takeTestRoute);
+app.use(`${api}/statistics`, adminRoute);
 
 app.get("/", (req, res) => res.send("X2MINT API"));
 
