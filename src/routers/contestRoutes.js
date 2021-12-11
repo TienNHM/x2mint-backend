@@ -339,11 +339,11 @@ router.put("/:contestId", verifyToken, async (req, res) => {
 });
 
 
-//@route PUT v1/contests/:contestId/delete
-//@desc Delete a contest by contest Id
+//@route PUT v1/contests/:contestId/archive
+//@desc Archive a contest by contest Id
 //@access private
 //@role admin/creator
-router.put("/:contestId/delete", verifyToken, async (req, res) => {
+router.put("/:contestId/archive", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
@@ -370,10 +370,12 @@ router.put("/:contestId/delete", verifyToken, async (req, res) => {
         updatedAt: formatTimeUTC()
       },
       { new: true }
-    );
+    )
+    .populate("tests").exec();
+    
     res.json({
       success: true,
-      message: "Delete contest successfully",
+      message: "Archive contest successfully",
       contest: deletedContest,
     });
   } catch (error) {
