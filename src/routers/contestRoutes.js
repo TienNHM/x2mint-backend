@@ -46,9 +46,9 @@ router.get("/creator/:creatorId", verifyToken, async (req, res) => {
 });
 
 //@route GET v1/contests/
-//@desc get all contest
+//@desc USER get all contest
 //@access private
-//@role admin/creator
+//@role user
 router.get("", verifyToken, async (req, res) => {
   try {
     //Check permission
@@ -65,6 +65,42 @@ router.get("", verifyToken, async (req, res) => {
     }
 
     const contests = await Contest.find({_status: STATUS.OK});
+    if (contests) {
+      res.json({
+        success: true,
+        message: "Get all contest successfully ",
+        contests,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Contests do not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+//@route GET v1/contests/all
+//@desc ADMIN get all contest
+//@access private
+//@role admin
+router.get("/all", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (
+      !(
+        req.body.verifyAccount.role === ROLES.ADMIN
+      )
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const contests = await Contest.find();
     if (contests) {
       res.json({
         success: true,
@@ -281,7 +317,8 @@ router.put("/:contestId", verifyToken, async (req, res) => {
       url: req.body.url,
       isHidden: false,
       embededMedia: req.body.embededMedia,
-      updatedAt: formatTimeUTC()
+      updatedAt: formatTimeUTC(),
+      _status: req.body._status
     };
 
     const updatedContest = await Contest.findByIdAndUpdate(
@@ -302,11 +339,11 @@ router.put("/:contestId", verifyToken, async (req, res) => {
 });
 
 
-//@route PUT v1/contests/:contestId/delete
-//@desc Delete a contest by contest Id
+//@route PUT v1/contests/:contestId/archive
+//@desc Archive a contest by contest Id
 //@access private
 //@role admin/creator
-router.put("/:contestId/delete", verifyToken, async (req, res) => {
+router.put("/:contestId/archive", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
@@ -333,10 +370,12 @@ router.put("/:contestId/delete", verifyToken, async (req, res) => {
         updatedAt: formatTimeUTC()
       },
       { new: true }
-    );
+    )
+    .populate("tests").exec();
+    
     res.json({
       success: true,
-      message: "Delete contest successfully",
+      message: "Archive contest successfully",
       contest: deletedContest,
     });
   } catch (error) {

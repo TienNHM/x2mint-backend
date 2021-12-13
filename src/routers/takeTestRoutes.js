@@ -7,6 +7,7 @@ const TakeTest = require("../models/TakeTest");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
+const { STATUS } = require("../models/enum");
 const { formatTimeUTC } = require("../utils/Timezone");
 
 //@route GET v1/takeTest/:takeTestId
@@ -67,7 +68,7 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
  * @param {*} choose đối tương lưu answers mà user chọn tương ứng với question
  * @returns số điểm mà user đạt được cho câu hỏi tương ứng
  */
-const calcPoints = (choose) => {
+const isCorrectAnswer = (choose) => {
   const answers = choose.answers
   const correctAnswers = choose.question.correctAnswers
 
@@ -76,9 +77,8 @@ const calcPoints = (choose) => {
     return 0
   }
 
-  const maxPoints = choose.question.maxPoints
   const num = answers.filter(c => correctAnswers.includes(c)).length
-  return num === correctAnswers.length ? maxPoints : 0
+  return num === correctAnswers.length ? 1 : 0
 }
 
 /**
@@ -86,18 +86,19 @@ const calcPoints = (choose) => {
  * @param {*} chooseAnswers danh sách các câu trả lời của user
  * @returns số điểm mà user đạt được cho bài thi
  */
-const calcTestPoints = (chooseAnswers) => {
-  let points = 0
+const calcTestPoints = (chooseAnswers, maxPoints) => {
+  let numCorrectAnswers = 0
   let isCorrect = []
   for (let i = 0; i < chooseAnswers.length; i++) {
-    const p = calcPoints(chooseAnswers[i])
-    points += p
+    const p = isCorrectAnswer(chooseAnswers[i])
+    numCorrectAnswers += p
     isCorrect.push(p > 0)
   }
 
   return {
-    points: points,
-    isCorrect: isCorrect
+    points: numCorrectAnswers*maxPoints/chooseAnswers.length,
+    isCorrect: isCorrect,
+    isPassed: numCorrectAnswers >= chooseAnswers.length/2
   }
 }
 
@@ -113,13 +114,10 @@ router.post("/", verifyToken, async (req, res) => {
         message: "Body request not found",
       });
 
-    const accountId = req.body.verifyAccount.id;
-    let user = await User.findOne({ acount: accountId });
-
     //Create new
     let take_test = new TakeTest({
       test: req.body.test,
-      user: user.id,
+      user: req.body.user,
       chooseAnswers: req.body.chooseAnswers,
       points: 0,
       _status: req.body._status,
@@ -184,8 +182,6 @@ router.put("/:takeTestId", verifyToken, async (req, res) => {
       _status: req.body._status
     };
 
-    console.log(req.params.takeTestId)
-
     const updateTakeTest = await TakeTest.findByIdAndUpdate(
       req.params.takeTestId,
       takeTest,
@@ -229,6 +225,7 @@ router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
     }
 
     const takeTest = await TakeTest.findById(req.params.takeTestId)
+      .populate("test")
       .populate({
         path: "chooseAnswers",
         populate: {
@@ -236,14 +233,17 @@ router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
         }
       }).exec();
 
-    const { points, isCorrect } = calcTestPoints(takeTest.chooseAnswers);
-    console.log(points, isCorrect);
+    const { points, isCorrect, isPassed } = calcTestPoints(
+      takeTest.chooseAnswers,
+      takeTest.test.maxPoints
+    );
 
     let newTakeTest = {
       points: points,
       isCorrect: isCorrect,
       updatedAt: formatTimeUTC(),
       submitTime: req.body.endTime,
+      _status: isPassed ? STATUS.PASSED : STATUS.FAILED
     };
 
     const updateTakeTest = await TakeTest.findByIdAndUpdate(

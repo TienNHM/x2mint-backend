@@ -25,7 +25,7 @@ router.get("/", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const users = await User.find();
+    const users = await User.find().select("-password");
     if (users) {
       res.json({
         success: true,
