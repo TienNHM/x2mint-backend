@@ -246,7 +246,6 @@ router.get("/verify", verifyToken, async (req, res) => {
 });
 
 router.get("/", verifyToken, async (req, res) => {
-<<<<<<< HEAD
   try {
     const user = await User.findById(req.body.verifyAccount.id).select(
       "-password"
@@ -261,17 +260,6 @@ router.get("/", verifyToken, async (req, res) => {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
-=======
-  try{
-    const user = await User.findById(req.userId).select('-password')
-    if (!user)
-      return res.status(400).json({success:false, message:'User not found'})
-    res.json({success:true, user})
-    }catch (error) {
-      console.log(error)
-      res.status(500).json({success:false, message:'Internal server error'})
-    }
->>>>>>> 369b11b (authen)
 });
 
 module.exports = router;
