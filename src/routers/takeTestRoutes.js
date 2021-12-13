@@ -68,7 +68,7 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
  * @param {*} choose đối tương lưu answers mà user chọn tương ứng với question
  * @returns số điểm mà user đạt được cho câu hỏi tương ứng
  */
-const calcPoints = (choose) => {
+const isCorrectAnswer = (choose) => {
   const answers = choose.answers
   const correctAnswers = choose.question.correctAnswers
 
@@ -77,9 +77,8 @@ const calcPoints = (choose) => {
     return 0
   }
 
-  const maxPoints = choose.question.maxPoints
   const num = answers.filter(c => correctAnswers.includes(c)).length
-  return num === correctAnswers.length ? maxPoints : 0
+  return num === correctAnswers.length ? 1 : 0
 }
 
 /**
@@ -88,18 +87,18 @@ const calcPoints = (choose) => {
  * @returns số điểm mà user đạt được cho bài thi
  */
 const calcTestPoints = (chooseAnswers, maxPoints) => {
-  let points = 0
+  let numCorrectAnswers = 0
   let isCorrect = []
   for (let i = 0; i < chooseAnswers.length; i++) {
-    const p = calcPoints(chooseAnswers[i])
-    points += p
+    const p = isCorrectAnswer(chooseAnswers[i])
+    numCorrectAnswers += p
     isCorrect.push(p > 0)
   }
 
   return {
-    points: points,
+    points: numCorrectAnswers*maxPoints/chooseAnswers.length,
     isCorrect: isCorrect,
-    isPassed: points >= maxPoints/2
+    isPassed: numCorrectAnswers >= chooseAnswers.length/2
   }
 }
 
