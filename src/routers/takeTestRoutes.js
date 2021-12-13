@@ -97,7 +97,7 @@ const calcTestPoints = (chooseAnswers) => {
 
   return {
     points: points,
-    isCorrect: isCorrect
+    isCorrect: isCorrect,
   }
 }
 
@@ -113,13 +113,10 @@ router.post("/", verifyToken, async (req, res) => {
         message: "Body request not found",
       });
 
-    const accountId = req.body.verifyAccount.id;
-    let user = await User.findOne({ acount: accountId });
-
     //Create new
     let take_test = new TakeTest({
       test: req.body.test,
-      user: user.id,
+      user: req.body.user,
       chooseAnswers: req.body.chooseAnswers,
       points: 0,
       _status: req.body._status,
@@ -128,6 +125,8 @@ router.post("/", verifyToken, async (req, res) => {
 
     //Send to Database
     take_test = await take_test.save();
+
+    console.log(req.body.user)
 
     //Populate để lấy dữ liệu các trường tương ứng
     let tmp = await TakeTest.findById(take_test._id)
@@ -184,8 +183,6 @@ router.put("/:takeTestId", verifyToken, async (req, res) => {
       _status: req.body._status
     };
 
-    console.log(req.params.takeTestId)
-
     const updateTakeTest = await TakeTest.findByIdAndUpdate(
       req.params.takeTestId,
       takeTest,
@@ -237,7 +234,6 @@ router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
       }).exec();
 
     const { points, isCorrect } = calcTestPoints(takeTest.chooseAnswers);
-    console.log(points, isCorrect);
 
     let newTakeTest = {
       points: points,

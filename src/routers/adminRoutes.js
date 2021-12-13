@@ -9,6 +9,7 @@ const { formatTimeUTC_, formatTimeUTC } = require("../utils/Timezone");
 const User = require("../models/User");
 const Contest = require("../models/Contest");
 const TakeTest = require("../models/TakeTest");
+const Question = require("../models/Question");
 
 //@route GET v1/statistics/
 //@desc View statistic overview
@@ -30,18 +31,26 @@ router.get("", verifyToken, async (req, res) => {
     const users = await User.find();
     const contests = await Contest.find();
     const tests = await Test.find();
-    const takeTests = await TakeTest.find();
+    const takeTests = await TakeTest.find()
+      .populate("test")
+      .populate({
+        path: 'user',
+        select: "-__v -createdAt -updatedAt -password"
+      }).exec();
+
+    const questions = await Question.find();
 
     res.json({
-        success: true,
-        message: "Get all successfully",
-        data: {
-            users: users,
-            contests: contests,
-            tests: tests,
-            takeTests: takeTests
-        }
-      });
+      success: true,
+      message: "Get all successfully",
+      data: {
+        users: users,
+        contests: contests,
+        tests: tests,
+        takeTests: takeTests,
+        questions: questions
+      }
+    });
 
   } catch (error) {
     console.log(error);
