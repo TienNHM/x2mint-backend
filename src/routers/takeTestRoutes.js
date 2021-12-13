@@ -7,6 +7,7 @@ const TakeTest = require("../models/TakeTest");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
+const { STATUS } = require("../models/enum");
 const { formatTimeUTC } = require("../utils/Timezone");
 
 //@route GET v1/takeTest/:takeTestId
@@ -86,7 +87,7 @@ const calcPoints = (choose) => {
  * @param {*} chooseAnswers danh sách các câu trả lời của user
  * @returns số điểm mà user đạt được cho bài thi
  */
-const calcTestPoints = (chooseAnswers) => {
+const calcTestPoints = (chooseAnswers, maxPoints) => {
   let points = 0
   let isCorrect = []
   for (let i = 0; i < chooseAnswers.length; i++) {
@@ -98,6 +99,7 @@ const calcTestPoints = (chooseAnswers) => {
   return {
     points: points,
     isCorrect: isCorrect,
+    isPassed: points >= maxPoints/2
   }
 }
 
@@ -125,8 +127,6 @@ router.post("/", verifyToken, async (req, res) => {
 
     //Send to Database
     take_test = await take_test.save();
-
-    console.log(req.body.user)
 
     //Populate để lấy dữ liệu các trường tương ứng
     let tmp = await TakeTest.findById(take_test._id)
@@ -226,6 +226,7 @@ router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
     }
 
     const takeTest = await TakeTest.findById(req.params.takeTestId)
+      .populate("test")
       .populate({
         path: "chooseAnswers",
         populate: {
@@ -233,13 +234,17 @@ router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
         }
       }).exec();
 
-    const { points, isCorrect } = calcTestPoints(takeTest.chooseAnswers);
+    const { points, isCorrect, isPassed } = calcTestPoints(
+      takeTest.chooseAnswers,
+      takeTest.test.maxPoints
+    );
 
     let newTakeTest = {
       points: points,
       isCorrect: isCorrect,
       updatedAt: formatTimeUTC(),
       submitTime: req.body.endTime,
+      _status: isPassed ? STATUS.PASSED : STATUS.FAILED
     };
 
     const updateTakeTest = await TakeTest.findByIdAndUpdate(
