@@ -25,6 +25,7 @@ const contestSchema = mongoose.Schema({
   creatorId: {
     type: mongoose.Schema.Types.ObjectId,
     default: null,
+    ref: "users",
   },
   url: {
     type: String,

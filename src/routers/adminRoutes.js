@@ -29,7 +29,9 @@ router.get("", verifyToken, async (req, res) => {
     }
 
     const users = await User.find();
-    const contests = await Contest.find();
+    const contests = await Contest.find()
+      .populate("creatorId").exec();
+
     const tests = await Test.find();
     const takeTests = await TakeTest.find()
       .populate("test")

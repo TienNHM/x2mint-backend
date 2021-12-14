@@ -87,7 +87,7 @@ router.get("/info/:userId", verifyToken, async (req, res) => {
 //@desc Update user's info
 //@access private
 //@role User/Creator/Admin
-router.put("/info/:userId", verifyToken, async (req, res) => {
+router.put("/:userId/update", verifyToken, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.userId))
       return res
@@ -101,6 +101,8 @@ router.put("/info/:userId", verifyToken, async (req, res) => {
       school: req.body.school,
       avatar: req.body.avatar,
       dob: req.body.dob,
+      role: req.body.role,
+      _status: req.body._status,
       updatedAt: formatTimeUTC(),
     };
 
