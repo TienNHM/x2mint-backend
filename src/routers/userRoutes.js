@@ -48,7 +48,7 @@ router.get("/", verifyToken, async (req, res) => {
 //@desc Get user's info
 //@access private
 //@role any
-router.get("/info/:userId", verifyToken, async (req, res) => {
+router.get("/:userId/info", verifyToken, async (req, res) => {
   try {
     //Check permission
 
@@ -61,10 +61,8 @@ router.get("/info/:userId", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const user = await User.findById(req.params.userId).populate(
-      "account",
-      "email role"
-    );
+    const user = await User.findById(req.params.userId);
+
     if (user) {
       res.json({
         success: true,
@@ -95,7 +93,8 @@ router.put("/:userId/update", verifyToken, async (req, res) => {
         .json({ success: false, message: "Invalid userId" });
 
     let updatedUser = {
-      fullname: req.body.fullname,
+      full_name: req.body.full_name,
+      username: req.body.username,
       phone: req.body.phone,
       address: req.body.address,
       school: req.body.school,
@@ -110,7 +109,7 @@ router.put("/:userId/update", verifyToken, async (req, res) => {
       { _id: req.params.userId },
       updatedUser,
       { new: true }
-    );
+    ).select("-password");
 
     res.json({
       success: true,
