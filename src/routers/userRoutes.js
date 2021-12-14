@@ -101,6 +101,7 @@ router.put("/:userId/update", verifyToken, async (req, res) => {
       school: req.body.school,
       avatar: req.body.avatar,
       dob: req.body.dob,
+      role: req.body.role,
       _status: req.body._status,
       updatedAt: formatTimeUTC(),
     };
