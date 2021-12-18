@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const { ROLES, STATUS } = require("../models/enum");
 dotenv.config({ path: "./.env" });
 const Contest = require("../models/Contest")
+const TakeTest = require("../models/TakeTest")
 const { formatTimeUTC_, formatTimeUTC } = require("../utils/Timezone");
 
 
@@ -64,7 +65,7 @@ router.get("", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const contests = await Contest.find({_status: STATUS.OK});
+    const contests = await Contest.find({ _status: STATUS.OK });
     if (contests) {
       res.json({
         success: true,
@@ -169,6 +170,60 @@ router.get("/:contestId/tests", verifyToken, async (req, res) => {
         success: true,
         message: "Get all tests by contest id successfully ",
         tests: contest.tests,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Tests does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+// Get All TakeTests by ContestId for Creator/Admin
+const getAllTakeTestsInContest = async (tests) => {
+  var takeTests = []
+
+  for (let testId of tests) {
+    const t = await TakeTest.find({ test: testId })
+      .populate("test")
+      .populate("user")
+      .then(data => data)
+
+    takeTests = takeTests.concat(t);
+  }
+
+  return takeTests
+}
+
+//@route GET v1/contests/:contestId/taketests
+//@desc get all taketests of the contest
+//@access private
+//@role admin/creator
+router.get("/:contestId/taketests", verifyToken, async (req, res) => {
+  try {
+    if (
+      !(
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.ADMIN
+      )
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const contest = await Contest.findById(req.params.contestId);
+    const takeTests = await getAllTakeTestsInContest(contest.tests)
+
+    if (contest) {
+      res.json({
+        success: true,
+        message: "Get all takeTests by contest id successfully ",
+        takeTests: takeTests,
       });
     } else {
       res.json({
@@ -371,8 +426,8 @@ router.put("/:contestId/archive", verifyToken, async (req, res) => {
       },
       { new: true }
     )
-    .populate("tests").exec();
-    
+      .populate("tests").exec();
+
     res.json({
       success: true,
       message: "Archive contest successfully",
