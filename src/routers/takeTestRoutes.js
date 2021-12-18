@@ -87,16 +87,16 @@ const isCorrectAnswer = (choose) => {
  * @returns số điểm mà user đạt được cho bài thi
  */
 const calcTestPoints = (chooseAnswers, maxPoints) => {
-  let numCorrectAnswers = 0
   let isCorrect = []
   for (let i = 0; i < chooseAnswers.length; i++) {
     const p = isCorrectAnswer(chooseAnswers[i])
-    numCorrectAnswers += p
     isCorrect.push(p > 0)
   }
 
+  const numCorrectAnswers = isCorrect.filter(Boolean).length
+
   return {
-    points: numCorrectAnswers*maxPoints/chooseAnswers.length,
+    points: numCorrectAnswers*(maxPoints/chooseAnswers.length),
     isCorrect: isCorrect,
     isPassed: numCorrectAnswers >= chooseAnswers.length/2
   }
