@@ -27,10 +27,8 @@ const verifyToken = async (req, res, next) => {
 
   try {
     //Try with token from google
-    console.log("Hello");
 
     const user = await googleAuth(token);
-    console.log("Hello");
 
     let userMap = await User.findOne({ email: user.email });
 
