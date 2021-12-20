@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const Account = require("../models/Account");
-const verifyToken = require("../middleware/requireAuth");
+const auth = require("../middleware/requireAuth");
 const argon2 = require("argon2");
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
@@ -14,8 +14,7 @@ dotenv.config({ path: "./.env" });
 //@desc Get all users
 //@access private
 //@role admin
-
-router.get("/", verifyToken, async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
     //Check permission
     console.log(req.body.verifyAccount);
@@ -48,10 +47,9 @@ router.get("/", verifyToken, async (req, res) => {
 //@desc Get user's info
 //@access private
 //@role any
-router.get("/:userId/info", verifyToken, async (req, res) => {
+router.get("/:userId/info", auth, async (req, res) => {
   try {
     //Check permission
-
     if (
       req.body.verifyAccount.role !== ROLES.ADMIN &&
       req.body.verifyAccount.role !== ROLES.CREATOR
@@ -81,20 +79,20 @@ router.get("/:userId/info", verifyToken, async (req, res) => {
   }
 });
 
+
 //@route PUT v1/users/:userId
 //@desc Update user's info
 //@access private
 //@role User/Creator/Admin
-router.put("/:userId/update", verifyToken, async (req, res) => {
+
+router.put("/:userId/update", auth, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.userId))
       return res
         .status(400)
         .json({ success: false, message: "Invalid userId" });
-
     let updatedUser = {
       full_name: req.body.full_name,
-      username: req.body.username,
       phone: req.body.phone,
       address: req.body.address,
       school: req.body.school,
@@ -104,13 +102,12 @@ router.put("/:userId/update", verifyToken, async (req, res) => {
       _status: req.body._status,
       updatedAt: formatTimeUTC(),
     };
-
     updatedUser = await User.findOneAndUpdate(
       { _id: req.params.userId },
       updatedUser,
       { new: true }
-    ).select("-password");
 
+    ).select("-password");
     res.json({
       success: true,
       message: "User updated successfully",
@@ -126,8 +123,7 @@ router.put("/:userId/update", verifyToken, async (req, res) => {
 //@desc Update user's account
 //@access private
 //@role User/Creator/Admin
-
-router.put("/resetPassword", verifyToken, async (req, res) => {
+router.put("/resetPassword", auth, async (req, res) => {
   try {
     const userId = req.body.verifyAccount.id;
     const { oldPassword, newPassword } = req.body;

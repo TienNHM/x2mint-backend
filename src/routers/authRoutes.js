@@ -3,8 +3,10 @@ const router = express.Router();
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const verifyToken = require("../middleware/requireAuth");
-const { OAuth2Client, auth } = require("google-auth-library");
+const auth = require("../middleware/requireAuth");
+const { OAuth2Client} = require("google-auth-library");
+const {google} = require('googleapis')
+const {OAuth2} = google.auth
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./.env" });
@@ -25,8 +27,13 @@ const googleAuth = async (token) => {
 //@access public
 //@role any
 router.post("/register", async (req, res) => {
-  const { username, email, password, full_name, phone, address, school } = req.body;
+  const { username, email, password } = req.body;
   //simple validation
+  if (!username || !password || !email) {
+    return res
+      .status(400)
+      .json({ success: false, message: "missing" });
+  }
   try {
     //Check for existing username
     const user = await User.findOne({ $or: [{ username }, { email }] });
@@ -40,66 +47,123 @@ router.post("/register", async (req, res) => {
           .json({ success: false, message: "email" });
       }
     }
-    const hashedPassword = await argon2.hash(
-      password,
-      process.env.SECRET_HASH_KEY
-    );
+    //Hash Password
+    const hashedPassword = await argon2.hash(password,process.env.SECRET_HASH_KEY);
 
     const newUser = new User({
       //create account with username, email and password
-      username,
-      password: hashedPassword,
-      email,
-      full_name,
-      phone,
-      address,
-      school,
+      username, email, password:hashedPassword 
     });
-    console.log(newUser)
-
-    await newUser.save();
-    //Return token
-    const accessToken = jwt.sign(
+    //console.log(newUser)
+    
+    // return activation_token
+    const activation_token = jwt.sign(
       {
-        verifyAccount: {
-          id: newUser.id,
-          username: newUser.username,
-          role: newUser.role,
-        },
-      },
-      process.env.ACCESS_TOKEN_SECRET
-    );
-      
-    // const url = `${process.env.CLIENT_URL}/auths/register/`
-    // sendMail(email, url, "Verify your email address")
+        username: newUser.username,
+        email: newUser.email,
+        password: hashedPassword
 
-    return res.json({
-      success: true,
-      message: "Account created successfully",
-      accessToken,
-    });
+      },
+      process.env.ACTIVATION_TOKEN_SECRET,
+      {expiresIn: '5m'}
+    );  
+
+    //send request verify email
+    const url = `${process.env.CLIENT_URL}/auths/register/${activation_token}`
+    sendMail('verify', username, email, url, "Xác thực tài khoản")
+    return res.json({success: true, message: "verify"});
+
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(500).json({message: "Internal server error" });
   }
 });
+
+// Activate Email
+router.post("/activation", async (req, res) => {
+  try {
+      const {activation_token} = req.body
+      const user = jwt.verify(activation_token, process.env.ACTIVATION_TOKEN_SECRET)
+
+      const  {username, password, email, 
+        full_name,
+        phone,
+        address,
+        school,
+        role } = user
+      const check = await User.findOne({email})
+      if(check) return res.status(400).json({message:"already"})
+    
+
+      const newUser = new User({
+        username,
+        email,
+        password,
+        full_name,
+        phone,
+        address,
+        school,
+        role
+      })
+      await newUser.save()
+      console.log(newUser)
+      
+      //Return token
+      const accessToken = jwt.sign(
+        {
+          verifyAccount: {
+            id: newUser.id,
+            username: newUser.username,
+            role: newUser.role,
+          },
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {expiresIn: '15m'}
+      );  
+
+      res.json({success:true, accessToken, message: "success"})
+
+  } catch (err) {
+    console.log(err.message)
+      return res.status(500).json({msg: err.message})
+      
+  }
+})
 
 // Forgot Password
 router.post("/forgotPassword", async (req, res) => {
   try {
       const {email} = req.body
-      const user = await Users.findOne({email})
+      const user = await User.findOne({email})
       if(!user) return res.status(400).json({msg: "This email does not exist."})
 
       const access_token = createAccessToken({id: user._id})
-      const url = `${process.env.CLIENT_URL}/user/reset/${access_token}`
+      const url = `${process.env.CLIENT_URL}/auths/resetPassword/${access_token}`
+      console.log(url)
 
-      sendMail(email, url, "Reset your password")
+      sendMail('reset', user.username, email, url, "Reset your password")
       res.json({msg: "Re-send the password, please check your email."})
   } catch (err) {
       return res.status(500).json({msg: err.message})
   }
 });
+
+//Reset Password
+router.post("/resetPassword", auth, async (req, res) => {
+  try {
+      const {password} = req.body
+      console.log(password)
+      const hashedPassword = await argon2.hash(password,process.env.SECRET_HASH_KEY);
+
+      console.log(req.user)
+      await User.findOneAndUpdate({_id: req.user.id}, {
+          password: hashedPassword
+      })
+      res.json({msg: "Password successfully changed!"})
+  } catch (err) {
+      return res.status(500).json({msg: err.message})
+  }
+},)
 
 
 // @route POST v1/auth/login
@@ -108,22 +172,18 @@ router.post("/forgotPassword", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   //simple validation
-  if (!username || !password) {
-    return res
-      .json({ success: false, message: "missing" });
-  }
   try {
     //check for existing username
     const user = await User.findOne({ username });
     if (!user)
       return res
+        .status(400)
         .json({ success: false, message: "incorrect" });
-
     // Username found
     const passwordValid = await argon2.verify(user.password, password);
     if (!passwordValid)
       return res
-
+        .status(400)
         .json({ success: false, message: "password" });
   
     //All good
@@ -137,6 +197,13 @@ router.post("/login", async (req, res) => {
         },
       }, process.env.ACCESS_TOKEN_SECRET
     );
+
+    // const refresh_token = createRefreshToken({id: user._id})
+    //         res.cookie('refreshtoken', refresh_token, {
+    //             httpOnly: true,
+    //             path: '/user/refresh_token',
+    //             maxAge: 7*24*60*60*1000 // 7 days
+    //         })
 
     res.json({
       accessToken: accessToken,
@@ -153,8 +220,20 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/getInfor", async (req, res) => {
+    try {
+        console.log(req.user)
+        const user = await User.findById(req.user.username).select('-password')
+        res.json(user)
+        
+    } catch (err) {
+        return res.status(500).json({msg: err.message})
+    }
+  }
+)
+
 //Login with  google api
-router.post("/login/google", verifyToken, async (req, res, next) => {
+router.post("/login/google", auth, async (req, res, next) => {
   try {
     const { authorization } = req.headers;
     if (!authorization) {
@@ -229,7 +308,7 @@ router.post("/login/google", verifyToken, async (req, res, next) => {
   }
 });
 
-router.get("/verify", verifyToken, async (req, res) => {
+router.get("/verify", auth, async (req, res) => {
   try {
     return res.status(200).json({
       message: "Token is valid",
@@ -245,12 +324,12 @@ router.get("/verify", verifyToken, async (req, res) => {
   }
 });
 
-router.get("/", verifyToken, async (req, res) => {
+
+router.get("/", auth, async (req, res) => {
   try {
     const user = await User.findById(req.body.verifyAccount.id).select(
       "-password"
     );
-
     if (!user)
       return res
         .status(400)
@@ -263,3 +342,8 @@ router.get("/", verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+
+
+const createAccessToken = (payload) => {
+  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '15m'})
+}

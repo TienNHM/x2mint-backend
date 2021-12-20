@@ -18,16 +18,20 @@ dotenv.config({ path: "./.env" });
 //Config CORS
 const cors = require("cors");
 
+
 var whitelist = [
   'https://x2mint.vercel.app', 
   'https://ex2mint.vercel.app', 
   'http://localhost:3000'
 ]
+
 var corsOptions = {
   origin: function (origin, callback) {
     //TODO: remove 2nd condition when deploy prodution
-    if (whitelist.indexOf(origin) !== -1
-      || origin.includes(process.env.DOMAIN)) {
+    // if (whitelist.indexOf(origin) !== -1 
+    //   || origin.includes(process.env.DOMAIN)) {
+    //   callback(null, true)
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true)
     }
     else {
