@@ -18,7 +18,7 @@ const oauth2Client = new OAuth2(
 )
 
 // send mail
-const sendEmail = (to, url, txt) => {
+const sendEmail = (kind, name, to, url, txt) => {
     oauth2Client.setCredentials({
         refresh_token: MAILING_SERVICE_REFRESH_TOKEN
     })
@@ -36,30 +36,60 @@ const sendEmail = (to, url, txt) => {
         }
     })
 
-    const mailOptions = {
+    const mailOptions_verify = {
         from: SENDER_EMAIL_ADDRESS,
         to: to,
-        subject: "X2M!NT",
+        subject: "X2M!NT XIN CHÀO",
         html: `
-            <div style="max-width: 700px; margin:auto; border: 10px solid #ddd; padding: 50px 20px; font-size: 110%;">
-            <h2 style="text-align: center; text-transform: uppercase;color: teal;">Chào mừng bạn đến với X2M!NT.</h2>
-            <p>
-                Hãy bấm nút bên dưới để xác thực Email của bạn.
-            </p>
-            
-            <a href=${url} style="background: white; border: 1px solid mint; radius:30px; text-decoration: none; color: mint; padding: 10px 20px; margin: 10px 0; display: inline-block;">${txt}</a>
-        
-            <p>Nếu nút không hoạt động, bạn vui lòng bấm vào link nhé !!:</p>
-        
+            <div style="max-width: 700px; padding: 30px 30px; margin:auto; border: 2px solid #5fa509; border-radius: 10px; font-size: 110%;">
+            <h1 style="text-align: center; color: #5fa509;">
+            CHÀO MỪNG @${name} ĐẾN VỚI X2M!NT</h1>
+
+            <h3> Hãy bấm nút bên dưới để xác thực Email của bạn nhé !!</h3>            
+            <a href=${url} style="background:#5fa509; border-radius:30px; text-decoration: none; color: white; padding: 10px 20px; display: inline-block;">${txt}</a>
+            <div>${url}</div>
+            </div>
+        `
+    }
+    const mailOptions_resetPassword = {
+        from: SENDER_EMAIL_ADDRESS,
+        to: to,
+        subject: "THAY ĐỔI MẬT KHẨU X2M!NT",
+        html: `
+            <div style="max-width: 700px; padding: 30px 30px; margin:auto; border: 2px solid #5fa509; border-radius: 10px; font-size: 110%;">
+            <h1 style="text-align: center; color: #5fa509;">
+            THAY ĐỔI MẬT KHẨU X2M!NT CỦA @${name}</h1>
+
+            <h3> Hãy bấm nút bên dưới để cập nhật mật khẩu của của bạn nhé !!</h3>            
+            <a href=${url} style="background:#5fa509; border-radius:30px; text-decoration: none; color: white; padding: 10px 20px; display: inline-block;">${txt}</a>
             <div>${url}</div>
             </div>
         `
     }
 
-    smtpTransport.sendMail(mailOptions, (err, infor) => {
-        if(err) return err;
-        return infor
-    })
+    if (kind == 'verify'){
+        smtpTransport.sendMail(mailOptions_verify, function(err, data) {
+            if(err) {
+                return err
+                console.log("Error:" + err)
+            }
+            else {
+                console.log("Email sent successfully")
+            }
+            
+        })
+    } else if (kind == 'reset') {
+        smtpTransport.sendMail(mailOptions_resetPassword, function(err, data) {
+            if(err) {
+                return err
+                console.log("Error:" + err)
+            }
+            else {
+                console.log("Email sent successfully")
+            }
+            
+        })
+    }
 }
 
 module.exports = sendEmail;
