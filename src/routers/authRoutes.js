@@ -55,7 +55,6 @@ router.post("/register", async (req, res) => {
       address,
       school,
     });
-    console.log(newUser)
 
     await newUser.save();
     //Return token
@@ -144,7 +143,6 @@ router.post("/login", async (req, res) => {
       success:true,
       message: "User logged successfully"
     })
-    console.log(accessToken)
     
 
   } catch (error) {
@@ -221,7 +219,7 @@ router.post("/login/google", verifyToken, async (req, res, next) => {
       }
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({
       message: "Internal server error",
       success: false,
@@ -237,7 +235,7 @@ router.get("/verify", verifyToken, async (req, res) => {
       user: req.body.verifyAccount,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Internal error server",
