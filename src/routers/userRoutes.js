@@ -24,7 +24,7 @@ router.get("/", auth, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const users = await User.find();
+    const users = await User.find().select("-password");
     if (users) {
       res.json({
         success: true,
@@ -47,7 +47,7 @@ router.get("/", auth, async (req, res) => {
 //@desc Get user's info
 //@access private
 //@role any
-router.get("/info/:userId", auth, async (req, res) => {
+router.get("/:userId/info", auth, async (req, res) => {
   try {
     //Check permission
     if (
@@ -59,10 +59,8 @@ router.get("/info/:userId", auth, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const user = await User.findById(req.params.userId).populate(
-      "account",
-      "email role"
-    );
+    const user = await User.findById(req.params.userId);
+
     if (user) {
       res.json({
         success: true,
@@ -86,7 +84,8 @@ router.get("/info/:userId", auth, async (req, res) => {
 //@desc Update user's info
 //@access private
 //@role User/Creator/Admin
-router.put("/updateInfo/:userId", auth, async (req, res) => {
+
+router.put("/:userId/update", auth, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.userId))
       return res
@@ -99,13 +98,16 @@ router.put("/updateInfo/:userId", auth, async (req, res) => {
       school: req.body.school,
       avatar: req.body.avatar,
       dob: req.body.dob,
+      role: req.body.role,
+      _status: req.body._status,
       updatedAt: formatTimeUTC(),
     };
     updatedUser = await User.findOneAndUpdate(
       { _id: req.params.userId },
       updatedUser,
       { new: true }
-    );
+
+    ).select("-password");
     res.json({
       success: true,
       message: "User updated successfully",

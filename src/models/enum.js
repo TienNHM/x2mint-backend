@@ -9,4 +9,7 @@ module.exports.STATUS = {
   DELETED: 'deleted',
   OK: 'ok',
   ARCHIVED: 'archived',
+  NOT_SUBMITTED: 'not submitted',
+  PASSED: 'passed',
+  FAILED: 'failed'
 };

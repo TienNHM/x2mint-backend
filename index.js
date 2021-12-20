@@ -10,6 +10,7 @@ const userRoute = require("./src/routers/userRoutes");
 const testRoute = require("./src/routers/testRoutes");
 const contestRoute = require("./src/routers/contestRoutes");
 const takeTestRoute = require("./src/routers/takeTestRoutes");
+const adminRoute = require("./src/routers/adminRoutes");
 
 //Config env
 dotenv.config({ path: "./.env" });
@@ -17,7 +18,13 @@ dotenv.config({ path: "./.env" });
 //Config CORS
 const cors = require("cors");
 
-var whitelist = ['https://x2mint.vercel.app', 'http://localhost:3000', 'https://mail.google.com']
+
+var whitelist = [
+  'https://x2mint.vercel.app', 
+  'https://ex2mint.vercel.app', 
+  'http://localhost:3000'
+]
+
 var corsOptions = {
   origin: function (origin, callback) {
     //TODO: remove 2nd condition when deploy prodution
@@ -68,6 +75,7 @@ app.use(`${api}/users`, userRoute);
 app.use(`${api}/tests`, testRoute);
 app.use(`${api}/contests`, contestRoute);
 app.use(`${api}/takeTest`, takeTestRoute);
+app.use(`${api}/statistics`, adminRoute);
 
 app.get("/", (req, res) => res.send("X2MINT API"));
 
