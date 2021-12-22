@@ -290,6 +290,7 @@ router.get("/verify", auth, async (req, res) => {
   }
 });
 
+
 router.get("/", auth, async (req, res) => {
   try {
     const user = await User.findById(req.body.verifyAccount.id).select(
