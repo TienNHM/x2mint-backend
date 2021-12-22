@@ -12,7 +12,6 @@ const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./.env" });
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const sendMail = require('./sendMail');
-
 const googleAuth = async (token) => {
   const ticket = await client.verifyIdToken({
     idToken: token,
@@ -28,12 +27,6 @@ const googleAuth = async (token) => {
 //@role any
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
-  //simple validation
-  if (!username || !password || !email) {
-    return res
-      .status(400)
-      .json({ success: false, message: "missing" });
-  }
   try {
     //Check for existing username
     const user = await User.findOne({ $or: [{ username }, { email }] });
@@ -49,27 +42,22 @@ router.post("/register", async (req, res) => {
     }
     //Hash Password
     const hashedPassword = await argon2.hash(password,process.env.SECRET_HASH_KEY);
-
     const newUser = new User({
       //create account with username, email and password
-      username, email, password:hashedPassword 
+      username: req.body.username, 
+      email: req.body.email, 
+      password:hashedPassword,
+      role: req.body.role
     });
-    //console.log(newUser)
+    console.log(newUser)
     
     // return activation_token
-    const activation_token = jwt.sign(
-      {
-        username: newUser.username,
-        email: newUser.email,
-        password: hashedPassword
-
-      },
+    const activation_token = jwt.sign({newUser},
       process.env.ACTIVATION_TOKEN_SECRET,
       {expiresIn: '5m'}
-    );  
-
+    ); 
     //send request verify email
-    const url = `${process.env.CLIENT_URL}/auths/register/${activation_token}`
+    const url = `${process.env.CLIENT_URL}/activation/${activation_token}`
     sendMail('verify', username, email, url, "Xác thực tài khoản")
     return res.json({success: true, message: "verify"});
 
@@ -82,9 +70,11 @@ router.post("/register", async (req, res) => {
 // Activate Email
 router.post("/activation", async (req, res) => {
   try {
-      const {activation_token} = req.body
-      const user = jwt.verify(activation_token, process.env.ACTIVATION_TOKEN_SECRET)
-
+      const { activation_token } = req.body
+      //console.log(activation_token)
+      //console.log(jwt.verify(process.env.ACTIVATION_TOKEN_SECRET))
+      const decode = jwt.verify(activation_token, process.env.ACTIVATION_TOKEN_SECRET)
+      const user = decode.newUser
       const  {username, password, email, 
         full_name,
         phone,
@@ -92,9 +82,7 @@ router.post("/activation", async (req, res) => {
         school,
         role } = user
       const check = await User.findOne({email})
-      if(check) return res.status(400).json({message:"already"})
-    
-
+      if(check) return res.json({success:false, message:"already"})    
       const newUser = new User({
         username,
         email,
@@ -105,28 +93,13 @@ router.post("/activation", async (req, res) => {
         school,
         role
       })
-      await newUser.save()
-      console.log(newUser)
+      await newUser.save()      //console.log(newUser)
       
-      //Return token
-      const accessToken = jwt.sign(
-        {
-          verifyAccount: {
-            id: newUser.id,
-            username: newUser.username,
-            role: newUser.role,
-          },
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        {expiresIn: '15m'}
-      );  
-
-      res.json({success:true, accessToken, message: "success"})
+      res.json({success:true, message: "success"})
 
   } catch (err) {
-    console.log(err.message)
-      return res.status(500).json({msg: err.message})
-      
+    //console.log(err.message)
+      return res.status(500).json({msg: err.message})      
   }
 })
 
@@ -137,9 +110,12 @@ router.post("/forgotPassword", async (req, res) => {
       const user = await User.findOne({email})
       if(!user) return res.status(400).json({msg: "This email does not exist."})
 
-      const access_token = createAccessToken({id: user._id})
-      const url = `${process.env.CLIENT_URL}/auths/resetPassword/${access_token}`
-      console.log(url)
+      const access_token = jwt.sign({id: user._id},
+        process.env.ACCESS_TOKEN_SECRET,
+        {expiresIn: '5m'}
+      );
+      const url = `${process.env.CLIENT_URL}/resetPassword/${access_token}`
+      //console.log(url)
 
       sendMail('reset', user.username, email, url, "Reset your password")
       res.json({msg: "Re-send the password, please check your email."})
@@ -149,17 +125,17 @@ router.post("/forgotPassword", async (req, res) => {
 });
 
 //Reset Password
-router.post("/resetPassword", auth, async (req, res) => {
+router.post("/resetPassword", async (req, res) => {
   try {
-      const {password} = req.body
-      console.log(password)
+      const {password, token} = req.body
       const hashedPassword = await argon2.hash(password,process.env.SECRET_HASH_KEY);
-
-      console.log(req.user)
-      await User.findOneAndUpdate({_id: req.user.id}, {
+      //console.log(req.body.token)
+      const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+      //console.log(user.id)
+      await User.findOneAndUpdate({_id: user.id}, {
           password: hashedPassword
       })
-      res.json({msg: "Password successfully changed!"})
+      res.json({success: true, msg: "Password successfully changed!"})
   } catch (err) {
       return res.status(500).json({msg: err.message})
   }
@@ -177,13 +153,11 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ username });
     if (!user)
       return res
-        .status(400)
         .json({ success: false, message: "incorrect" });
     // Username found
     const passwordValid = await argon2.verify(user.password, password);
     if (!passwordValid)
       return res
-        .status(400)
         .json({ success: false, message: "password" });
   
     //All good
@@ -197,14 +171,6 @@ router.post("/login", async (req, res) => {
         },
       }, process.env.ACCESS_TOKEN_SECRET
     );
-
-    // const refresh_token = createRefreshToken({id: user._id})
-    //         res.cookie('refreshtoken', refresh_token, {
-    //             httpOnly: true,
-    //             path: '/user/refresh_token',
-    //             maxAge: 7*24*60*60*1000 // 7 days
-    //         })
-
     res.json({
       accessToken: accessToken,
       user : user,
@@ -341,8 +307,3 @@ router.get("/", auth, async (req, res) => {
 });
 
 module.exports = router;
-
-
-const createAccessToken = (payload) => {
-  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '15m'})
-}
