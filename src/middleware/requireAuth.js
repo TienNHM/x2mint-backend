@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const User = require("../models/User");
 
+
 dotenv.config({ path: "./.env" });
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -13,23 +14,6 @@ const googleAuth = async (token) => {
 	});
 	return ticket.getPayload();
 };
-
-
-// const auth = (req, res, next) => {
-// 	try {
-// 		const token = req.header("Authorization")
-// 		if (!token) return res.status(400).json({ msg: "Invalid Authentication." })
-
-// 		jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-// 			if (err) return res.status(400).json({ msg: "Invalid Authentication." })
-
-// 			req.user = user
-// 			next()
-// 		})
-// 	} catch (err) {
-// 		return res.status(500).json({ msg: err.message })
-// 	}
-// }
 
 const verifyToken = async (req, res, next) => {
 	const authHeader = req.header("Authorization");

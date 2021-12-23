@@ -18,7 +18,7 @@ const oauth2Client = new OAuth2(
 )
 
 // send mail
-const sendEmail = (kind, name, to, url, txt) => {
+const sendEmail = (kind, full_name, name, to, url, txt) => {
     oauth2Client.setCredentials({
         refresh_token: MAILING_SERVICE_REFRESH_TOKEN
     })
@@ -47,7 +47,6 @@ const sendEmail = (kind, name, to, url, txt) => {
 
             <h3> Hãy bấm nút bên dưới để xác thực Email của bạn nhé !!</h3>            
             <a href=${url} style="background:#5fa509; border-radius:30px; text-decoration: none; color: white; padding: 10px 20px; display: inline-block;">${txt}</a>
-            <div>${url}</div>
             </div>
         `
     }
@@ -62,7 +61,22 @@ const sendEmail = (kind, name, to, url, txt) => {
 
             <h3> Hãy bấm nút bên dưới để cập nhật mật khẩu của của bạn nhé !!</h3>            
             <a href=${url} style="background:#5fa509; border-radius:30px; text-decoration: none; color: white; padding: 10px 20px; display: inline-block;">${txt}</a>
-            <div>${url}</div>
+            </div>
+        `
+    }
+    const mailOptions_creatAccountByEmail = {
+        from: SENDER_EMAIL_ADDRESS,
+        to: to,
+        subject: "TẠO TÀI KHOẢN BẰNG GMAIL THÀNH CÔNG",
+        html: `
+            <div style="max-width: 700px; padding: 30px 30px; margin:auto; border: 2px solid #5fa509; border-radius: 10px; font-size: 110%;">
+            <h1 style="text-align: center; color: #5fa509;">
+            THÔNG TIN ĐĂNG NHẬP X2M!NT CỦA ${full_name}</h1>
+
+            <h4>Username: ${name} </h4>
+            <h4>Password: ${url} </h4>
+            <h3> Trở lại trang đăng nhập !!</h3>            
+            <a href="${process.env.REACT_APP_CLIENT_URL}/login" style="background:#5fa509; border-radius:30px; text-decoration: none; color: white; padding: 10px 20px; display: inline-block;">${txt}</a>
             </div>
         `
     }
@@ -80,6 +94,17 @@ const sendEmail = (kind, name, to, url, txt) => {
         })
     } else if (kind == 'reset') {
         smtpTransport.sendMail(mailOptions_resetPassword, function(err, data) {
+            if(err) {
+                return err
+                console.log("Error:" + err)
+            }
+            else {
+                console.log("Email sent successfully")
+            }
+            
+        })
+    } else if (kind == 'password') {
+        smtpTransport.sendMail(mailOptions_creatAccountByEmail, function(err, data) {
             if(err) {
                 return err
                 console.log("Error:" + err)
