@@ -27,11 +27,7 @@ var whitelist = [
 
 var corsOptions = {
   origin: function (origin, callback) {
-    //TODO: remove 2nd condition when deploy prodution
-    // if (whitelist.indexOf(origin) !== -1 
-    //   || origin.includes(process.env.DOMAIN)) {
-    //   callback(null, true)
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
+    if (whitelist.indexOf(origin) !== -1) {
       callback(null, true)
     }
     else {
