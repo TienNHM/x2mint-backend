@@ -177,7 +177,6 @@ router.post("/login", async (req, res) => {
       success:true,
       message: "User logged successfully"
     })
-    console.log(accessToken)
     
 
   } catch (error) {
@@ -266,7 +265,7 @@ router.post("/login/google", auth, async (req, res, next) => {
       }
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({
       message: "Internal server error",
       success: false,
@@ -282,7 +281,7 @@ router.get("/verify", auth, async (req, res) => {
       user: req.body.verifyAccount,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Internal error server",

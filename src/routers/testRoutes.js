@@ -174,6 +174,7 @@ router.post("", verifyToken, async (req, res) => {
       name: req.body.name,
       creatorId: req.body.creatorId,
       description: req.body.description,
+      pin: req.body.pin,
       questions: req.body.questions, // can null
       startTime: formatTimeUTC_(req.body.startTime),
       endTime: formatTimeUTC_(req.body.endTime),
@@ -270,6 +271,7 @@ router.put("/:testId", verifyToken, async (req, res) => {
       creatorId: req.body.creatorId,
       description: req.body.description,
       questions: req.body.questions,
+      pin: req.body.pin,
       startTime: formatTimeUTC_(req.body.startTime),
       endTime: formatTimeUTC_(req.body.endTime),
       url: req.body.url,

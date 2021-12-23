@@ -17,7 +17,6 @@ dotenv.config({ path: "./.env" });
 router.get("/", auth, async (req, res) => {
   try {
     //Check permission
-    console.log(req.body.verifyAccount);
     if (req.body.verifyAccount.role !== ROLES.ADMIN) {
       return res
         .status(401)
