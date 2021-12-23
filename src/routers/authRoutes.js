@@ -49,6 +49,7 @@ router.post("/register", async (req, res) => {
       password:hashedPassword,
       role: req.body.role
     });
+<<<<<<< HEAD
     console.log(newUser)
     
     // return activation_token
@@ -60,6 +61,8 @@ router.post("/register", async (req, res) => {
     const url = `${process.env.CLIENT_URL}/activation/${activation_token}`
     sendMail('verify', username, email, url, "Xác thực tài khoản")
     return res.json({success: true, message: "verify"});
+=======
+>>>>>>> 7b891f300d631237695fe0f3b1a014f5cd43f26c
 
   } catch (error) {
     console.log(error);
