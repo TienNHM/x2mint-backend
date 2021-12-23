@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
 			}
 		}
 		//Hash Password
-		const hashedPassword = await argon2.hash(password, process.env.SECRET_HASH_KEY);
+		const hashedPassword = await argon2.hash(password, process.env.REACT_APP_SECRET_HASH_KEY);
 		const newUser = new User({
 			//create account with username, email and password
 			username: req.body.username,
@@ -55,7 +55,7 @@ router.post("/register", async (req, res) => {
 
 		// return activation_token
 		const activation_token = jwt.sign({ newUser },
-			process.env.ACTIVATION_TOKEN_SECRET,
+			process.env.REACT_APP_ACTIVATION_TOKEN_SECRET,
 			{ expiresIn: '5m' }
 		);
 		//send request verify email
@@ -74,8 +74,8 @@ router.post("/activation", async (req, res) => {
 	try {
 		const { activation_token } = req.body
 		//console.log(activation_token)
-		//console.log(jwt.verify(process.env.ACTIVATION_TOKEN_SECRET))
-		const decode = jwt.verify(activation_token, process.env.ACTIVATION_TOKEN_SECRET)
+		//console.log(jwt.verify(process.env.REACT_APP_ACTIVATION_TOKEN_SECRET))
+		const decode = jwt.verify(activation_token, process.env.REACT_APP_ACTIVATION_TOKEN_SECRET)
 		const user = decode.newUser
 		const { username, password, email,
 			full_name,
@@ -112,7 +112,7 @@ router.post("/forgotPassword", async (req, res) => {
 		const user = await User.findOne({ email })
 		if (!user) return res.status(400).json({ msg: "This email does not exist." })
 		const access_token = jwt.sign({ id: user._id },
-			process.env.ACCESS_TOKEN_SECRET,
+			process.env.REACT_APP_ACCESS_TOKEN_SECRET,
 			{ expiresIn: '5m' }
 		);
 		const url = `${process.env.CLIENT_URL}/resetPassword/${access_token}`
@@ -130,7 +130,7 @@ router.post("/resetPassword", async (req, res) => {
 		const { password, token } = req.body
 		console.log(token)
 		const hashedPassword = await argon2.hash(password, process.env.SECRET_HASH_KEY);
-		const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+		const user = jwt.verify(token, process.env.REACT_APP_ACCESS_TOKEN_SECRET)
 		console.log(user)
 		await User.findOneAndUpdate({ _id: user.id }, {
 			password: hashedPassword
@@ -169,7 +169,7 @@ router.post("/login", async (req, res) => {
 					username: user.username,
 					role: user.role,
 				},
-			}, process.env.ACCESS_TOKEN_SECRET
+			}, process.env.REACT_APP_ACCESS_TOKEN_SECRET
 		);
 		res.json({
 			accessToken: accessToken,
@@ -219,7 +219,7 @@ router.post("/loginViaGoogle", async (req, res) => {
 						username: user.username,
 						role: user.role,
 					},
-				}, process.env.ACCESS_TOKEN_SECRET
+				}, process.env.REACT_APP_ACCESS_TOKEN_SECRET
 			);
 			res.json({
 				accessToken: accessToken,
@@ -249,7 +249,7 @@ router.post("/loginViaGoogle", async (req, res) => {
 						username: user.username,
 						role: user.role,
 					},
-				}, process.env.ACCESS_TOKEN_SECRET
+				}, process.env.REACT_APP_ACCESS_TOKEN_SECRET
 			);
 			//console.log(accessToken)
 			res.json({

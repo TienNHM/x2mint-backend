@@ -48,7 +48,6 @@ app.use(fileUpload({
 }))
 
 //Base url: no slash at the end
-//const api = process.env.API_URL;
 const api = "/app/api/v1";
 //Connect DB
 const connectDB = async () => {
