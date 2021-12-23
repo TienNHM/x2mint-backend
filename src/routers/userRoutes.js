@@ -171,4 +171,47 @@ router.put("/resetPassword", auth, async (req, res) => {
   }
 });
 
+//@route PUT v1/users/:userId
+//@desc Update user's info
+//@access private
+//@role User/Creator/Admin
+router.put("/:userId/changePassword", verifyToken, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid userId" });
+
+    const user = await User.findById(req.params.userId)
+
+    if (req.body.password !== user.password) {
+      res.json({
+        success: false,
+        message: "Password is not match. Please try again!",
+      });
+    }
+    else {
+      let updatedUser = {
+        password: req.body.newPassword,
+        updatedAt: formatTimeUTC(),
+      };
+
+      updatedUser = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        updatedUser,
+        { new: true }
+      ).select("-password");
+
+      res.json({
+        success: true,
+        message: "User updated successfully",
+        user: updatedUser,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 module.exports = router;
