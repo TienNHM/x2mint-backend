@@ -1,47 +1,89 @@
-const jwt = require('jsonwebtoken')
+const { OAuth2Client, auth } = require("google-auth-library");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const User = require("../models/User");
 
+dotenv.config({ path: "./.env" });
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-<<<<<<< HEAD
-const auth = (req, res, next) => {
-    try {
-        const token = req.header("Authorization")
-        if(!token) return res.status(400).json({msg: "Invalid Authentication."})
-=======
 const googleAuth = async (token) => {
-  const ticket = await client.verifyIdToken({
-    idToken: token,
-    audience: [process.env.GOOGLE_CLIENT_ID],
-  });
-
-  return ticket.getPayload();
+	const ticket = await client.verifyIdToken({
+		idToken: token,
+		audience: [process.env.GOOGLE_CLIENT_ID],
+	});
+	return ticket.getPayload();
 };
 
+
+// const auth = (req, res, next) => {
+// 	try {
+// 		const token = req.header("Authorization")
+// 		if (!token) return res.status(400).json({ msg: "Invalid Authentication." })
+
+// 		jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+// 			if (err) return res.status(400).json({ msg: "Invalid Authentication." })
+
+// 			req.user = user
+// 			next()
+// 		})
+// 	} catch (err) {
+// 		return res.status(500).json({ msg: err.message })
+// 	}
+// }
+
 const verifyToken = async (req, res, next) => {
-  const authHeader = req.header("Authorization");
-  const token = authHeader && authHeader.split(" ")[1];
+	const authHeader = req.header("Authorization");
+	const token = authHeader && authHeader.split(" ")[1];
+	if (!token)
+		return res
+			.status(401)
+			.json({ success: false, message: "Access token not found" });
+	try {
+		//Try with token from google
+		const user = await googleAuth(token);
 
-  if (!token)
-    return res
-      .status(401)
-      .json({ success: false, message: "Access token not found" });
+		let userMap = await User.findOne({ email: user.email });
 
-  try {
-    //Try with token from google
+		//Checked account is active
+		if (!userMap.isHidden) {
+			req.body.userAuth = userMap;
+			req.headers.authorization = token;
+			next();
+		} else {
+			res.status(403).json({
+				message: "Your account is blocked",
+				success: false,
+			});
+		}
+	} catch (error) {
+		//Login by enter email and password
+		try {
+			let account;
+			jwt.verify(
+				token,
+				process.env.ACCESS_TOKEN_SECRET,
+				function (err, payload) {
+					if (typeof payload != "undefined") {
+						account = payload.verifyAccount;
+						req.body.verifyAccount = account;
+						req.headers.authorization = token;
+						next();
+					} else {
+						return res.status(401).json({
+							message: "Authentication failed!",
+							success: false,
+						});
+					}
+				}
+			);
+			// const decode = jwt.decode(token, process.env.ACCESS_TOKEN_SECRET);
+			// req.accountId = decode.accountId;
+			// next();
+		} catch (error) {
+			console.log(error);
+			res.status(403).json({ success: false, message: "Invalid token" });
+		}
+	}
+};
 
-    const user = await googleAuth(token);
-
-    let userMap = await User.findOne({ email: user.email });
->>>>>>> 7b891f300d631237695fe0f3b1a014f5cd43f26c
-
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if(err) return res.status(400).json({msg: "Invalid Authentication."})
-
-            req.user = user
-            next()
-        })
-    } catch (err) {
-        return res.status(500).json({msg: err.message})
-    }
-}
-
-module.exports = auth
+module.exports = verifyToken

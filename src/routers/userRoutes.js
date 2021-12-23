@@ -175,7 +175,7 @@ router.put("/resetPassword", auth, async (req, res) => {
 //@desc Update user's info
 //@access private
 //@role User/Creator/Admin
-router.put("/:userId/changePassword", verifyToken, async (req, res) => {
+router.put("/:userId/changePassword", auth, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.userId))
       return res
@@ -183,16 +183,31 @@ router.put("/:userId/changePassword", verifyToken, async (req, res) => {
         .json({ success: false, message: "Invalid userId" });
 
     const user = await User.findById(req.params.userId)
+    if (!user) {
+      res.json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
 
-    if (req.body.password !== user.password) {
+    const passwordValid = await argon2.verify(user.password, req.body.password);
+
+    if (!passwordValid) {
       res.json({
         success: false,
         message: "Password is not match. Please try again!",
       });
     }
     else {
+      //Hash new password to save
+      const hashedPassword = await argon2.hash(
+        req.body.newPassword,
+        process.env.SECRET_HASH_KEY
+      );
+      console.log(hashedPassword)
       let updatedUser = {
-        password: req.body.newPassword,
+        password: hashedPassword,
         updatedAt: formatTimeUTC(),
       };
 
