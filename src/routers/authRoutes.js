@@ -53,11 +53,10 @@ router.post("/register", async (req, res) => {
       password:hashedPassword,
       role: req.body.role
     });
-    console.log(newUser)
     
     // return activation_token
     const activation_token = jwt.sign({newUser},
-      process.env.ACTIVATION_TOKEN_SECRET,
+      process.env.REACT_APP_ACTIVATION_TOKEN_SECRET,
       {expiresIn: '5m'}
     ); 
     //send request verify email
@@ -117,7 +116,7 @@ router.post("/forgotPassword", async (req, res) => {
 			process.env.REACT_APP_ACCESS_TOKEN_SECRET,
 			{ expiresIn: '5m' }
 		);
-		const url = `${process.env.CLIENT_URL}/resetPassword/${access_token}`
+		const url = `${process.env.REACT_APP_CLIENT_URL}/resetPassword/${access_token}`
 		//console.log(url)
 		sendMail('reset', user.username, email, url, "Reset your password")
 		res.json({ msg: "Re-send the password, please check your email." })
@@ -130,10 +129,10 @@ router.post("/forgotPassword", async (req, res) => {
 router.post("/resetPassword", async (req, res) => {
 	try {
 		const { password, token } = req.body
-		console.log(token)
+
 		const hashedPassword = await argon2.hash(password, process.env.SECRET_HASH_KEY);
 		const user = jwt.verify(token, process.env.REACT_APP_ACCESS_TOKEN_SECRET)
-		console.log(user)
+
 		await User.findOneAndUpdate({ _id: user.id }, {
 			password: hashedPassword
 		})
@@ -229,7 +228,6 @@ router.post("/loginViaGoogle", async (req, res) => {
 				success: true,
 				message: "login"
 			})
-			console.log(accessToken)
 		}
 		// Tạo tài khoản mới !!
 		else {
@@ -265,9 +263,6 @@ router.post("/loginViaGoogle", async (req, res) => {
 		res.status(500).json({ success: false, message: "Internal server error" });
 	}
 });
-
-
-router.get("/verify", async (req, res) => {
 
 //Login with  google api
 router.post("/login/google", verifyToken, async (req, res, next) => {

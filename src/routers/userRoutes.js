@@ -213,7 +213,7 @@ router.put("/:userId/changePassword", auth, async (req, res) => {
         req.body.newPassword,
         process.env.SECRET_HASH_KEY
       );
-      console.log(hashedPassword)
+
       let updatedUser = {
         password: hashedPassword,
         updatedAt: formatTimeUTC(),
