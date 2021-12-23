@@ -59,7 +59,7 @@ router.post("/register", async (req, res) => {
       {expiresIn: '5m'}
     ); 
     //send request verify email
-    const url = `${process.env.CLIENT_URL}/activation/${activation_token}`
+    const url = `${process.env.REACT_APP_CLIENT_URL}/activation/${activation_token}`
     sendMail('verify', '', username, email, url, "Xác thực tài khoản")
     return res.json({success: true, message: "verify"});
 
@@ -203,18 +203,15 @@ router.get("/getInfor", async (req, res) => {
 router.post("/loginViaGoogle", async (req, res) => {
   try {      
       const {tokenId} = req.body
+      console.log(req.body)
       const verify = await client.verifyIdToken({idToken: tokenId, audience: process.env.MAILING_SERVICE_CLIENT_ID})
-      //console.log(verify)
       const {email_verified, email, name, picture} = verify.payload
       const password = email + process.env.GOOGLE_SECRET
       
       const passwordHash = await argon2.hash(password,process.env.SECRET_HASH_KEY);
       if(!email_verified) return res.json({success: false, message: "email"})
       const user = await User.findOne({email})
-      //console.log(user)
       if(user){
-        //console.log(user)
-        //return token
         const accessToken = jwt.sign (
           {
             verifyAccount: {
@@ -266,83 +263,6 @@ router.post("/loginViaGoogle", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
-
-
-// //Login with  google api
-// router.post("/login/google", auth, async (req, res, next) => {
-//   try {
-//     const { authorization } = req.headers;
-//     if (!authorization) {
-//       return res.status(401).json({
-//         message: "Access token not found",
-//       });
-//     }
-//     const token = authorization;
-
-//     const user = await googleAuth(token);
-
-//     const snapshot = await Account.findOne({
-//       email: user.email,
-//     });
-
-//     if (!snapshot) {
-//       //New account
-//       let newAccount = new Account({
-//         email: user.email,
-//       });
-
-//       newAccount = await newAccount.save();
-//       let newUser = new User({
-//         fullName: user.name,
-//         image: user.picture,
-//         account: newAccount._id,
-//       });
-
-//       newUser = await newUser.save();
-
-//       if (!newUser) {
-//         return res.status(500).json({
-//           message: "Cannot create user",
-//           success: false,
-//         });
-//       } else {
-//         return res.status(200).json({
-//           message: "Create user successfully",
-//           success: true,
-//           user: newUser,
-//           accessToken: token,
-//         });
-//       }
-//     } else {
-//       if (!snapshot.isHidden) {
-//         if (snapshot.username === null && snapshot.password === null)
-//           return res.status(200).json({
-//             message: "User login",
-//             success: true,
-//             user: snapshot,
-//             accessToken: req.headers.authorization,
-//           });
-//         else {
-//           return res.status(400).json({
-//             message: "This account have used with username and password",
-//             success: false,
-//           });
-//         }
-//       } else {
-//         res.status(403).json({
-//           message: "Your account is blocked",
-//           success: false,
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//     return res.status(500).json({
-//       message: "Internal server error",
-//       success: false,
-//     });
-//   }
-// });
 
 router.get("/verify", async (req, res) => {
   try {
