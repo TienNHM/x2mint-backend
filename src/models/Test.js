@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
 
-const testSchema = mongoose.Schema({
+const testSchema = mongoose.Schema(
+  {
     name: {
     type: String,
     require: true,
@@ -12,6 +13,11 @@ const testSchema = mongoose.Schema({
     default: null,
   },
   description: {
+    type: String,
+    require: true,
+    default: null,
+  },
+  pin: {
     type: String,
     require: true,
     default: null,

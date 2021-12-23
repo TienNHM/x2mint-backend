@@ -17,7 +17,6 @@ dotenv.config({ path: "./.env" });
 router.get("/", auth, async (req, res) => {
   try {
     //Check permission
-    console.log(req.body.verifyAccount);
     if (req.body.verifyAccount.role !== ROLES.ADMIN) {
       return res
         .status(401)
@@ -166,6 +165,64 @@ router.put("/resetPassword", auth, async (req, res) => {
       message: "Reset password successfully",
       account: updatedUser,
     });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+//@route PUT v1/users/:userId
+//@desc Update user's info
+//@access private
+//@role User/Creator/Admin
+router.put("/:userId/changePassword", auth, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId))
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid userId" });
+
+    const user = await User.findById(req.params.userId)
+    if (!user) {
+      res.json({
+        success: false,
+        message: "User not found",
+      });
+      return;
+    }
+
+    const passwordValid = await argon2.verify(user.password, req.body.password);
+
+    if (!passwordValid) {
+      res.json({
+        success: false,
+        message: "Password is not match. Please try again!",
+      });
+    }
+    else {
+      //Hash new password to save
+      const hashedPassword = await argon2.hash(
+        req.body.newPassword,
+        process.env.SECRET_HASH_KEY
+      );
+      console.log(hashedPassword)
+      let updatedUser = {
+        password: hashedPassword,
+        updatedAt: formatTimeUTC(),
+      };
+
+      updatedUser = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        updatedUser,
+        { new: true }
+      ).select("-password");
+
+      res.json({
+        success: true,
+        message: "User updated successfully",
+        user: updatedUser,
+      });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });

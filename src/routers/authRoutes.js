@@ -3,7 +3,7 @@ const router = express.Router();
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const auth = require("../middleware/requireAuth");
+const verifyToken = require("../middleware/requireAuth");
 const { OAuth2Client} = require("google-auth-library");
 const {google} = require('googleapis')
 const {OAuth2} = google.auth
@@ -177,7 +177,6 @@ router.post("/login", async (req, res) => {
       success:true,
       message: "User logged successfully"
     })
-    console.log(accessToken)
     
 
   } catch (error) {
@@ -199,7 +198,7 @@ router.get("/getInfor", async (req, res) => {
 )
 
 //Login with  google api
-router.post("/login/google", auth, async (req, res, next) => {
+router.post("/login/google", verifyToken, async (req, res, next) => {
   try {
     const { authorization } = req.headers;
     if (!authorization) {
@@ -266,7 +265,7 @@ router.post("/login/google", auth, async (req, res, next) => {
       }
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({
       message: "Internal server error",
       success: false,
@@ -274,7 +273,7 @@ router.post("/login/google", auth, async (req, res, next) => {
   }
 });
 
-router.get("/verify", auth, async (req, res) => {
+router.get("/verify", verifyToken, async (req, res) => {
   try {
     return res.status(200).json({
       message: "Token is valid",
@@ -282,7 +281,7 @@ router.get("/verify", auth, async (req, res) => {
       user: req.body.verifyAccount,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Internal error server",
@@ -291,7 +290,7 @@ router.get("/verify", auth, async (req, res) => {
 });
 
 
-router.get("/", auth, async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.body.verifyAccount.id).select(
       "-password"
