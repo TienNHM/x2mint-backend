@@ -29,39 +29,41 @@ const googleAuth = async (token) => {
 //@access public
 //@role any
 router.post("/register", async (req, res) => {
-	const { username, email, password } = req.body;
-	try {
-		//Check for existing username
-		const user = await User.findOne({ $or: [{ username }, { email }] });
-		if (user) {
-			// check already account
-			if (user.username === username)
-				return res
-					.json({ success: false, message: "username" });
-			else if (user.email === email) {
-				return res
-					.json({ success: false, message: "email" });
-			}
-		}
-		//Hash Password
-		const hashedPassword = await argon2.hash(password, process.env.REACT_APP_SECRET_HASH_KEY);
-		const newUser = new User({
-			//create account with username, email and password
-			username: req.body.username,
-			email: req.body.email,
-			password: hashedPassword,
-			role: req.body.role
-		});
 
-		// return activation_token
-		const activation_token = jwt.sign({ newUser },
-			process.env.REACT_APP_ACTIVATION_TOKEN_SECRET,
-			{ expiresIn: '5m' }
-		);
-		//send request verify email
-		const url = `${process.env.CLIENT_URL}/activation/${activation_token}`
-		sendMail('verify', '', username, email, url, "Xác thực tài khoản")
-		return res.json({ success: true, message: "verify" });
+  const { username, email, password } = req.body;
+  try {
+    //Check for existing username
+    const user = await User.findOne({ $or: [{ username }, { email }] });
+    if (user) {
+      // check already account
+      if (user.username === username)
+        return res
+          .json({ success: false, message: "username" });
+      else if (user.email === email) {
+        return res
+          .json({ success: false, message: "email" });
+      }
+    }
+    //Hash Password
+    const hashedPassword = await argon2.hash(password,process.env.SECRET_HASH_KEY);
+    const newUser = new User({
+      //create account with username, email and password
+      username: req.body.username, 
+      email: req.body.email, 
+      password:hashedPassword,
+      role: req.body.role
+    });
+    console.log(newUser)
+    
+    // return activation_token
+    const activation_token = jwt.sign({newUser},
+      process.env.ACTIVATION_TOKEN_SECRET,
+      {expiresIn: '5m'}
+    ); 
+    //send request verify email
+    const url = `${process.env.REACT_APP_CLIENT_URL}/activation/${activation_token}`
+    sendMail('verify', '', username, email, url, "Xác thực tài khoản")
+    return res.json({success: true, message: "verify"});
 
 	} catch (error) {
 		console.log(error);
@@ -265,6 +267,8 @@ router.post("/loginViaGoogle", async (req, res) => {
 });
 
 
+router.get("/verify", async (req, res) => {
+
 //Login with  google api
 router.post("/login/google", verifyToken, async (req, res, next) => {
 	try {
@@ -337,6 +341,19 @@ router.post("/login/google", verifyToken, async (req, res, next) => {
 });
 
 router.get("/verify", verifyToken, async (req, res) => {
+  try {
+    return res.status(200).json({
+      message: "Token is valid",
+      success: true,
+      user: req.body.verifyAccount,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal error server",
+    });
+  }
 	try {
 		return res.status(200).json({
 			message: "Token is valid",
