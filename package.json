@@ -24,9 +24,11 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.14",
     "nodemailer": "^6.7.2",
+
     "nodemon": "^2.0.15",
     "unique-username-generator": "^1.0.1",
     "username-generator": "^1.1.0"
+
   },
   "optionalDependencies": {
     "fsevents": "~2.3.2"
