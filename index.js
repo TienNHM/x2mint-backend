@@ -7,16 +7,19 @@ const authRoute = require("./src/routers/authRoutes");
 const questionRoute = require("./src/routers/questionRoutes");
 const answerRoute = require("./src/routers/answerRoutes");
 const userRoute = require("./src/routers/userRoutes");
+const uploadRoute = require("./src/routers/uploadRoutes");
 const testRoute = require("./src/routers/testRoutes");
 const contestRoute = require("./src/routers/contestRoutes");
 const takeTestRoute = require("./src/routers/takeTestRoutes");
 const adminRoute = require("./src/routers/adminRoutes");
+const fileUpload = require('express-fileupload')
 
 //Config env
 dotenv.config({ path: "./.env" });
 
 //Config CORS
 const cors = require("cors");
+const { uploadAvatar } = require("./src/middleware/uploadImage");
 
 
 var whitelist = [
@@ -44,6 +47,9 @@ app.options('*', cors())
 app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(fileUpload({
+  useTempFiles: true
+}))
 
 //Base url: no slash at the end
 //const api = process.env.API_URL;
@@ -76,6 +82,8 @@ app.use(`${api}/tests`, testRoute);
 app.use(`${api}/contests`, contestRoute);
 app.use(`${api}/takeTest`, takeTestRoute);
 app.use(`${api}/statistics`, adminRoute);
+app.use(`${api}/upload_avatar`, uploadRoute);
+
 
 app.get("/", (req, res) => res.send("X2MINT API"));
 
