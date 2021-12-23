@@ -45,7 +45,7 @@ const verifyToken = async (req, res, next) => {
 			let account;
 			jwt.verify(
 				token,
-				process.env.ACCESS_TOKEN_SECRET,
+				process.env.REACT_APP_ACCESS_TOKEN_SECRET,
 				function (err, payload) {
 					if (typeof payload != "undefined") {
 						account = payload.verifyAccount;
@@ -60,7 +60,7 @@ const verifyToken = async (req, res, next) => {
 					}
 				}
 			);
-			// const decode = jwt.decode(token, process.env.ACCESS_TOKEN_SECRET);
+			// const decode = jwt.decode(token, process.env.REACT_APP_ACCESS_TOKEN_SECRET);
 			// req.accountId = decode.accountId;
 			// next();
 		} catch (error) {
