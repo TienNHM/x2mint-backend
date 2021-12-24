@@ -46,42 +46,36 @@ router.get("/", auth, async (req, res) => {
 //@desc Get user's info
 //@access private
 //@role any
-router.get("/info", auth, async (req, res) => {
+router.get("/:userId/info", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.verifyAccount.id).select('-password')
-    res.json(user)
-} catch (err) {
-    return res.status(500).json({msg: err.message})
-}
-  // try {
-  //   //Check permission
-  //   if (
-  //     req.body.verifyAccount.role !== ROLES.ADMIN &&
-  //     req.body.verifyAccount.role !== ROLES.CREATOR
-  //   ) {
-  //     return res
-  //       .status(401)
-  //       .json({ success: false, message: "Permission denied" });
-  //   }
+    //Check permission
+    if (
+      req.body.verifyAccount.role !== ROLES.ADMIN &&
+      req.body.verifyAccount.role !== ROLES.CREATOR
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
 
-  //   const user = await User.findById(req.params.userId);
+    const user = await User.findById(req.params.userId);
 
-  //   if (user) {
-  //     res.json({
-  //       success: true,
-  //       message: "Get all user successfully ",
-  //       data: user,
-  //     });
-  //   } else {
-  //     res.json({
-  //       success: false,
-  //       message: "Users do not exist",
-  //     });
-  //   }
-  // } catch (error) {
-  //   console.log(error);
-  //   res.status(500).json({ success: false, message: "Internal server error" });
-  // }
+    if (user) {
+      res.json({
+        success: true,
+        message: "Get all user successfully ",
+        data: user,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Users do not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
 });
 
 

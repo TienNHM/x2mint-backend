@@ -206,9 +206,11 @@ router.post("/loginViaGoogle", async (req, res) => {
 		//console.log(verify)
 		const { email_verified, email, name, picture } = verify.payload
 		// const password = email + process.env.GOOGLE_SECRET
+		console.log(verify.payload)
 
 		if (!email_verified) return res.json({ success: false, message: "email" })
 		const user = await User.findOne({ email: email })
+		// console.log('user', user)
 		if (user) {
 			//console.log(user)
 			//return token
@@ -236,7 +238,7 @@ router.post("/loginViaGoogle", async (req, res) => {
 				numbers: true
 			});
 			const passwordHash = await argon2.hash(password, process.env.SECRET_HASH_KEY);
-			console.log(username, passwordHash);
+			// console.log(username, passwordHash);
 			const newUser = new User({
 				username: username, 
 				full_name: name, 
