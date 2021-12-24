@@ -156,8 +156,7 @@ router.post("/login", async (req, res) => {
 			return res
 				.json({ success: false, message: "incorrect" });
 		// Username found
-		console.log(user)
-		console.log('password', password)
+		
 		const passwordValid = await argon2.verify(user.password, password);
 		if (!passwordValid)
 			return res
