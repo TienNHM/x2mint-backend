@@ -18,11 +18,11 @@ const userSchema = mongoose.Schema({
     require: [true,"Hãy điền Password !!"],
     min: 8,
   },
-  password__gg: {
-    type: String,
-    require: [true,"Hãy điền Password !!"],
-    min: 8,
-  },
+  // password__gg: {
+  //   type: String,
+  //   require: [true,"Hãy điền Password !!"],
+  //   min: 8,
+  // },
   role: {
     type: String,
     default: ROLES.USER,

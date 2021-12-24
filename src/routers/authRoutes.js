@@ -156,6 +156,8 @@ router.post("/login", async (req, res) => {
 			return res
 				.json({ success: false, message: "incorrect" });
 		// Username found
+		console.log(user)
+		console.log('password', password)
 		const passwordValid = await argon2.verify(user.password, password);
 		if (!passwordValid)
 			return res
@@ -204,12 +206,10 @@ router.post("/loginViaGoogle", async (req, res) => {
 		const verify = await client.verifyIdToken({ idToken: tokenId, audience: process.env.MAILING_SERVICE_CLIENT_ID })
 		//console.log(verify)
 		const { email_verified, email, name, picture } = verify.payload
-		const password = email + process.env.GOOGLE_SECRET
+		// const password = email + process.env.GOOGLE_SECRET
 
-		const passwordHash = await argon2.hash(password, process.env.SECRET_HASH_KEY);
 		if (!email_verified) return res.json({ success: false, message: "email" })
-		const user = await User.findOne({ email })
-		//console.log(user)
+		const user = await User.findOne({ email: email })
 		if (user) {
 			//console.log(user)
 			//return token
@@ -236,8 +236,14 @@ router.post("/loginViaGoogle", async (req, res) => {
 				length: 10,
 				numbers: true
 			});
+			const passwordHash = await argon2.hash(password, process.env.SECRET_HASH_KEY);
+			console.log(username, passwordHash);
 			const newUser = new User({
-				username: username, full_name: name, email, password, password__gg: passwordHash, avatar: picture
+				username: username, 
+				full_name: name, 
+				email: email, 
+				password: passwordHash, 
+				avatar: picture
 			})
 			await newUser.save()
 			sendMail('password', name, username, email, password, "Xác thực tài khoản")
