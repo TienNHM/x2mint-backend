@@ -9,6 +9,7 @@ const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 const { STATUS } = require("../models/enum");
 const { formatTimeUTC } = require("../utils/Timezone");
+const TakeTestLogs = require("../models/TakeTestLogs");
 
 //@route GET v1/takeTest/:takeTestId
 //@desc get take test by id
@@ -138,6 +139,21 @@ router.post("/", verifyToken, async (req, res) => {
       })
       .exec();
 
+    let take_test_logs = new TakeTestLogs({
+      test: req.body.test,
+      user: req.body.user,
+      takeTest: take_test._id,
+      logs: [
+        {
+          action: 'Created'
+        }
+      ],
+      status: 'Ok'
+    })
+
+    take_test_logs = await take_test_logs.save();
+    console.log(take_test_logs)
+
     res.json({
       success: true,
       message: "Take test created successfully",
@@ -187,6 +203,17 @@ router.put("/:takeTestId", verifyToken, async (req, res) => {
       takeTest,
       { new: true }
     );
+
+    // Update: add logs
+    let takeTestLogs = await TakeTestLogs.findOne({
+      takeTest: req.params.takeTestId
+    })
+    if (takeTestLogs) {
+      takeTestLogs.logs.push({
+        action: req.body.action
+      });
+      takeTestLogs = await TakeTestLogs.findByIdAndUpdate(takeTestLogs.id, takeTestLogs, { new: true })
+    }
 
     res.json({
       success: true,
@@ -251,6 +278,17 @@ router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
       newTakeTest,
       { new: true }
     )
+
+    // Update: add logs
+    let takeTestLogs = await TakeTestLogs.findOne({
+      takeTest: req.params.takeTestId
+    })
+    if (takeTestLogs) {
+      takeTestLogs.logs.push({
+        action: 'Submit'
+      });
+      takeTestLogs = await TakeTestLogs.findByIdAndUpdate(takeTestLogs.id, takeTestLogs, { new: true })
+    }
 
     res.json({
       success: true,
