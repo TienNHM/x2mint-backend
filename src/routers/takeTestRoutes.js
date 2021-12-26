@@ -64,6 +64,54 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
   }
 });
 
+//@route GET v1/takeTest/:takeTestId/logs
+//@desc get take test logs by id
+//@access private
+//@role admin/creator/user
+router.get("/:takeTestId/logs", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER)
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const takeTestLogs = await TakeTestLogs.findOne({
+      takeTest: req.params.takeTestId
+    })
+      .populate({
+        path: 'test',
+        select: "-__v -createdAt -updatedAt"
+      })
+      .populate({
+        path: 'user',
+        select: "-__v -createdAt -updatedAt -password"
+      })
+      .exec();
+
+    if (takeTestLogs) {
+      res.json({
+        success: true,
+        message: "Get take test logs by id successfully ",
+        data: takeTestLogs,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Take test logs does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 /**
  * Tính điểm mà user đạt được cho mỗi câu hỏi
  * @param {*} choose đối tương lưu answers mà user chọn tương ứng với question
@@ -145,14 +193,14 @@ router.post("/", verifyToken, async (req, res) => {
       takeTest: take_test._id,
       logs: [
         {
-          action: 'Created'
+          action: 'Tham gia làm bài'
         }
       ],
       status: 'Ok'
     })
 
     take_test_logs = await take_test_logs.save();
-    console.log(take_test_logs)
+    // console.log(take_test_logs)
 
     res.json({
       success: true,
