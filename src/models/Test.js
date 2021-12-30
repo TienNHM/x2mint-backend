@@ -30,12 +30,12 @@ const testSchema = mongoose.Schema(
 
   startTime: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
 
   endTime: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
   url: {
     type: String,
@@ -57,11 +57,11 @@ const testSchema = mongoose.Schema(
   },
   createdAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
   updatedAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
 });
 

@@ -14,12 +14,12 @@ const contestSchema = mongoose.Schema({
   },
   startTime: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()// formatTimeUTC,
   },
 
   endTime: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()// formatTimeUTC,
   },
 
   creatorId: {
@@ -44,11 +44,11 @@ const contestSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()// formatTimeUTC,
   },
   updatedAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
   embededMedia: 
     {

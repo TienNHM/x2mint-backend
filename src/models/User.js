@@ -60,11 +60,11 @@ const userSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
   updatedAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
 });
 

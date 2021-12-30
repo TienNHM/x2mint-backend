@@ -206,7 +206,7 @@ router.post("/loginViaGoogle", async (req, res) => {
 		//console.log(verify)
 		const { email_verified, email, name, picture } = verify.payload
 		// const password = email + process.env.GOOGLE_SECRET
-		console.log(verify.payload)
+		// console.log(verify.payload)
 
 		if (!email_verified) return res.json({ success: false, message: "email" })
 		const user = await User.findOne({ email: email })

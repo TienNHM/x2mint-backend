@@ -176,8 +176,8 @@ router.post("", verifyToken, async (req, res) => {
       description: req.body.description,
       pin: req.body.pin,
       questions: req.body.questions, // can null
-      startTime: formatTimeUTC_(req.body.startTime),
-      endTime: formatTimeUTC_(req.body.endTime),
+      startTime: new Date(req.body.startTime), // formatTimeUTC_(req.body.startTime),
+      endTime: new Date(req.body.endTime), // formatTimeUTC_(req.body.endTime),
       url: req.body.url,
       maxPoints: req.body.maxPoints,
       _status: req.body._status,
@@ -226,7 +226,9 @@ router.put("/:testId/questions", verifyToken, async (req, res) => {
     //update new question
     let test = await Test.findByIdAndUpdate(req.params.testId,
       {
-        questions: req.body.questions, updatedAt: formatTimeUTC(),
+        questions: req.body.questions,
+        questionsOrder: req.body.questions,
+        updatedAt: new Date()// formatTimeUTC(),
       },
       { new: true }
     );
@@ -272,13 +274,13 @@ router.put("/:testId", verifyToken, async (req, res) => {
       description: req.body.description,
       questions: req.body.questions,
       pin: req.body.pin,
-      startTime: formatTimeUTC_(req.body.startTime),
-      endTime: formatTimeUTC_(req.body.endTime),
+      startTime: new Date(req.body.startTime), // formatTimeUTC_(req.body.startTime),
+      endTime: new Date(req.body.endTime), //formatTimeUTC_(req.body.endTime),
       url: req.body.url,
       maxPoints: req.body.maxPoints,
       _status: req.body._status,
       questionsOrder: req.body.questionsOrder,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date(), //formatTimeUTC(),
     };
 
     const updatedTest = await Test.findOneAndUpdate(
@@ -325,7 +327,7 @@ router.put("/:testId/delete", verifyToken, async (req, res) => {
       req.params.testId,
       {
         _status: STATUS.DELETED,
-        updatedAt: formatTimeUTC_(new Date())
+        updatedAt: new Date(), // formatTimeUTC_(new Date())
       },
       { new: true }
     );

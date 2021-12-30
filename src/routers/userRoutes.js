@@ -48,15 +48,6 @@ router.get("/", auth, async (req, res) => {
 //@role any
 router.get("/:userId/info", auth, async (req, res) => {
   try {
-    //Check permission
-    if (
-      req.body.verifyAccount.role !== ROLES.ADMIN &&
-      req.body.verifyAccount.role !== ROLES.CREATOR
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
-    }
 
     const user = await User.findById(req.params.userId);
 
@@ -101,7 +92,7 @@ router.put("/:userId/update", auth, async (req, res) => {
       dob: req.body.dob,
       role: req.body.role,
       _status: req.body._status,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date(), //formatTimeUTC(),
     };
     updatedUser = await User.findOneAndUpdate(
       { _id: req.params.userId },
@@ -155,7 +146,7 @@ router.put("/resetPassword", auth, async (req, res) => {
     );
     let updatedUser = {
       password: hashedPassword,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date(), //formatTimeUTC(),
     };
 
     updatedUser = await User.findOneAndUpdate({ _id: userId }, updatedUser, {
@@ -210,7 +201,7 @@ router.put("/:userId/changePassword", auth, async (req, res) => {
 
       let updatedUser = {
         password: hashedPassword,
-        updatedAt: formatTimeUTC(),
+        updatedAt: new Date(), //formatTimeUTC(),
       };
 
       updatedUser = await User.findOneAndUpdate(

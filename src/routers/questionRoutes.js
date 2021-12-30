@@ -184,12 +184,12 @@ router.put("/:questionId", verifyToken, async (req, res) => {
       answers: req.body.answers,
       correctAnswers: req.body.correctAnswers,
       embededMedia: req.body.embededMedia,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date(), // formatTimeUTC(),
       _status: req.body._status,
       maxPoints: req.body.maxPoints,
     };
 
-    console.log(question)
+    // console.log(question)
     const updatedQuestion = await Question.findByIdAndUpdate(
       req.params.questionId,
       question,
