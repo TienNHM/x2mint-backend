@@ -24,7 +24,7 @@ const takeTestLogsSchema = mongoose.Schema({
         {
             time: {
                 type: Date,
-                default: formatTimeUTC,
+                default: new Date()//formatTimeUTC,
             },
             action: {
                 type: String,
@@ -36,11 +36,11 @@ const takeTestLogsSchema = mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: formatTimeUTC,
+        default: new Date()//formatTimeUTC,
     },
     updatedAt: {
         type: Date,
-        default: formatTimeUTC,
+        default: new Date()//formatTimeUTC,
     },
 });
 

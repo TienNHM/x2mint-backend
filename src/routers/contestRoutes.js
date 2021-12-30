@@ -271,8 +271,8 @@ router.post("", verifyToken, async (req, res) => {
       creatorId: req.body.creatorId,
       description: req.body.description,
       tests: req.body.tests, // can null
-      startTime: formatTimeUTC_(req.body.startTime),
-      endTime: formatTimeUTC_(req.body.endTime),
+      startTime: new Date(req.body.startTime), //formatTimeUTC_(req.body.startTime),
+      endTime: new Date(req.body.endTime), //formatTimeUTC_(req.body.endTime),
       url: req.body.url,
       embededMedia: req.body.embededMedia,
       isHidden: false
@@ -329,7 +329,7 @@ router.put("/:contestId/tests", verifyToken, async (req, res) => {
 
     res.json({
       success: true,
-      message: "Test updated successfully",
+      message: "Contest updated successfully",
       contest: contest,
     });
   } catch (error) {
@@ -367,12 +367,12 @@ router.put("/:contestId", verifyToken, async (req, res) => {
       creatorId: req.body.creatorId,
       description: req.body.description,
       tests: req.body.tests, // can null
-      startTime: formatTimeUTC_(req.body.startTime),
-      endTime: formatTimeUTC_(req.body.endTime),
+      startTime: new Date(req.body.startTime), //formatTimeUTC_(req.body.startTime),
+      endTime: new Date(req.body.endTime), //formatTimeUTC_(req.body.endTime),
       url: req.body.url,
       isHidden: false,
       embededMedia: req.body.embededMedia,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date(), // formatTimeUTC(),
       _status: req.body._status
     };
 
@@ -422,7 +422,7 @@ router.put("/:contestId/archive", verifyToken, async (req, res) => {
       req.params.contestId,
       {
         _status: STATUS.ARCHIVED,
-        updatedAt: formatTimeUTC()
+        updatedAt: new Date(),// formatTimeUTC()
       },
       { new: true }
     )

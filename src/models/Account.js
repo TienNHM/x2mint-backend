@@ -24,11 +24,11 @@ const accountSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()// formatTimeUTC,
   },
   updatedAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()// formatTimeUTC,
   },
   _status: {
     type: String,

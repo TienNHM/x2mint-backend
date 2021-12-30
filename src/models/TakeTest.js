@@ -17,7 +17,7 @@ const takeTestSchema = mongoose.Schema({
   },
   submitTime: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()// formatTimeUTC,
   },
   questionsOrder: [String],
   chooseAnswers: [
@@ -40,11 +40,11 @@ const takeTestSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
   updatedAt: {
     type: Date,
-    default: formatTimeUTC,
+    default: new Date()//formatTimeUTC,
   },
 });
 

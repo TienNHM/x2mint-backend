@@ -184,7 +184,7 @@ router.put("/:questionId", verifyToken, async (req, res) => {
       answers: req.body.answers,
       correctAnswers: req.body.correctAnswers,
       embededMedia: req.body.embededMedia,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date(), // formatTimeUTC(),
       _status: req.body._status,
       maxPoints: req.body.maxPoints,
     };

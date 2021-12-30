@@ -165,7 +165,7 @@ router.put("/:answerId", verifyToken, async (req, res) => {
       name: req.body.name,
       content: req.body.content,
       _status: req.body._status,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date() // formatTimeUTC(),
     };
 
     const updatedAnswer = await Answer.findByIdAndUpdate(

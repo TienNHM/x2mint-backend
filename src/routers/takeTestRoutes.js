@@ -242,7 +242,7 @@ router.put("/:takeTestId", verifyToken, async (req, res) => {
       test: req.body.test,
       questionsOrder: req.body.questionsOrder,
       chooseAnswers: req.body.chooseAnswers,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date(), //formatTimeUTC(),
       _status: req.body._status
     };
 
@@ -316,7 +316,7 @@ router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
     let newTakeTest = {
       points: points,
       isCorrect: isCorrect,
-      updatedAt: formatTimeUTC(),
+      updatedAt: new Date(), //formatTimeUTC(),
       submitTime: req.body.endTime,
       _status: isPassed ? STATUS.PASSED : STATUS.FAILED
     };
