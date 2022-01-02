@@ -85,6 +85,7 @@ router.put("/:userId/update", auth, async (req, res) => {
         .json({ success: false, message: "Invalid userId" });
     let updatedUser = {
       full_name: req.body.full_name,
+      username: req.body.username,
       phone: req.body.phone,
       address: req.body.address,
       school: req.body.school,
@@ -107,7 +108,12 @@ router.put("/:userId/update", auth, async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    if (error.message.indexOf("duplicate") !== -1) {
+      res.json({ success: false, message: "Duplicate key error" });
+    }
+    else {
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
   }
 });
 
