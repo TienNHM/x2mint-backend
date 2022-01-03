@@ -1,16 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const verifyToken = require("../middleware/requireAuth");
+const User = require("../models/User");
 const { sortObject } = require("../utils/SortObj")
-
-router.get('/create_payment_url', function (req, res, next) {
-    
-    var dateFormat = require('dateformat');
-    var date = new Date();
-
-    var desc = 'Thanh toán đơn hàng thời gian: ' + dateFormat(date, 'yyyy-mm-dd HH:mm:ss');
-    res.render('order', {title: 'Tạo mới đơn hàng', amount: 1, description: desc})
-});
+const { datetimeFormat } = require("../utils/Timezone")
+const { ACCOUNT_TYPES } = require("../models/enum");
 
 router.post('/create_payment_url', function (req, res, next) {
     var ipAddr = req.headers['x-forwarded-for'] ||
@@ -18,9 +11,6 @@ router.post('/create_payment_url', function (req, res, next) {
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
 
-    var dateFormat = require('dateformat');
-
-    
     var tmnCode = process.env.REACT_APP_VNP_TMNCODE;
     var secretKey = process.env.REACT_APP_VNP_HASHSECRET;
     var vnpUrl = process.env.REACT_APP_VNP_URL;
@@ -28,15 +18,14 @@ router.post('/create_payment_url', function (req, res, next) {
 
     var date = new Date();
 
-    var createDate = dateFormat(date, 'yyyymmddHHmmss');
-    var orderId = dateFormat(date, 'HHmmss');
+    var createDate = datetimeFormat(date, 'yyyymmddHHmmss');
+    var orderId = datetimeFormat(date, 'HHmmss');
     var amount = req.body.amount;
     var bankCode = req.body.bankCode;
-    
     var orderInfo = req.body.orderDescription;
     var orderType = req.body.orderType;
     var locale = req.body.language;
-    if(locale === null || locale === ''){
+    if (locale === null || locale === '') {
         locale = 'vn';
     }
     var currCode = 'VND';
@@ -44,7 +33,7 @@ router.post('/create_payment_url', function (req, res, next) {
     vnp_Params['vnp_Version'] = '2.1.0';
     vnp_Params['vnp_Command'] = 'pay';
     vnp_Params['vnp_TmnCode'] = tmnCode;
-    // vnp_Params['vnp_Merchant'] = ''
+    vnp_Params['vnp_Merchant'] = 'X2MINT'
     vnp_Params['vnp_Locale'] = locale;
     vnp_Params['vnp_CurrCode'] = currCode;
     vnp_Params['vnp_TxnRef'] = orderId;
@@ -54,7 +43,7 @@ router.post('/create_payment_url', function (req, res, next) {
     vnp_Params['vnp_ReturnUrl'] = returnUrl;
     vnp_Params['vnp_IpAddr'] = ipAddr;
     vnp_Params['vnp_CreateDate'] = createDate;
-    if(bankCode !== null && bankCode !== ''){
+    if (bankCode !== null && bankCode !== '') {
         vnp_Params['vnp_BankCode'] = bankCode;
     }
 
@@ -62,18 +51,22 @@ router.post('/create_payment_url', function (req, res, next) {
 
     var querystring = require('qs');
     var signData = querystring.stringify(vnp_Params, { encode: false });
-    var crypto = require("crypto");     
+    var crypto = require("crypto");
     var hmac = crypto.createHmac("sha512", secretKey);
-    var signed = hmac.update(new Buffer.from(signData, 'utf-8')).digest("hex"); 
+    var signed = hmac.update(new Buffer.from(signData, 'utf-8')).digest("hex");
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
 
-    res.redirect(vnpUrl)
+    // res.redirect(301, vnpUrl)
+    res.json({
+        success: true,
+        message: "Redirect",
+        vnpUrl: vnpUrl
+    });
 });
 
-router.get('/vnpay_return', function (req, res, next) {
+router.get('/vnpay_return', function(req, res, next) {
     var vnp_Params = req.query;
-
     var secureHash = vnp_Params['vnp_SecureHash'];
 
     delete vnp_Params['vnp_SecureHash'];
@@ -86,20 +79,33 @@ router.get('/vnpay_return', function (req, res, next) {
 
     var querystring = require('qs');
     var signData = querystring.stringify(vnp_Params, { encode: false });
-    var crypto = require("crypto");     
+    var crypto = require("crypto");
     var hmac = crypto.createHmac("sha512", secretKey);
-    var signed = hmac.update(new Buffer.from(signData, 'utf-8')).digest("hex");     
+    var signed = hmac.update(new Buffer.from(signData, 'utf-8')).digest("hex");
 
-    if(secureHash === signed){
+    if (secureHash === signed) {
+        var orderId = vnp_Params['vnp_TxnRef'];
+        var rspCode = vnp_Params['vnp_ResponseCode'];
+
         //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
 
-        res.render('success', {code: vnp_Params['vnp_ResponseCode']})
-    } else{
-        res.render('success', {code: '97'})
+        res.json({
+            success: true,
+            message: "Success",
+            orderId: orderId,
+            code: rspCode,
+            userId: vnp_Params['vnp_OrderInfo']
+        })
+    } else {
+        res.json({
+            success: false,
+            message: "Invalid sign",
+            code: '97'
+        })
     }
 });
 
-router.get('/vnpay_ipn', function (req, res, next) {
+router.get('/vnpay_ipn', function(req, res, next) {
     var vnp_Params = req.query;
     var secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -110,19 +116,25 @@ router.get('/vnpay_ipn', function (req, res, next) {
     var secretKey = process.env.REACT_APP_VNP_HASHSECRET;
     var querystring = require('qs');
     var signData = querystring.stringify(vnp_Params, { encode: false });
-    var crypto = require("crypto");     
+    var crypto = require("crypto");
     var hmac = crypto.createHmac("sha512", secretKey);
-    var signed = hmac.update(new Buffer.from(signData, 'utf-8')).digest("hex");     
-     
+    var signed = hmac.update(new Buffer.from(signData, 'utf-8')).digest("hex");
 
-    if(secureHash === signed){
+    if (secureHash === signed) {
         var orderId = vnp_Params['vnp_TxnRef'];
         var rspCode = vnp_Params['vnp_ResponseCode'];
         //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
-        res.status(200).json({RspCode: '00', Message: 'success'})
+
+        res.status(200).json({
+            RspCode: '00',
+            Message: 'success'
+        })
     }
     else {
-        res.status(200).json({RspCode: '97', Message: 'Fail checksum'})
+        res.status(200).json({
+            RspCode: '97',
+            Message: 'Fail checksum'
+        })
     }
 });
 

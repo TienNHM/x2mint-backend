@@ -24,7 +24,8 @@ const cors = require("cors");
 var whitelist = [
   'https://x2mint.vercel.app', 
   'https://ex2mint.vercel.app', 
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'https://sandbox.vnpayment.vn'
 ]
 
 var corsOptions = {
