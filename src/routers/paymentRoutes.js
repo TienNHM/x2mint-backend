@@ -3,7 +3,6 @@ const router = express.Router();
 const User = require("../models/User");
 const { sortObject } = require("../utils/SortObj")
 const { datetimeFormat } = require("../utils/Timezone")
-const { ACCOUNT_TYPES } = require("../models/enum");
 
 router.post('/create_payment_url', function (req, res, next) {
     var ipAddr = req.headers['x-forwarded-for'] ||
