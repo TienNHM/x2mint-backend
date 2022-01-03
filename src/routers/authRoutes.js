@@ -10,7 +10,7 @@ const { OAuth2 } = google.auth
 const dotenv = require("dotenv");
 const { ROLES } = require("../models/enum");
 dotenv.config({ path: "./.env" });
-const client = new OAuth2Client(process.env.MAILING_SERVICE_CLIENT_ID);
+const client = new OAuth2Client(process.env.REACT_APP_MAILING_SERVICE_CLIENT_ID);
 const sendMail = require('./sendMail');
 const generator = require('generate-password');
 const genUsername = require("unique-username-generator");
@@ -18,7 +18,7 @@ const genUsername = require("unique-username-generator");
 const googleAuth = async (token) => {
 	const ticket = await client.verifyIdToken({
 		idToken: token,
-		audience: [process.env.GOOGLE_CLIENT_ID],
+		audience: [process.env.REACT_APP_GOOGLE_CLIENT_ID],
 	});
 	return ticket.getPayload();
 };
