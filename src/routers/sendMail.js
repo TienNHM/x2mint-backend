@@ -4,40 +4,41 @@ const {OAuth2} = google.auth;
 const OAUTH_PLAYGROUND = 'https://developers.google.com/oauthplayground'
 
 const {
-    MAILING_SERVICE_CLIENT_ID,
-    MAILING_SERVICE_CLIENT_SECRET,
-    MAILING_SERVICE_REFRESH_TOKEN,
-    SENDER_EMAIL_ADDRESS
+    REACT_APP_MAILING_SERVICE_CLIENT_ID,
+    REACT_APP_MAILING_SERVICE_CLIENT_SECRET,
+    REACT_APP_MAILING_SERVICE_REFRESH_TOKEN,
+    REACT_APP_SENDER_EMAIL_ADDRESS
 } = process.env
 
 const oauth2Client = new OAuth2(
-    MAILING_SERVICE_CLIENT_ID,
-    MAILING_SERVICE_CLIENT_SECRET,
-    MAILING_SERVICE_REFRESH_TOKEN,
+    REACT_APP_MAILING_SERVICE_CLIENT_ID,
+    REACT_APP_MAILING_SERVICE_CLIENT_SECRET,
+    REACT_APP_MAILING_SERVICE_REFRESH_TOKEN,
     OAUTH_PLAYGROUND
 )
 
 // send mail
 const sendEmail = (kind, full_name, name, to, url, txt) => {
     oauth2Client.setCredentials({
-        refresh_token: MAILING_SERVICE_REFRESH_TOKEN
+        refresh_token: REACT_APP_MAILING_SERVICE_REFRESH_TOKEN
     })
 
     const accessToken = oauth2Client.getAccessToken()
+
     const smtpTransport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             type: 'OAuth2',
-            user: SENDER_EMAIL_ADDRESS,
-            clientId: MAILING_SERVICE_CLIENT_ID,
-            clientSecret: MAILING_SERVICE_CLIENT_SECRET,
-            refreshToken: MAILING_SERVICE_REFRESH_TOKEN,
+            user: REACT_APP_SENDER_EMAIL_ADDRESS,
+            clientId: REACT_APP_MAILING_SERVICE_CLIENT_ID,
+            clientSecret: REACT_APP_MAILING_SERVICE_CLIENT_SECRET,
+            refreshToken: REACT_APP_MAILING_SERVICE_REFRESH_TOKEN,
             accessToken
         }
     })
 
     const mailOptions_verify = {
-        from: SENDER_EMAIL_ADDRESS,
+        from: REACT_APP_SENDER_EMAIL_ADDRESS,
         to: to,
         subject: "X2M!NT XIN CHÀO",
         html: `
@@ -50,8 +51,9 @@ const sendEmail = (kind, full_name, name, to, url, txt) => {
             </div>
         `
     }
+
     const mailOptions_resetPassword = {
-        from: SENDER_EMAIL_ADDRESS,
+        from: REACT_APP_SENDER_EMAIL_ADDRESS,
         to: to,
         subject: "THAY ĐỔI MẬT KHẨU X2M!NT",
         html: `
@@ -64,8 +66,9 @@ const sendEmail = (kind, full_name, name, to, url, txt) => {
             </div>
         `
     }
+    
     const mailOptions_creatAccountByEmail = {
-        from: SENDER_EMAIL_ADDRESS,
+        from: REACT_APP_SENDER_EMAIL_ADDRESS,
         to: to,
         subject: "TẠO TÀI KHOẢN BẰNG GMAIL THÀNH CÔNG",
         html: `
@@ -81,33 +84,33 @@ const sendEmail = (kind, full_name, name, to, url, txt) => {
         `
     }
 
-    if (kind == 'verify'){
+    if (kind === 'verify'){
         smtpTransport.sendMail(mailOptions_verify, function(err, data) {
             if(err) {
-                return err
                 console.log("Error:" + err)
+                return err
             }
             else {
                 console.log("Email sent successfully")
             }
             
         })
-    } else if (kind == 'reset') {
+    } else if (kind === 'reset') {
         smtpTransport.sendMail(mailOptions_resetPassword, function(err, data) {
             if(err) {
-                return err
                 console.log("Error:" + err)
+                return err
             }
             else {
                 console.log("Email sent successfully")
             }
             
         })
-    } else if (kind == 'password') {
+    } else if (kind === 'password') {
         smtpTransport.sendMail(mailOptions_creatAccountByEmail, function(err, data) {
             if(err) {
-                return err
                 console.log("Error:" + err)
+                return err
             }
             else {
                 console.log("Email sent successfully")
