@@ -11,6 +11,7 @@ const testRoute = require("./src/routers/testRoutes");
 const contestRoute = require("./src/routers/contestRoutes");
 const takeTestRoute = require("./src/routers/takeTestRoutes");
 const adminRoute = require("./src/routers/adminRoutes");
+const paymentRoute = require("./src/routers/paymentRoutes")
 const fileUpload = require('express-fileupload')
 
 //Config env
@@ -23,7 +24,8 @@ const cors = require("cors");
 var whitelist = [
   'https://x2mint.vercel.app', 
   'https://ex2mint.vercel.app', 
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'https://sandbox.vnpayment.vn'
 ]
 
 var corsOptions = {
@@ -75,7 +77,7 @@ app.use(`${api}/tests`, testRoute);
 app.use(`${api}/contests`, contestRoute);
 app.use(`${api}/takeTest`, takeTestRoute);
 app.use(`${api}/statistics`, adminRoute);
-
+app.use(`${api}/payments`, paymentRoute);
 
 app.get("/", (req, res) => res.send("X2MINT API"));
 

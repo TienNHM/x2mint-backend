@@ -92,6 +92,7 @@ router.put("/:userId/update", auth, async (req, res) => {
       avatar: req.body.avatar,
       dob: req.body.dob,
       role: req.body.role,
+      type: req.body.type,
       _status: req.body._status,
       updatedAt: new Date(), //formatTimeUTC(),
     };

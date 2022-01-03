@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
-const { ROLES } = require("./enum");
+const { ROLES, ACCOUNT_TYPES } = require("./enum");
 
 const userSchema = mongoose.Schema({
   username: {
@@ -21,6 +21,10 @@ const userSchema = mongoose.Schema({
   role: {
     type: String,
     default: ROLES.USER,
+  },
+  type: {
+    type: String,
+    default: ACCOUNT_TYPES.LITE,
   },
   full_name: {
     type: String,
