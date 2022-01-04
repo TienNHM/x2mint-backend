@@ -16,5 +16,6 @@ module.exports.STATUS = {
   ARCHIVED: 'archived',
   NOT_SUBMITTED: 'not submitted',
   PASSED: 'passed',
-  FAILED: 'failed'
+  FAILED: 'failed',
+  SUCCESS: 'success'
 };

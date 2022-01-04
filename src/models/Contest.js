@@ -21,7 +21,6 @@ const contestSchema = mongoose.Schema({
     type: Date,
     default: new Date()// formatTimeUTC,
   },
-
   creatorId: {
     type: mongoose.Schema.Types.ObjectId,
     default: null,
