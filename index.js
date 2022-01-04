@@ -12,6 +12,7 @@ const contestRoute = require("./src/routers/contestRoutes");
 const takeTestRoute = require("./src/routers/takeTestRoutes");
 const adminRoute = require("./src/routers/adminRoutes");
 const paymentRoute = require("./src/routers/paymentRoutes")
+const billRoute = require("./src/routers/billRoutes")
 const fileUpload = require('express-fileupload')
 
 //Config env
@@ -78,6 +79,7 @@ app.use(`${api}/contests`, contestRoute);
 app.use(`${api}/takeTest`, takeTestRoute);
 app.use(`${api}/statistics`, adminRoute);
 app.use(`${api}/payments`, paymentRoute);
+app.use(`${api}/bills`, billRoute);
 
 app.get("/", (req, res) => res.send("X2MINT API"));
 
