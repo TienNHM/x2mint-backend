@@ -27,12 +27,10 @@ const testSchema = mongoose.Schema(
       ref: "questions",
       default: null,
     }],
-
     startTime: {
       type: Date,
       default: new Date()//formatTimeUTC,
     },
-
     endTime: {
       type: Date,
       default: new Date()//formatTimeUTC,
@@ -42,6 +40,10 @@ const testSchema = mongoose.Schema(
       default: null,
     },
     maxPoints: {
+      type: Number,
+      default: null,
+    },
+    maxTimes: {
       type: Number,
       default: null,
     },
