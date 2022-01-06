@@ -95,7 +95,8 @@ const sendEmail = (kind, full_name, name, to, url, txt) => {
             }
             
         })
-    } else if (kind === 'reset') {
+    } 
+    else if (kind === 'reset') {
         smtpTransport.sendMail(mailOptions_resetPassword, function(err, data) {
             if(err) {
                 console.log("Error:" + err)
@@ -106,7 +107,8 @@ const sendEmail = (kind, full_name, name, to, url, txt) => {
             }
             
         })
-    } else if (kind === 'password') {
+    } 
+    else if (kind === 'password') {
         smtpTransport.sendMail(mailOptions_creatAccountByEmail, function(err, data) {
             if(err) {
                 console.log("Error:" + err)
