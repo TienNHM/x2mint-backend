@@ -64,6 +64,62 @@ router.get("/:takeTestId", verifyToken, async (req, res) => {
   }
 });
 
+//@route GET v1/takeTest/:takeTestId
+//@desc get all take test by testId and userId
+//@access private
+//@role admin/creator/user
+router.get("/test/:testId/:userId", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER)
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const takeTest = await TakeTest.find({
+      test: req.params.testId,
+      user: req.params.userId
+    })
+      .populate({
+        path: 'test',
+        select: "-__v -createdAt -updatedAt"
+      })
+      .populate({
+        path: 'user',
+        select: "-__v -createdAt -updatedAt -password"
+      })
+      .populate({
+        path: 'chooseAnswers',
+        populate: {
+          path: 'question',
+          select: "-__v -createdAt -updatedAt"
+        }
+      })
+      .exec();
+
+    if (takeTest) {
+      res.json({
+        success: true,
+        message: "Get take test by testId and UserId successfully ",
+        data: takeTest,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Take test does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 //@route GET v1/takeTest/:takeTestId/logs
 //@desc get take test logs by id
 //@access private
@@ -145,9 +201,9 @@ const calcTestPoints = (chooseAnswers, maxPoints) => {
   const numCorrectAnswers = isCorrect.filter(Boolean).length
 
   return {
-    points: numCorrectAnswers*(maxPoints/chooseAnswers.length),
+    points: numCorrectAnswers * (maxPoints / chooseAnswers.length),
     isCorrect: isCorrect,
-    isPassed: numCorrectAnswers >= chooseAnswers.length/2
+    isPassed: numCorrectAnswers >= chooseAnswers.length / 2
   }
 }
 
@@ -388,7 +444,7 @@ router.get("/user/:userId", verifyToken, async (req, res) => {
 });
 
 //@route GET v1/takeTest/user/:userId
-//@desc Create a take test
+//@desc Get all take test by testId
 //@access public
 //@role any
 router.get("/test/:testId", verifyToken, async (req, res) => {

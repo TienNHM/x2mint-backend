@@ -181,6 +181,7 @@ router.post("", verifyToken, async (req, res) => {
             endTime: new Date(req.body.endTime), // formatTimeUTC_(req.body.endTime),
             url: req.body.url,
             maxPoints: req.body.maxPoints,
+            maxTimes: req.body.maxTimes,
             _status: req.body._status,
             questionsOrder: req.body.questionsOrder,
         });
@@ -279,6 +280,7 @@ router.put("/:testId", verifyToken, async (req, res) => {
             endTime: new Date(req.body.endTime), //formatTimeUTC_(req.body.endTime),
             url: req.body.url,
             maxPoints: req.body.maxPoints,
+            maxTimes: req.body.maxTimes,
             _status: req.body._status,
             questionsOrder: req.body.questionsOrder,
             updatedAt: new Date(), //formatTimeUTC(),
