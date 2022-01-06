@@ -30,39 +30,39 @@ const googleAuth = async (token) => {
 //@role any
 router.post("/register", async (req, res) => {
 
-  const { username, email, password } = req.body;
-  try {
-    //Check for existing username
-    const user = await User.findOne({ $or: [{ username }, { email }] });
-    if (user) {
-      // check already account
-      if (user.username === username)
-        return res
-          .json({ success: false, message: "username" });
-      else if (user.email === email) {
-        return res
-          .json({ success: false, message: "email" });
-      }
-    }
-    //Hash Password
-    const hashedPassword = await argon2.hash(password,process.env.SECRET_HASH_KEY);
-    const newUser = new User({
-      //create account with username, email and password
-      username: req.body.username, 
-      email: req.body.email, 
-      password:hashedPassword,
-      role: req.body.role
-    });
-    
-    // return activation_token
-    const activation_token = jwt.sign({newUser},
-      process.env.REACT_APP_ACTIVATION_TOKEN_SECRET,
-      {expiresIn: '5m'}
-    ); 
-    //send request verify email
-    const url = `${process.env.REACT_APP_CLIENT_URL}/activation/${activation_token}`
-    sendMail('verify', '', username, email, url, "Xác thực tài khoản")
-    return res.json({success: true, message: "verify"});
+	const { username, email, password } = req.body;
+	try {
+		//Check for existing username
+		const user = await User.findOne({ $or: [{ username }, { email }] });
+		if (user) {
+			// check already account
+			if (user.username === username)
+				return res
+					.json({ success: false, message: "username" });
+			else if (user.email === email) {
+				return res
+					.json({ success: false, message: "email" });
+			}
+		}
+		//Hash Password
+		const hashedPassword = await argon2.hash(password, process.env.SECRET_HASH_KEY);
+		const newUser = new User({
+			//create account with username, email and password
+			username: req.body.username,
+			email: req.body.email,
+			password: hashedPassword,
+			role: req.body.role
+		});
+
+		// return activation_token
+		const activation_token = jwt.sign({ newUser },
+			process.env.REACT_APP_ACTIVATION_TOKEN_SECRET,
+			{ expiresIn: '5m' }
+		);
+		//send request verify email
+		const url = `${process.env.REACT_APP_CLIENT_URL}/activation/${activation_token}`
+		sendMail('verify', '', username, email, url, "Xác thực tài khoản")
+		return res.json({ success: true, message: "verify" });
 
 	} catch (error) {
 		console.log(error);
@@ -118,7 +118,7 @@ router.post("/forgotPassword", async (req, res) => {
 		);
 		const url = `${process.env.REACT_APP_CLIENT_URL}/resetPassword/${access_token}`
 		//console.log(url)
-		sendMail('reset', user.username, email, url, "Reset your password")
+		sendMail('reset', user.full_name, user.username, email, url, "Reset your password")
 		res.json({ msg: "Re-send the password, please check your email." })
 	} catch (err) {
 		return res.status(500).json({ msg: err.message })
@@ -136,7 +136,10 @@ router.post("/resetPassword", async (req, res) => {
 		await User.findOneAndUpdate({ _id: user.id }, {
 			password: hashedPassword
 		})
-		res.json({ success: true, msg: "Password successfully changed!" })
+		res.json({
+			success: true,
+			msg: "Password has been changed successfully!"
+		})
 	} catch (err) {
 		return res.status(500).json({ msg: err.message })
 	}
@@ -156,7 +159,7 @@ router.post("/login", async (req, res) => {
 			return res
 				.json({ success: false, message: "incorrect" });
 		// Username found
-		
+
 		const passwordValid = await argon2.verify(user.password, password);
 		if (!passwordValid)
 			return res
@@ -240,10 +243,10 @@ router.post("/loginViaGoogle", async (req, res) => {
 			const passwordHash = await argon2.hash(password, process.env.SECRET_HASH_KEY);
 			// console.log(username, passwordHash);
 			const newUser = new User({
-				username: username, 
-				full_name: name, 
-				email: email, 
-				password: passwordHash, 
+				username: username,
+				full_name: name,
+				email: email,
+				password: passwordHash,
 				avatar: picture
 			})
 			await newUser.save()
@@ -280,7 +283,7 @@ router.post("/login/google", verifyToken, async (req, res, next) => {
 				message: "Access token not found",
 			});
 		}
-		
+
 		const token = authorization;
 		const user = await googleAuth(token);
 		const snapshot = await Account.findOne({
@@ -343,19 +346,19 @@ router.post("/login/google", verifyToken, async (req, res, next) => {
 });
 
 router.get("/verify", verifyToken, async (req, res) => {
-  try {
-    return res.status(200).json({
-      message: "Token is valid",
-      success: true,
-      user: req.body.verifyAccount,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal error server",
-    });
-  }
+	try {
+		return res.status(200).json({
+			message: "Token is valid",
+			success: true,
+			user: req.body.verifyAccount,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal error server",
+		});
+	}
 	try {
 		return res.status(200).json({
 			message: "Token is valid",
