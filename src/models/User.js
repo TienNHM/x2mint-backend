@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
-const { ROLES, ACCOUNT_TYPES } = require("./enum");
+const { ROLES, ACCOUNT_TYPES, STATUS } = require("./enum");
 
 const userSchema = mongoose.Schema({
   username: {
@@ -56,6 +56,7 @@ const userSchema = mongoose.Schema({
   },
   _status: {
     type: String,
+    default: STATUS.OK
   },
   createdAt: {
     type: Date,

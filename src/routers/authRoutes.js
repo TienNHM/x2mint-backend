@@ -74,8 +74,6 @@ router.post("/register", async (req, res) => {
 router.post("/activation", async (req, res) => {
 	try {
 		const { activation_token } = req.body
-		//console.log(activation_token)
-		//console.log(jwt.verify(process.env.REACT_APP_ACTIVATION_TOKEN_SECRET))
 		const decode = jwt.verify(activation_token, process.env.REACT_APP_ACTIVATION_TOKEN_SECRET)
 		const user = decode.newUser
 		const { username, password, email,
@@ -96,12 +94,11 @@ router.post("/activation", async (req, res) => {
 			school,
 			role
 		})
-		await newUser.save()      //console.log(newUser)
+		await newUser.save()
 
 		res.json({ success: true, message: "success" })
 
 	} catch (err) {
-		//console.log(err.message)
 		return res.status(500).json({ msg: err.message })
 	}
 })
