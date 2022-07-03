@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const autoinc = require("mongoose-plugin-autoinc");
 const { formatTimeUTC } = require("../utils/Timezone");
+const { COLLECTION } = require("../utils/enum");
 
 const questionSchema = mongoose.Schema({
   // order: {
@@ -25,7 +26,7 @@ const questionSchema = mongoose.Schema({
   answers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "answers",
+      ref: COLLECTION.ANSWER,
       default: null,
     },
   ],
@@ -55,7 +56,13 @@ const questionSchema = mongoose.Schema({
   },
 });
 
-questionSchema.plugin(autoinc.autoIncrement, { model: "questions", field: "questionId" });
+questionSchema.plugin(
+  autoinc.autoIncrement,
+  {
+    model: COLLECTION.QUESTION,
+    field: "questionId"
+  }
+);
 
 questionSchema.method("toJSON", function () {
   const { __v, ...object } = this.toObject();
@@ -63,4 +70,4 @@ questionSchema.method("toJSON", function () {
   return { ...result, id };
 });
 
-module.exports = mongoose.model("questions", questionSchema);
+module.exports = mongoose.model(COLLECTION.QUESTION, questionSchema);

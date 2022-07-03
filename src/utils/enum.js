@@ -13,6 +13,17 @@ module.exports.DEFAULT_VALUES = {
   AVATAR: 'https://res.cloudinary.com/dsy3fbzxg/image/upload/v1639069707/samples/avatar/39e426741c29f67274c8d23734f19aea_bm8bil.jpg',
 };
 
+module.exports.COLLECTION = {
+  ANSWER: "answers",
+  BILL: "bills",
+  CONTEST: "contests",
+  QUESTION: "questions",
+  TAKETEST: "take_tests",
+  TAKETESTLOG: "take_test_logs",
+  TEST: "tests",
+  USER: "users",
+};
+
 module.exports.STATUS = {
   DEACTIVE: 'deactive',
   DELETED: 'deleted',

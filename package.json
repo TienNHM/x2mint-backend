@@ -30,7 +30,8 @@
     "nodemon": "^2.0.15",
     "qs": "^6.10.2",
     "unique-username-generator": "^1.0.1",
-    "username-generator": "^1.1.0"
+    "username-generator": "^1.1.0",
+    "vietnamese-slug": "^1.1.4"
   },
   "optionalDependencies": {
     "fsevents": "~2.3.2"

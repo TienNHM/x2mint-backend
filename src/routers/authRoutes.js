@@ -8,7 +8,7 @@ const { OAuth2Client } = require("google-auth-library");
 const { google } = require('googleapis')
 const { OAuth2 } = google.auth
 const dotenv = require("dotenv");
-const { ROLES } = require("../models/enum");
+const { ROLES } = require("../utils/enum");
 dotenv.config({ path: "./.env" });
 const client = new OAuth2Client(process.env.REACT_APP_MAILING_SERVICE_CLIENT_ID);
 const sendMail = require('./sendMail');

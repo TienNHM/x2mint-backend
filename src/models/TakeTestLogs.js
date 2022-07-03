@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const autoinc = require("mongoose-plugin-autoinc");
 const { formatTimeUTC } = require("../utils/Timezone");
+const { COLLECTION } = require("../utils/enum");
 
 const takeTestLogsSchema = mongoose.Schema({
     logId: {
@@ -11,19 +12,19 @@ const takeTestLogsSchema = mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         require: true,
         default: null,
-        ref: "tests",
+        ref: COLLECTION.TEST,
     },
     takeTest: {
         type: mongoose.SchemaTypes.ObjectId,
         require: true,
         default: null,
-        ref: "take_test",
+        ref: COLLECTION.TAKETEST,
     },
     user: {
         type: mongoose.SchemaTypes.ObjectId,
         require: true,
         default: null,
-        ref: "users",
+        ref: COLLECTION.USER,
     },
     logs: [
         {
@@ -49,7 +50,13 @@ const takeTestLogsSchema = mongoose.Schema({
     },
 });
 
-takeTestLogsSchema.plugin(autoinc.autoIncrement, { model: "take_test_logs", field: "logId" });
+takeTestLogsSchema.plugin(
+    autoinc.autoIncrement,
+    {
+        model: COLLECTION.TAKETESTLOG,
+        field: "logId"
+    }
+);
 
 takeTestLogsSchema.method("toJSON", function () {
     const { __v, ...object } = this.toObject();
@@ -57,4 +64,4 @@ takeTestLogsSchema.method("toJSON", function () {
     return { ...result, id };
 });
 
-module.exports = mongoose.model("take_test_logs", takeTestLogsSchema);
+module.exports = mongoose.model(COLLECTION.TAKETESTLOG, takeTestLogsSchema);

@@ -1,7 +1,13 @@
 const mongoose = require("mongoose");
 const autoinc = require("mongoose-plugin-autoinc");
 const { formatTimeUTC } = require("../utils/Timezone");
-const { ROLES, ACCOUNT_TYPES, STATUS, DEFAULT_VALUES } = require("./enum");
+const {
+  ROLES,
+  ACCOUNT_TYPES,
+  STATUS,
+  DEFAULT_VALUES,
+  COLLECTION
+} = require("../utils/enum");
 
 const userSchema = mongoose.Schema({
   userId: {
@@ -52,10 +58,10 @@ const userSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-  account: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "accounts",
-  },
+  // account: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "accounts",
+  // },
   avatar: {
     type: String,
     default: DEFAULT_VALUES.AVATAR,
@@ -74,7 +80,13 @@ const userSchema = mongoose.Schema({
   },
 });
 
-userSchema.plugin(autoinc.autoIncrement, { model: "users", field: "userId" });
+userSchema.plugin(
+  autoinc.autoIncrement,
+  {
+    model: COLLECTION.USER,
+    field: "userId"
+  }
+);
 
 userSchema.method("toJSON", function () {
   const { __v, ...object } = this.toObject();
@@ -82,4 +94,4 @@ userSchema.method("toJSON", function () {
   return { ...result, id };
 });
 
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model(COLLECTION.USER, userSchema);

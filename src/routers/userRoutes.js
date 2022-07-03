@@ -4,7 +4,7 @@ const User = require("../models/User");
 const auth = require("../middleware/requireAuth");
 const argon2 = require("argon2");
 const dotenv = require("dotenv");
-const { ROLES } = require("../models/enum");
+const { ROLES } = require("../utils/enum");
 const { formatTimeUTC } = require("../utils/Timezone");
 const mongoose = require("mongoose");
 dotenv.config({ path: "./.env" });

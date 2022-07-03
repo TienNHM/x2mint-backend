@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const autoinc = require("mongoose-plugin-autoinc");
 const { formatTimeUTC } = require("../utils/Timezone");
+const { COLLECTION } = require("../utils/enum");
 
 const contestSchema = mongoose.Schema({
   contestId: {
@@ -29,7 +30,7 @@ const contestSchema = mongoose.Schema({
   creatorId: {
     type: mongoose.Schema.Types.ObjectId,
     default: null,
-    ref: "users",
+    ref: COLLECTION.USER,
   },
   url: {
     type: String,
@@ -38,7 +39,7 @@ const contestSchema = mongoose.Schema({
   tests: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "tests",
+      ref: COLLECTION.TEST,
       default: null,
     },
   ],
@@ -54,15 +55,21 @@ const contestSchema = mongoose.Schema({
     type: Date,
     default: new Date()//formatTimeUTC,
   },
-  embededMedia: 
-    {
-      type: String,
-      default: null,
-    },
-  
+  embededMedia:
+  {
+    type: String,
+    default: null,
+  },
+
 });
 
-contestSchema.plugin(autoinc.autoIncrement, { model: 'contests', field: 'contestId' });
+contestSchema.plugin(
+  autoinc.autoIncrement,
+  {
+    model: COLLECTION.CONTEST,
+    field: 'contestId'
+  }
+);
 
 contestSchema.method("toJSON", function () {
   const { __v, ...object } = this.toObject();
@@ -70,4 +77,4 @@ contestSchema.method("toJSON", function () {
   return { ...result, id };
 });
 
-module.exports = mongoose.model("contests", contestSchema);
+module.exports = mongoose.model(COLLECTION.CONTEST, contestSchema);
