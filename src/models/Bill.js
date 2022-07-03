@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
+const autoinc = require("mongoose-plugin-autoinc");
 const { formatTimeUTC } = require("../utils/Timezone");
 const { STATUS } = require("../models/enum");
 
 const billSchema = mongoose.Schema({
     billId: {
         type: Number,
-        default: 0,
         require: true,
     },
     user: {
@@ -30,6 +30,8 @@ const billSchema = mongoose.Schema({
         default: new Date()
     },
 });
+
+billSchema.plugin(autoinc.autoIncrement, { model: "bills", field: "billId" });
 
 billSchema.method("toJSON", function () {
     const { __v, ...object } = this.toObject();

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const autoinc = require("mongoose-plugin-autoinc");
 const { formatTimeUTC } = require("../utils/Timezone");
 const { ROLES, ACCOUNT_TYPES, STATUS, DEFAULT_VALUES } = require("./enum");
 
@@ -7,7 +8,6 @@ const userSchema = mongoose.Schema({
     type: Number,
     unique: true,
     require: [true, "Hãy điền UserId !!"],
-    default: 0,
   },
   username: {
     type: String,
@@ -73,6 +73,8 @@ const userSchema = mongoose.Schema({
     default: new Date()//formatTimeUTC,
   },
 });
+
+userSchema.plugin(autoinc.autoIncrement, { model: "users", field: "userId" });
 
 userSchema.method("toJSON", function () {
   const { __v, ...object } = this.toObject();

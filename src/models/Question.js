@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const autoinc = require("mongoose-plugin-autoinc");
 const { formatTimeUTC } = require("../utils/Timezone");
 
 const questionSchema = mongoose.Schema({
@@ -10,7 +11,6 @@ const questionSchema = mongoose.Schema({
   questionId: {
     type: Number,
     require: true,
-    default: 0,
   },
   type: {
     type: String,
@@ -54,6 +54,8 @@ const questionSchema = mongoose.Schema({
     default: new Date()//formatTimeUTC
   },
 });
+
+questionSchema.plugin(autoinc.autoIncrement, { model: "questions", field: "questionId" });
 
 questionSchema.method("toJSON", function () {
   const { __v, ...object } = this.toObject();

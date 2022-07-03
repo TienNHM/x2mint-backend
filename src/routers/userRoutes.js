@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const Account = require("../models/Account");
 const auth = require("../middleware/requireAuth");
 const argon2 = require("argon2");
 const dotenv = require("dotenv");
