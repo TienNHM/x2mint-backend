@@ -266,7 +266,6 @@ router.post("", verifyToken, async (req, res) => {
 
     //Create new contest
     let contest = new Contest({
-
       name: req.body.name,
       creatorId: req.body.creatorId,
       description: req.body.description,
