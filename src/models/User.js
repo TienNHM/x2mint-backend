@@ -1,21 +1,33 @@
 const mongoose = require("mongoose");
+const autoinc = require("mongoose-plugin-autoinc");
 const { formatTimeUTC } = require("../utils/Timezone");
-const { ROLES, ACCOUNT_TYPES } = require("./enum");
+const {
+  ROLES,
+  ACCOUNT_TYPES,
+  STATUS,
+  DEFAULT_VALUES,
+  COLLECTION
+} = require("../utils/enum");
 
 const userSchema = mongoose.Schema({
+  userId: {
+    type: Number,
+    unique: true,
+    require: [true, "Hãy điền UserId !!"],
+  },
   username: {
     type: String,
     unique: true,
-    require:[true,"Hãy điền Username !!"] 
+    require: [true, "Hãy điền Username !!"]
   },
   email: {
     type: String,
     unique: true,
-    require: [true,"Hãy điền Email !!"] 
+    require: [true, "Hãy điền Email !!"]
   },
   password: {
     type: String,
-    require: [true,"Hãy điền Password !!"],
+    require: [true, "Hãy điền Password !!"],
     min: 8,
   },
   role: {
@@ -46,16 +58,17 @@ const userSchema = mongoose.Schema({
     type: String,
     default: null,
   },
-  account: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "accounts",
-  },
+  // account: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "accounts",
+  // },
   avatar: {
     type: String,
-    default: "https://res.cloudinary.com/dsy3fbzxg/image/upload/v1639069707/samples/avatar/39e426741c29f67274c8d23734f19aea_bm8bil.jpg",
+    default: DEFAULT_VALUES.AVATAR,
   },
   _status: {
     type: String,
+    default: STATUS.OK
   },
   createdAt: {
     type: Date,
@@ -67,10 +80,18 @@ const userSchema = mongoose.Schema({
   },
 });
 
+userSchema.plugin(
+  autoinc.autoIncrement,
+  {
+    model: COLLECTION.USER,
+    field: "userId"
+  }
+);
+
 userSchema.method("toJSON", function () {
   const { __v, ...object } = this.toObject();
   const { _id: id, ...result } = object;
   return { ...result, id };
 });
 
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model(COLLECTION.USER, userSchema);

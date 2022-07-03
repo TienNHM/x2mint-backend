@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
-const { ROLES, STATUS } = require("../models/enum");
+const { ROLES, STATUS, COLLECTION } = require("../utils/enum");
 dotenv.config({ path: "./.env" });
 const Contest = require("../models/Contest")
 const TakeTest = require("../models/TakeTest")
 const { formatTimeUTC_, formatTimeUTC } = require("../utils/Timezone");
-
+const TextUtils = require("../utils/TextUtils");
 
 //@route GET v1/contests/
 //@desc get all contests
@@ -266,14 +266,13 @@ router.post("", verifyToken, async (req, res) => {
 
     //Create new contest
     let contest = new Contest({
-
       name: req.body.name,
       creatorId: req.body.creatorId,
       description: req.body.description,
       tests: req.body.tests, // can null
       startTime: new Date(req.body.startTime), //formatTimeUTC_(req.body.startTime),
       endTime: new Date(req.body.endTime), //formatTimeUTC_(req.body.endTime),
-      url: req.body.url,
+      url: TextUtils.makeSlug(COLLECTION.CONTEST, req.body.name),
       embededMedia: req.body.embededMedia,
       isHidden: false
     });
@@ -369,7 +368,7 @@ router.put("/:contestId", verifyToken, async (req, res) => {
       tests: req.body.tests, // can null
       startTime: new Date(req.body.startTime), //formatTimeUTC_(req.body.startTime),
       endTime: new Date(req.body.endTime), //formatTimeUTC_(req.body.endTime),
-      url: req.body.url,
+      url: TextUtils.makeSlug(COLLECTION.CONTEST, req.body.name),
       isHidden: false,
       embededMedia: req.body.embededMedia,
       updatedAt: new Date(), // formatTimeUTC(),

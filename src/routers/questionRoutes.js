@@ -4,7 +4,7 @@ const Question = require("../models/Question");
 const Test = require("../models/Test");
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
-const { ROLES, STATUS } = require("../models/enum");
+const { ROLES, STATUS } = require("../utils/enum");
 const { formatTimeUTC_, formatTimeUTC } = require("../utils/Timezone");
 dotenv.config({ path: "./.env" });
 

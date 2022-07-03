@@ -6,8 +6,8 @@ const TakeTest = require("../models/TakeTest");
 
 const verifyToken = require("../middleware/requireAuth");
 const dotenv = require("dotenv");
-const { ROLES } = require("../models/enum");
-const { STATUS } = require("../models/enum");
+const { ROLES } = require("../utils/enum");
+const { STATUS } = require("../utils/enum");
 const { formatTimeUTC } = require("../utils/Timezone");
 const TakeTestLogs = require("../models/TakeTestLogs");
 
