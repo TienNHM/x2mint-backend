@@ -1,21 +1,27 @@
 const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
-const { ROLES, ACCOUNT_TYPES, STATUS } = require("./enum");
+const { ROLES, ACCOUNT_TYPES, STATUS, DEFAULT_VALUES } = require("./enum");
 
 const userSchema = mongoose.Schema({
+  userId: {
+    type: Number,
+    unique: true,
+    require: [true, "Hãy điền UserId !!"],
+    default: 0,
+  },
   username: {
     type: String,
     unique: true,
-    require:[true,"Hãy điền Username !!"] 
+    require: [true, "Hãy điền Username !!"]
   },
   email: {
     type: String,
     unique: true,
-    require: [true,"Hãy điền Email !!"] 
+    require: [true, "Hãy điền Email !!"]
   },
   password: {
     type: String,
-    require: [true,"Hãy điền Password !!"],
+    require: [true, "Hãy điền Password !!"],
     min: 8,
   },
   role: {
@@ -52,7 +58,7 @@ const userSchema = mongoose.Schema({
   },
   avatar: {
     type: String,
-    default: "https://res.cloudinary.com/dsy3fbzxg/image/upload/v1639069707/samples/avatar/39e426741c29f67274c8d23734f19aea_bm8bil.jpg",
+    default: DEFAULT_VALUES.AVATAR,
   },
   _status: {
     type: String,

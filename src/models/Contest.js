@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
 
 const contestSchema = mongoose.Schema({
+  contestId: {
+    type: Number,
+    require: true,
+    default: 0,
+  },
   name: {
     type: String,
     require: true,

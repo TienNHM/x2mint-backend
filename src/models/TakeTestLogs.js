@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const { formatTimeUTC } = require("../utils/Timezone");
 
 const takeTestLogsSchema = mongoose.Schema({
+    logId: {
+        type: Number,
+        require: true,
+        default: 0,
+    },
     test: {
         type: mongoose.SchemaTypes.ObjectId,
         require: true,

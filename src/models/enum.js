@@ -9,6 +9,10 @@ module.exports.ACCOUNT_TYPES = {
   PRO: "38f6e20fe91bd2ad0afc80acf3c1a179d5678487",
 };
 
+module.exports.DEFAULT_VALUES = {
+  AVATAR: 'https://res.cloudinary.com/dsy3fbzxg/image/upload/v1639069707/samples/avatar/39e426741c29f67274c8d23734f19aea_bm8bil.jpg',
+};
+
 module.exports.STATUS = {
   DEACTIVE: 'deactive',
   DELETED: 'deleted',

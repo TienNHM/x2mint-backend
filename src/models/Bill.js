@@ -3,6 +3,11 @@ const { formatTimeUTC } = require("../utils/Timezone");
 const { STATUS } = require("../models/enum");
 
 const billSchema = mongoose.Schema({
+    billId: {
+        type: Number,
+        default: 0,
+        require: true,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         default: null,

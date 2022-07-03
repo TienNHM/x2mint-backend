@@ -7,6 +7,11 @@ const questionSchema = mongoose.Schema({
   //   require: true,
   //   default: 0,
   // },
+  questionId: {
+    type: Number,
+    require: true,
+    default: 0,
+  },
   type: {
     type: String,
     require: true,

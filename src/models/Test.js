@@ -3,6 +3,11 @@ const { formatTimeUTC } = require("../utils/Timezone");
 
 const testSchema = mongoose.Schema(
   {
+    testId: {
+      type: Number,
+      require: true,
+      default: 0,
+    },
     name: {
       type: String,
       require: true,
