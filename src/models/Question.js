@@ -32,7 +32,7 @@ const questionSchema = mongoose.Schema({
   ],
   correctAnswers: [
     {
-      type: [String],
+      type: String,
       default: null,
     },
   ],
