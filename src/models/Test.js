@@ -53,6 +53,12 @@ const testSchema = mongoose.Schema(
       type: Number,
       default: null,
     },
+    tracking: [
+      {
+        type: String,
+        default: [],
+      },
+    ],
     questionsOrder: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: COLLECTION.QUESTION,
