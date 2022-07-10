@@ -23,6 +23,7 @@ const cors = require("cors");
 
 
 var whitelist = [
+  'https://api-x2mint.herokuapp.com',
   'https://x2mint.vercel.app', 
   'https://ex2mint.vercel.app', 
   'http://localhost:3000',

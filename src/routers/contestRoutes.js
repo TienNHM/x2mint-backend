@@ -124,7 +124,7 @@ router.get("/all", verifyToken, async (req, res) => {
 //@desc get answers by id
 //@access private
 //@role admin/creator/user
-router.get("/:contestId", verifyToken, async (req, res) => {
+router.get("/:contestIdOrUrl", verifyToken, async (req, res) => {
   try {
     //Check permission
     if (
@@ -137,7 +137,15 @@ router.get("/:contestId", verifyToken, async (req, res) => {
         .json({ success: false, message: "Permission denied" });
     }
 
-    const contest = await Contest.findById(req.params.contestId).populate("tests");
+    var contest = null;
+    try {
+      contest = await Contest.findById(req.params.contestIdOrUrl).populate("tests");
+    }
+    catch {
+      const url = `/${COLLECTION.CONTEST}/${req.params.contestIdOrUrl}`
+      contest = await Contest.findOne({ url }).populate("tests");
+    }
+
     if (contest) {
       res.json({
         success: true,
@@ -360,20 +368,30 @@ router.put("/:contestId", verifyToken, async (req, res) => {
         success: false,
         message: "Body request not found",
       });
-    let contest;
-    contest = {
+
+    let contest = {
       name: req.body.name,
       creatorId: req.body.creatorId,
       description: req.body.description,
       tests: req.body.tests, // can null
       startTime: new Date(req.body.startTime), //formatTimeUTC_(req.body.startTime),
       endTime: new Date(req.body.endTime), //formatTimeUTC_(req.body.endTime),
-      url: TextUtils.makeSlug(COLLECTION.CONTEST, req.body.name),
       isHidden: false,
       embededMedia: req.body.embededMedia,
       updatedAt: new Date(), // formatTimeUTC(),
       _status: req.body._status
     };
+
+    if (req.body.url) {
+      contest.url = TextUtils.makeSlug(COLLECTION.CONTEST, req.body.url, false)
+    }
+    else {
+      const {url: oldUrl} = await Contest.findById(req.params.contestId).select("url").exec();
+      console.log(oldUrl)
+      contest.url = oldUrl;
+    }
+
+    console.log('contest', contest)
 
     const updatedContest = await Contest.findByIdAndUpdate(
       req.params.contestId,
