@@ -185,6 +185,7 @@ router.post("", verifyToken, async (req, res) => {
             maxTimes: req.body.maxTimes,
             _status: req.body._status,
             questionsOrder: req.body.questionsOrder,
+            tracking: req.body.tracking,
         });
 
         //Send to Database
@@ -284,6 +285,7 @@ router.put("/:testId", verifyToken, async (req, res) => {
             maxTimes: req.body.maxTimes,
             _status: req.body._status,
             questionsOrder: req.body.questionsOrder,
+            tracking: req.body.tracking,
             updatedAt: new Date(), //formatTimeUTC(),
         };
 
