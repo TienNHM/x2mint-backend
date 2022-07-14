@@ -120,6 +120,64 @@ router.get("/test/:testId/:userId", verifyToken, async (req, res) => {
   }
 });
 
+//@route GET v1/takeTest/:takeTestId
+//@desc get all take test by testId and userId
+//@access private
+//@role admin/creator/user
+router.get("/test/:testId/:userId/lastest", verifyToken, async (req, res) => {
+  try {
+    //Check permission
+    if (
+      !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        req.body.verifyAccount.role === ROLES.CREATOR ||
+        req.body.verifyAccount.role === ROLES.USER)
+    ) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Permission denied" });
+    }
+
+    const takeTest = await TakeTest.find({
+      test: req.params.testId,
+      user: req.params.userId
+    })
+      .sort({createdAt: -1, takeTestId: -1})
+      .limit(1)
+      .populate({
+        path: 'test',
+        select: "-__v -createdAt -updatedAt"
+      })
+      .populate({
+        path: 'user',
+        select: "-__v -createdAt -updatedAt -password"
+      })
+      // .populate({
+      //   path: 'chooseAnswers',
+      //   populate: {
+      //     path: 'question',
+      //     select: "-__v -createdAt -updatedAt -correctAnswers"
+      //   }
+      // })
+      .exec();
+
+    if (takeTest) {
+      res.json({
+        success: true,
+        message: "Get lastest take test by testId and UserId successfully ",
+        data: takeTest,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Lastest take test does not exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 //@route GET v1/takeTest/:takeTestId/logs
 //@desc get take test logs by id
 //@access private
@@ -233,15 +291,15 @@ router.post("/", verifyToken, async (req, res) => {
     take_test = await take_test.save();
 
     //Populate để lấy dữ liệu các trường tương ứng
-    let tmp = await TakeTest.findById(take_test._id)
-      .populate({
-        path: 'chooseAnswers',
-        populate: {
-          path: 'question',
-          select: "-__v -createdAt -updatedAt"
-        }
-      })
-      .exec();
+    // let tmp = await TakeTest.findById(take_test._id)
+    //   .populate({
+    //     path: 'chooseAnswers',
+    //     populate: {
+    //       path: 'question',
+    //       select: "-__v -createdAt -updatedAt -correctAnswers"
+    //     }
+    //   })
+    //   .exec();
 
     let take_test_logs = new TakeTestLogs({
       test: req.body.test,
