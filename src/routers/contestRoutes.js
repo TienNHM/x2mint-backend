@@ -387,11 +387,8 @@ router.put("/:contestId", verifyToken, async (req, res) => {
     }
     else {
       const {url: oldUrl} = await Contest.findById(req.params.contestId).select("url").exec();
-      console.log(oldUrl)
       contest.url = oldUrl;
     }
-
-    console.log('contest', contest)
 
     const updatedContest = await Contest.findByIdAndUpdate(
       req.params.contestId,

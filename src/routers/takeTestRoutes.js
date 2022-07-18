@@ -314,7 +314,6 @@ router.post("/", verifyToken, async (req, res) => {
     })
 
     take_test_logs = await take_test_logs.save();
-    // console.log(take_test_logs)
 
     res.json({
       success: true,
