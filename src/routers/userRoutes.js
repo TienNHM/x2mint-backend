@@ -68,14 +68,10 @@ router.get("/:userId/info", auth, async (req, res) => {
   }
 });
 
-
-
-
 //@route PUT v1/users/:userId
 //@desc Update user's info
 //@access private
 //@role User/Creator/Admin
-
 router.put("/:userId/update", auth, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.userId))

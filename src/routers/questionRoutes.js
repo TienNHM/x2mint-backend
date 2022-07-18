@@ -189,7 +189,6 @@ router.put("/:questionId", verifyToken, async (req, res) => {
       maxPoints: req.body.maxPoints,
     };
 
-    // console.log(question)
     const updatedQuestion = await Question.findByIdAndUpdate(
       req.params.questionId,
       question,
