@@ -1,7 +1,7 @@
 
 # @name login
 ###Login  
-POST http://localhost:5001/app/api/v1/auths/login
+POST http://localhost:5005/app/api/v1/auths/login
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 ###
 @authToken = {{login.response.body.token}}
 ###
-POST http://localhost:5001/app/api/v1/takeTest
+POST http://localhost:5005/app/api/v1/takeTest
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2Mzc1NjU1NTh9.fVTFZvcLWmFCRpYn36ifI29UhdslzbdGa4rOSrmm0v4
 
@@ -64,11 +64,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50I
 
 
 ###
-GET http://localhost:5001/app/api/v1/takeTest/user/618d35c07a4165dcf02f7b05
+GET http://localhost:5005/app/api/v1/takeTest/user/618d35c07a4165dcf02f7b05
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2Mzc1NjU1NTh9.fVTFZvcLWmFCRpYn36ifI29UhdslzbdGa4rOSrmm0v4
 
 ###
-GET http://localhost:5001/app/api/v1/takeTest/test/619413b7101638c5e32ad4eb
+GET http://localhost:5005/app/api/v1/takeTest/test/619413b7101638c5e32ad4eb
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJpZnlBY2NvdW50Ijp7ImlkIjoiNjE4Y2YxODhjNDAzMjZiMjM4ZTlkYTNkIiwiaXNIaWRkZW4iOmZhbHNlLCJ1c2VybmFtZSI6Im1pbmhob2FuZyIsInJvbGUiOiJhZG1pbiJ9LCJpYXQiOjE2Mzc1NjU1NTh9.fVTFZvcLWmFCRpYn36ifI29UhdslzbdGa4rOSrmm0v4

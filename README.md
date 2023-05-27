@@ -93,7 +93,7 @@ yarn install
 
 - Bước 4: Khởi chạy
 
-Mặc định, server sẽ chạy tại cổng `5001`. Mở terminal và chạy lệnh sau:
+Mặc định, server sẽ chạy tại cổng `5005`. Mở terminal và chạy lệnh sau:
 ```
 npm run server
 ```
@@ -109,7 +109,7 @@ npm run server
 [nodemon] watching path(s): *.*
 [nodemon] watching extensions: js,mjs,json
 [nodemon] starting `node index index.js`
-Express server listening on port 5001 in development mode
+Express server listening on port 5005 in development mode
  Mongoose connected 
 ```
 
