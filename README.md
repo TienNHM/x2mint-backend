@@ -143,6 +143,6 @@ heroku config:push -a api-x2mint
 - Bước 5: Deploy lại ứng dụng.
 
 ## Contributors
-
 [![](https://avatars.githubusercontent.com/u/33385777?v=4&s=80)](https://github.com/TienNHM)
 [![](https://avatars.githubusercontent.com/u/58748687?v=4&s=80)](https://github.com/timomint)
+
