@@ -87,7 +87,7 @@ app.use(`${api}/bills`, billRoute);
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 const htmlData = `<p>Hello, X2MINT API. View API documentation <a href="/doc">here</a></p>`;
-app.get("/", (req, res) => res.send(htmlData).type("text/html"));
+app.get("/", (req, res) => res.type("text/html").send(htmlData));
 
 app.listen(process.env.PORT || 5005, function () {
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
