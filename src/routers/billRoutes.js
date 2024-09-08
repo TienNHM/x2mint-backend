@@ -10,14 +10,16 @@ const Bill = require("../models/Bill")
 //@desc ADMIN get all bills
 //@access private
 //@role ADMIN
-router.get("", verifyToken, async (req, res) => {
+router.get("", verifyToken, async(req, res) => {
+    // #swagger.tags = ['bills']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get all bills'
+
     try {
         //Check permission
-        if (
-            !(
+        if (!(
                 req.body.verifyAccount.role === ROLES.ADMIN
-            )
-        ) {
+            )) {
             return res
                 .status(401)
                 .json({ success: false, message: "Permission denied" });
@@ -46,7 +48,11 @@ router.get("", verifyToken, async (req, res) => {
 //@desc Create a bill
 //@access private
 //@role admin/creator/user
-router.post("", verifyToken, async (req, res) => {
+router.post("", verifyToken, async(req, res) => {
+    // #swagger.tags = ['bills']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Create a bill'
+
     try {
         if (!req.body)
             res.status(400).json({

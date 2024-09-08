@@ -12,15 +12,17 @@ dotenv.config({ path: "./.env" });
 //@desc get all test
 //@access private
 //@role admin/creator
-router.get("/creator/:creatorId", verifyToken, async (req, res) => {
+router.get("/creator/:creatorId", verifyToken, async(req, res) => {
+    // #swagger.tags = ['tests']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get all tests by creator/admin'
+
     try {
         //Check permission
-        if (
-            !(
+        if (!(
                 req.body.verifyAccount.role === ROLES.ADMIN ||
                 req.body.verifyAccount.role === ROLES.CREATOR
-            )
-        ) {
+            )) {
             return res
                 .status(401)
                 .json({ success: false, message: "Permission denied" });
@@ -49,15 +51,17 @@ router.get("/creator/:creatorId", verifyToken, async (req, res) => {
 //@desc get all test
 //@access private
 //@role admin/creator
-router.get("", verifyToken, async (req, res) => {
+router.get("", verifyToken, async(req, res) => {
+    // #swagger.tags = ['tests']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get all tests by admin/creator'
+
     try {
         //Check permission
-        if (
-            !(
+        if (!(
                 req.body.verifyAccount.role === ROLES.ADMIN ||
                 req.body.verifyAccount.role === ROLES.CREATOR
-            )
-        ) {
+            )) {
             return res
                 .status(401)
                 .json({ success: false, message: "Permission denied" });
@@ -86,14 +90,16 @@ router.get("", verifyToken, async (req, res) => {
 //@desc get test by id
 //@access private
 //@role admin/creator/user
-router.get("/:testId", verifyToken, async (req, res) => {
+router.get("/:testId", verifyToken, async(req, res) => {
+    // #swagger.tags = ['tests']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get test by id'
+
     try {
         //Check permission
-        if (
-            !(req.body.verifyAccount.role === ROLES.ADMIN ||
+        if (!(req.body.verifyAccount.role === ROLES.ADMIN ||
                 req.body.verifyAccount.role === ROLES.CREATOR ||
-                req.body.verifyAccount.role === ROLES.USER)
-        ) {
+                req.body.verifyAccount.role === ROLES.USER)) {
             return res
                 .status(401)
                 .json({ success: false, message: "Permission denied" });
@@ -111,8 +117,7 @@ router.get("/:testId", verifyToken, async (req, res) => {
                     }
                 })
                 .exec();
-        }
-        else {
+        } else {
             test = await Test.findById(req.params.testId)
                 .populate({
                     path: 'questions',
@@ -149,16 +154,18 @@ router.get("/:testId", verifyToken, async (req, res) => {
 //@desc Create a test
 //@access private
 //@role admin/creator
-router.post("", verifyToken, async (req, res) => {
+router.post("", verifyToken, async(req, res) => {
+    // #swagger.tags = ['tests']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Create a test by admin/creator'
+
     try {
         //Check permission
 
-        if (
-            !(
+        if (!(
                 req.body.verifyAccount.role === ROLES.ADMIN ||
                 req.body.verifyAccount.role === ROLES.CREATOR
-            )
-        ) {
+            )) {
             return res
                 .status(401)
                 .json({ success: false, message: "Permission denied" });
@@ -206,16 +213,18 @@ router.post("", verifyToken, async (req, res) => {
 //@desc update/create new questions for test
 //@access private
 //@role admin/creator
-router.put("/:testId/questions", verifyToken, async (req, res) => {
+router.put("/:testId/questions", verifyToken, async(req, res) => {
+    // #swagger.tags = ['tests']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Update/create new questions for test by admin/creator'
+
     try {
         //Check permission
 
-        if (
-            !(
+        if (!(
                 req.body.verifyAccount.role === ROLES.ADMIN ||
                 req.body.verifyAccount.role === ROLES.CREATOR
-            )
-        ) {
+            )) {
             return res
                 .status(401)
                 .json({ success: false, message: "Permission denied" });
@@ -228,14 +237,11 @@ router.put("/:testId/questions", verifyToken, async (req, res) => {
             });
 
         //update new question
-        let test = await Test.findByIdAndUpdate(req.params.testId,
-            {
-                questions: req.body.questions,
-                questionsOrder: req.body.questionsOrder,
-                updatedAt: new Date()// formatTimeUTC(),
-            },
-            { new: true }
-        );
+        let test = await Test.findByIdAndUpdate(req.params.testId, {
+            questions: req.body.questions,
+            questionsOrder: req.body.questionsOrder,
+            updatedAt: new Date() // formatTimeUTC(),
+        }, { new: true });
 
         res.json({
             success: true,
@@ -252,15 +258,17 @@ router.put("/:testId/questions", verifyToken, async (req, res) => {
 //@desc Update a test by test Id
 //@access private
 //@role admin/creator
-router.put("/:testId", verifyToken, async (req, res) => {
+router.put("/:testId", verifyToken, async(req, res) => {
+    // #swagger.tags = ['tests']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Update a test by test Id by admin/creator'
+
     try {
         //Check permission
-        if (
-            !(
+        if (!(
                 req.body.verifyAccount.role === ROLES.ADMIN ||
                 req.body.verifyAccount.role === ROLES.CREATOR
-            )
-        ) {
+            )) {
             return res
                 .status(401)
                 .json({ success: false, message: "Permission denied" });
@@ -289,11 +297,9 @@ router.put("/:testId", verifyToken, async (req, res) => {
             updatedAt: new Date(), //formatTimeUTC(),
         };
 
-        const updatedTest = await Test.findOneAndUpdate(
-            { _id: req.params.testId },
-            test,
-            { new: true }
-        ).populate("questions")
+        const updatedTest = await Test.findOneAndUpdate({ _id: req.params.testId },
+                test, { new: true }
+            ).populate("questions")
             .populate({
                 path: "questions",
                 populate: {
@@ -317,15 +323,17 @@ router.put("/:testId", verifyToken, async (req, res) => {
 //@desc Delete a test by test Id
 //@access private
 //@role admin/creator
-router.put("/:testId/delete", verifyToken, async (req, res) => {
+router.put("/:testId/delete", verifyToken, async(req, res) => {
+    // #swagger.tags = ['tests']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Delete a test by test Id by admin/creator'
+
     try {
         //Check permission
-        if (
-            !(
+        if (!(
                 req.body.verifyAccount.role === ROLES.ADMIN ||
                 req.body.verifyAccount.role === ROLES.CREATOR
-            )
-        ) {
+            )) {
             return res
                 .status(401)
                 .json({ success: false, message: "Permission denied" });
@@ -338,12 +346,10 @@ router.put("/:testId/delete", verifyToken, async (req, res) => {
             });
 
         const deletedTest = await Test.findOneAndUpdate(
-            req.params.testId,
-            {
+            req.params.testId, {
                 _status: STATUS.DELETED,
                 updatedAt: new Date(), // formatTimeUTC_(new Date())
-            },
-            { new: true }
+            }, { new: true }
         );
         res.json({
             success: true,

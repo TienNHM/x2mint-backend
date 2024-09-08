@@ -1,4 +1,6 @@
 const express = require("express");
+const swaggerUi = require('swagger-ui-express')
+const swaggerFile = require('./swagger-output.json')
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
@@ -82,6 +84,7 @@ app.use(`${api}/takeTest`, takeTestRoute);
 app.use(`${api}/statistics`, adminRoute);
 app.use(`${api}/payments`, paymentRoute);
 app.use(`${api}/bills`, billRoute);
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.get("/", (req, res) => res.send("X2MINT API"));
 

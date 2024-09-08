@@ -15,49 +15,51 @@ const Question = require("../models/Question");
 //@desc View statistic overview
 //@access private
 //@role admin
-router.get("", verifyToken, async (req, res) => {
-  try {
-    //Check permission
-    if (
-      !(
-        req.body.verifyAccount.role === ROLES.ADMIN
-      )
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
+router.get("", verifyToken, async(req, res) => {
+    // #swagger.tags = ['statistics']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get all statistics'
+
+    try {
+        //Check permission
+        if (!(
+                req.body.verifyAccount.role === ROLES.ADMIN
+            )) {
+            return res
+                .status(401)
+                .json({ success: false, message: "Permission denied" });
+        }
+
+        const users = await User.find();
+        const contests = await Contest.find()
+            .populate("creatorId").exec();
+
+        const tests = await Test.find();
+        const takeTests = await TakeTest.find()
+            .populate("test")
+            .populate({
+                path: 'user',
+                select: "-__v -createdAt -updatedAt -password"
+            }).exec();
+
+        const questions = await Question.find();
+
+        res.json({
+            success: true,
+            message: "Get all successfully",
+            data: {
+                users: users,
+                contests: contests,
+                tests: tests,
+                takeTests: takeTests,
+                questions: questions
+            }
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-
-    const users = await User.find();
-    const contests = await Contest.find()
-      .populate("creatorId").exec();
-
-    const tests = await Test.find();
-    const takeTests = await TakeTest.find()
-      .populate("test")
-      .populate({
-        path: 'user',
-        select: "-__v -createdAt -updatedAt -password"
-      }).exec();
-
-    const questions = await Question.find();
-
-    res.json({
-      success: true,
-      message: "Get all successfully",
-      data: {
-        users: users,
-        contests: contests,
-        tests: tests,
-        takeTests: takeTests,
-        questions: questions
-      }
-    });
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
 });
 
 module.exports = router;
