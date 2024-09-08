@@ -15,215 +15,223 @@ const TakeTestLogs = require("../models/TakeTestLogs");
 //@desc get take test by id
 //@access private
 //@role admin/creator/user
-router.get("/:takeTestId", verifyToken, async (req, res) => {
-  try {
-    //Check permission
-    if (
-      !(req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR ||
-        req.body.verifyAccount.role === ROLES.USER)
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
-    }
+router.get("/:takeTestId", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get take test by id'
 
-    const takeTest = await TakeTest.findById(req.params.takeTestId)
-      .populate({
-        path: 'test',
-        select: "-__v -createdAt -updatedAt"
-      })
-      .populate({
-        path: 'user',
-        select: "-__v -createdAt -updatedAt -password"
-      })
-      .populate({
-        path: 'chooseAnswers',
-        populate: {
-          path: 'question',
-          select: "-__v -createdAt -updatedAt"
+    try {
+        //Check permission
+        if (!(req.body.verifyAccount.role === ROLES.ADMIN ||
+                req.body.verifyAccount.role === ROLES.CREATOR ||
+                req.body.verifyAccount.role === ROLES.USER)) {
+            return res
+                .status(401)
+                .json({ success: false, message: "Permission denied" });
         }
-      })
-      .exec();
 
-    if (takeTest) {
-      res.json({
-        success: true,
-        message: "Get take test by id successfully ",
-        data: takeTest,
-      });
-    } else {
-      res.json({
-        success: false,
-        message: "Take test does not exist",
-      });
+        const takeTest = await TakeTest.findById(req.params.takeTestId)
+            .populate({
+                path: 'test',
+                select: "-__v -createdAt -updatedAt"
+            })
+            .populate({
+                path: 'user',
+                select: "-__v -createdAt -updatedAt -password"
+            })
+            .populate({
+                path: 'chooseAnswers',
+                populate: {
+                    path: 'question',
+                    select: "-__v -createdAt -updatedAt"
+                }
+            })
+            .exec();
+
+        if (takeTest) {
+            res.json({
+                success: true,
+                message: "Get take test by id successfully ",
+                data: takeTest,
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "Take test does not exist",
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
 });
 
 //@route GET v1/takeTest/:takeTestId
 //@desc get all take test by testId and userId
 //@access private
 //@role admin/creator/user
-router.get("/test/:testId/:userId", verifyToken, async (req, res) => {
-  try {
-    //Check permission
-    if (
-      !(req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR ||
-        req.body.verifyAccount.role === ROLES.USER)
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
-    }
+router.get("/test/:testId/:userId", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get all take test by testId and userId'
 
-    const takeTest = await TakeTest.find({
-      test: req.params.testId,
-      user: req.params.userId
-    })
-      .populate({
-        path: 'test',
-        select: "-__v -createdAt -updatedAt"
-      })
-      .populate({
-        path: 'user',
-        select: "-__v -createdAt -updatedAt -password"
-      })
-      .populate({
-        path: 'chooseAnswers',
-        populate: {
-          path: 'question',
-          select: "-__v -createdAt -updatedAt"
+    try {
+        //Check permission
+        if (!(req.body.verifyAccount.role === ROLES.ADMIN ||
+                req.body.verifyAccount.role === ROLES.CREATOR ||
+                req.body.verifyAccount.role === ROLES.USER)) {
+            return res
+                .status(401)
+                .json({ success: false, message: "Permission denied" });
         }
-      })
-      .exec();
 
-    if (takeTest) {
-      res.json({
-        success: true,
-        message: "Get take test by testId and UserId successfully ",
-        data: takeTest,
-      });
-    } else {
-      res.json({
-        success: false,
-        message: "Take test does not exist",
-      });
+        const takeTest = await TakeTest.find({
+                test: req.params.testId,
+                user: req.params.userId
+            })
+            .populate({
+                path: 'test',
+                select: "-__v -createdAt -updatedAt"
+            })
+            .populate({
+                path: 'user',
+                select: "-__v -createdAt -updatedAt -password"
+            })
+            .populate({
+                path: 'chooseAnswers',
+                populate: {
+                    path: 'question',
+                    select: "-__v -createdAt -updatedAt"
+                }
+            })
+            .exec();
+
+        if (takeTest) {
+            res.json({
+                success: true,
+                message: "Get take test by testId and UserId successfully ",
+                data: takeTest,
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "Take test does not exist",
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
 });
 
 //@route GET v1/takeTest/:takeTestId
 //@desc get all take test by testId and userId
 //@access private
 //@role admin/creator/user
-router.get("/test/:testId/:userId/lastest", verifyToken, async (req, res) => {
-  try {
-    //Check permission
-    if (
-      !(req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR ||
-        req.body.verifyAccount.role === ROLES.USER)
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
-    }
+router.get("/test/:testId/:userId/lastest", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get lastest take test by testId and userId'
 
-    const takeTest = await TakeTest.find({
-      test: req.params.testId,
-      user: req.params.userId
-    })
-      .sort({createdAt: -1, takeTestId: -1})
-      .limit(1)
-      .populate({
-        path: 'test',
-        select: "-__v -createdAt -updatedAt"
-      })
-      .populate({
-        path: 'user',
-        select: "-__v -createdAt -updatedAt -password"
-      })
-      // .populate({
-      //   path: 'chooseAnswers',
-      //   populate: {
-      //     path: 'question',
-      //     select: "-__v -createdAt -updatedAt -correctAnswers"
-      //   }
-      // })
-      .exec();
+    try {
+        //Check permission
+        if (!(req.body.verifyAccount.role === ROLES.ADMIN ||
+                req.body.verifyAccount.role === ROLES.CREATOR ||
+                req.body.verifyAccount.role === ROLES.USER)) {
+            return res
+                .status(401)
+                .json({ success: false, message: "Permission denied" });
+        }
 
-    if (takeTest) {
-      res.json({
-        success: true,
-        message: "Get lastest take test by testId and UserId successfully ",
-        data: takeTest,
-      });
-    } else {
-      res.json({
-        success: false,
-        message: "Lastest take test does not exist",
-      });
+        const takeTest = await TakeTest.find({
+                test: req.params.testId,
+                user: req.params.userId
+            })
+            .sort({ createdAt: -1, takeTestId: -1 })
+            .limit(1)
+            .populate({
+                path: 'test',
+                select: "-__v -createdAt -updatedAt"
+            })
+            .populate({
+                path: 'user',
+                select: "-__v -createdAt -updatedAt -password"
+            })
+            // .populate({
+            //   path: 'chooseAnswers',
+            //   populate: {
+            //     path: 'question',
+            //     select: "-__v -createdAt -updatedAt -correctAnswers"
+            //   }
+            // })
+            .exec();
+
+        if (takeTest) {
+            res.json({
+                success: true,
+                message: "Get lastest take test by testId and UserId successfully ",
+                data: takeTest,
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "Lastest take test does not exist",
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
 });
 
 //@route GET v1/takeTest/:takeTestId/logs
 //@desc get take test logs by id
 //@access private
 //@role admin/creator/user
-router.get("/:takeTestId/logs", verifyToken, async (req, res) => {
-  try {
-    //Check permission
-    if (
-      !(req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR ||
-        req.body.verifyAccount.role === ROLES.USER)
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
-    }
+router.get("/:takeTestId/logs", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get take test logs by id'
 
-    const takeTestLogs = await TakeTestLogs.findOne({
-      takeTest: req.params.takeTestId
-    })
-      .populate({
-        path: 'test',
-        select: "-__v -createdAt -updatedAt"
-      })
-      .populate({
-        path: 'user',
-        select: "-__v -createdAt -updatedAt -password"
-      })
-      .exec();
+    try {
+        //Check permission
+        if (!(req.body.verifyAccount.role === ROLES.ADMIN ||
+                req.body.verifyAccount.role === ROLES.CREATOR ||
+                req.body.verifyAccount.role === ROLES.USER)) {
+            return res
+                .status(401)
+                .json({ success: false, message: "Permission denied" });
+        }
 
-    if (takeTestLogs) {
-      res.json({
-        success: true,
-        message: "Get take test logs by id successfully ",
-        data: takeTestLogs,
-      });
-    } else {
-      res.json({
-        success: false,
-        message: "Take test logs does not exist",
-      });
+        const takeTestLogs = await TakeTestLogs.findOne({
+                takeTest: req.params.takeTestId
+            })
+            .populate({
+                path: 'test',
+                select: "-__v -createdAt -updatedAt"
+            })
+            .populate({
+                path: 'user',
+                select: "-__v -createdAt -updatedAt -password"
+            })
+            .exec();
+
+        if (takeTestLogs) {
+            res.json({
+                success: true,
+                message: "Get take test logs by id successfully ",
+                data: takeTestLogs,
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "Take test logs does not exist",
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
 });
 
 /**
@@ -232,16 +240,16 @@ router.get("/:takeTestId/logs", verifyToken, async (req, res) => {
  * @returns số điểm mà user đạt được cho câu hỏi tương ứng
  */
 const isCorrectAnswer = (choose) => {
-  const answers = choose.answers
-  const correctAnswers = choose.question.correctAnswers
+    const answers = choose.answers
+    const correctAnswers = choose.question.correctAnswers
 
-  // Nếu chọn nhiều hoặc ít hơn số đáp án đúng, thì chắc chắn không có điểm
-  if (answers.length !== correctAnswers.length) {
-    return 0
-  }
+    // Nếu chọn nhiều hoặc ít hơn số đáp án đúng, thì chắc chắn không có điểm
+    if (answers.length !== correctAnswers.length) {
+        return 0
+    }
 
-  const num = answers.filter(c => correctAnswers.includes(c)).length
-  return num === correctAnswers.length ? 1 : 0
+    const num = answers.filter(c => correctAnswers.includes(c)).length
+    return num === correctAnswers.length ? 1 : 0
 }
 
 /**
@@ -250,292 +258,304 @@ const isCorrectAnswer = (choose) => {
  * @returns số điểm mà user đạt được cho bài thi
  */
 const calcTestPoints = (chooseAnswers, maxPoints) => {
-  let isCorrect = []
-  for (let i = 0; i < chooseAnswers.length; i++) {
-    const p = isCorrectAnswer(chooseAnswers[i])
-    isCorrect.push(p > 0)
-  }
+    let isCorrect = []
+    for (let i = 0; i < chooseAnswers.length; i++) {
+        const p = isCorrectAnswer(chooseAnswers[i])
+        isCorrect.push(p > 0)
+    }
 
-  const numCorrectAnswers = isCorrect.filter(Boolean).length
+    const numCorrectAnswers = isCorrect.filter(Boolean).length
 
-  return {
-    points: numCorrectAnswers * (maxPoints / chooseAnswers.length),
-    isCorrect: isCorrect,
-    isPassed: numCorrectAnswers >= chooseAnswers.length / 2
-  }
+    return {
+        points: numCorrectAnswers * (maxPoints / chooseAnswers.length),
+        isCorrect: isCorrect,
+        isPassed: numCorrectAnswers >= chooseAnswers.length / 2
+    }
 }
 
 //@route Post v1/takeTest/new
 //@desc Create a take test
 //@access public
 //@role user
-router.post("/", verifyToken, async (req, res) => {
-  try {
-    if (!req.body)
-      res.status(400).json({
-        success: false,
-        message: "Body request not found",
-      });
+router.post("/", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Create a take test by user'
 
-    //Create new
-    let take_test = new TakeTest({
-      test: req.body.test,
-      user: req.body.user,
-      chooseAnswers: req.body.chooseAnswers,
-      points: 0,
-      _status: req.body._status,
-      questionsOrder: req.body.questionsOrder,
-    });
+    try {
+        if (!req.body)
+            res.status(400).json({
+                success: false,
+                message: "Body request not found",
+            });
 
-    //Send to Database
-    take_test = await take_test.save();
+        //Create new
+        let take_test = new TakeTest({
+            test: req.body.test,
+            user: req.body.user,
+            chooseAnswers: req.body.chooseAnswers,
+            points: 0,
+            _status: req.body._status,
+            questionsOrder: req.body.questionsOrder,
+        });
 
-    //Populate để lấy dữ liệu các trường tương ứng
-    // let tmp = await TakeTest.findById(take_test._id)
-    //   .populate({
-    //     path: 'chooseAnswers',
-    //     populate: {
-    //       path: 'question',
-    //       select: "-__v -createdAt -updatedAt -correctAnswers"
-    //     }
-    //   })
-    //   .exec();
+        //Send to Database
+        take_test = await take_test.save();
 
-    let take_test_logs = new TakeTestLogs({
-      test: req.body.test,
-      user: req.body.user,
-      takeTest: take_test._id,
-      logs: [
-        {
-          action: 'Tham gia làm bài'
-        }
-      ],
-      status: 'Ok'
-    })
+        //Populate để lấy dữ liệu các trường tương ứng
+        // let tmp = await TakeTest.findById(take_test._id)
+        //   .populate({
+        //     path: 'chooseAnswers',
+        //     populate: {
+        //       path: 'question',
+        //       select: "-__v -createdAt -updatedAt -correctAnswers"
+        //     }
+        //   })
+        //   .exec();
 
-    take_test_logs = await take_test_logs.save();
+        let take_test_logs = new TakeTestLogs({
+            test: req.body.test,
+            user: req.body.user,
+            takeTest: take_test._id,
+            logs: [{
+                action: 'Tham gia làm bài'
+            }],
+            status: 'Ok'
+        })
 
-    res.json({
-      success: true,
-      message: "Take test created successfully",
-      takeTestId: take_test._id,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
+        take_test_logs = await take_test_logs.save();
+
+        res.json({
+            success: true,
+            message: "Take test created successfully",
+            takeTestId: take_test._id,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
 });
 
 //@route PUT v1/takeTest/:takeTestId
 //@desc Update takeTest
 //@access private
 //@role admin/creator/user
-router.put("/:takeTestId", verifyToken, async (req, res) => {
-  try {
-    //Check permission
-    if (!req.body)
-      res.status(400).json({
-        success: false,
-        message: "Body request not found",
-      });
+router.put("/:takeTestId", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Update take test by admin/creator/user'
 
-    if (
-      !(
-        req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR ||
-        req.body.verifyAccount.role === ROLES.USER
-      )
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
+    try {
+        //Check permission
+        if (!req.body)
+            res.status(400).json({
+                success: false,
+                message: "Body request not found",
+            });
+
+        if (!(
+                req.body.verifyAccount.role === ROLES.ADMIN ||
+                req.body.verifyAccount.role === ROLES.CREATOR ||
+                req.body.verifyAccount.role === ROLES.USER
+            )) {
+            return res
+                .status(401)
+                .json({ success: false, message: "Permission denied" });
+        }
+
+        let takeTest = {
+            test: req.body.test,
+            questionsOrder: req.body.questionsOrder,
+            chooseAnswers: req.body.chooseAnswers,
+            updatedAt: new Date(), //formatTimeUTC(),
+            _status: req.body._status
+        };
+
+        const updateTakeTest = await TakeTest.findByIdAndUpdate(
+            req.params.takeTestId,
+            takeTest, { new: true }
+        );
+
+        // Update: add logs
+        let takeTestLogs = await TakeTestLogs.findOne({
+            takeTest: req.params.takeTestId
+        })
+        if (takeTestLogs) {
+            takeTestLogs.logs.push({
+                action: req.body.action
+            });
+            takeTestLogs = await TakeTestLogs.findByIdAndUpdate(takeTestLogs.id, takeTestLogs, { new: true })
+        }
+
+        res.json({
+            success: true,
+            message: "Update takeTest successfully",
+            takeTest: updateTakeTest,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-
-    let takeTest = {
-      test: req.body.test,
-      questionsOrder: req.body.questionsOrder,
-      chooseAnswers: req.body.chooseAnswers,
-      updatedAt: new Date(), //formatTimeUTC(),
-      _status: req.body._status
-    };
-
-    const updateTakeTest = await TakeTest.findByIdAndUpdate(
-      req.params.takeTestId,
-      takeTest,
-      { new: true }
-    );
-
-    // Update: add logs
-    let takeTestLogs = await TakeTestLogs.findOne({
-      takeTest: req.params.takeTestId
-    })
-    if (takeTestLogs) {
-      takeTestLogs.logs.push({
-        action: req.body.action
-      });
-      takeTestLogs = await TakeTestLogs.findByIdAndUpdate(takeTestLogs.id, takeTestLogs, { new: true })
-    }
-
-    res.json({
-      success: true,
-      message: "Update takeTest successfully",
-      takeTest: updateTakeTest,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
 });
 
 //@route PUT v1/takeTest/:takeTestId/submit
 //@desc Submit takeTest
 //@access private
 //@role admin/creator/user
-router.put("/:takeTestId/submit", verifyToken, async (req, res) => {
-  try {
-    //Check permission
-    if (!req.body)
-      res.status(400).json({
-        success: false,
-        message: "Body request not found",
-      });
+router.put("/:takeTestId/submit", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Submit take test by admin/creator/user'
 
-    if (
-      !(
-        req.body.verifyAccount.role === ROLES.ADMIN ||
-        req.body.verifyAccount.role === ROLES.CREATOR ||
-        req.body.verifyAccount.role === ROLES.USER
-      )
-    ) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Permission denied" });
-    }
+    try {
+        //Check permission
+        if (!req.body)
+            res.status(400).json({
+                success: false,
+                message: "Body request not found",
+            });
 
-    const takeTest = await TakeTest.findById(req.params.takeTestId)
-      .populate("test")
-      .populate({
-        path: "chooseAnswers",
-        populate: {
-          path: "question"
+        if (!(
+                req.body.verifyAccount.role === ROLES.ADMIN ||
+                req.body.verifyAccount.role === ROLES.CREATOR ||
+                req.body.verifyAccount.role === ROLES.USER
+            )) {
+            return res
+                .status(401)
+                .json({ success: false, message: "Permission denied" });
         }
-      }).exec();
 
-    const { points, isCorrect, isPassed } = calcTestPoints(
-      takeTest.chooseAnswers,
-      takeTest.test.maxPoints
-    );
+        const takeTest = await TakeTest.findById(req.params.takeTestId)
+            .populate("test")
+            .populate({
+                path: "chooseAnswers",
+                populate: {
+                    path: "question"
+                }
+            }).exec();
 
-    let newTakeTest = {
-      points: points,
-      isCorrect: isCorrect,
-      updatedAt: new Date(), //formatTimeUTC(),
-      submitTime: req.body.endTime,
-      _status: isPassed ? STATUS.PASSED : STATUS.FAILED
-    };
+        const { points, isCorrect, isPassed } = calcTestPoints(
+            takeTest.chooseAnswers,
+            takeTest.test.maxPoints
+        );
 
-    const updateTakeTest = await TakeTest.findByIdAndUpdate(
-      req.params.takeTestId,
-      newTakeTest,
-      { new: true }
-    )
+        let newTakeTest = {
+            points: points,
+            isCorrect: isCorrect,
+            updatedAt: new Date(), //formatTimeUTC(),
+            submitTime: req.body.endTime,
+            _status: isPassed ? STATUS.PASSED : STATUS.FAILED
+        };
 
-    // Update: add logs
-    let takeTestLogs = await TakeTestLogs.findOne({
-      takeTest: req.params.takeTestId
-    })
-    if (takeTestLogs) {
-      takeTestLogs.logs.push({
-        action: 'Submit'
-      });
-      takeTestLogs = await TakeTestLogs.findByIdAndUpdate(takeTestLogs.id, takeTestLogs, { new: true })
+        const updateTakeTest = await TakeTest.findByIdAndUpdate(
+            req.params.takeTestId,
+            newTakeTest, { new: true }
+        )
+
+        // Update: add logs
+        let takeTestLogs = await TakeTestLogs.findOne({
+            takeTest: req.params.takeTestId
+        })
+        if (takeTestLogs) {
+            takeTestLogs.logs.push({
+                action: 'Submit'
+            });
+            takeTestLogs = await TakeTestLogs.findByIdAndUpdate(takeTestLogs.id, takeTestLogs, { new: true })
+        }
+
+        res.json({
+            success: true,
+            message: "Update takeTest successfully",
+            takeTest: updateTakeTest,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-
-    res.json({
-      success: true,
-      message: "Update takeTest successfully",
-      takeTest: updateTakeTest,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
 });
 
 //@route GET v1/takeTest/user/:userId
 //@desc Get all take test of a user
 //@access public
 //@role any
-router.get("/user/:userId", verifyToken, async (req, res) => {
-  try {
-    //Check permission
+router.get("/user/:userId", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get all take test by userId'
 
-    let take_tests = [];
-    take_tests = await TakeTest.find({ user: req.params.userId })
-      .populate({
-        path: 'test',
-        select: "-__v -createdAt -updatedAt",
-      })
-      .populate({
-        path: 'user',
-        select: "-__v -createdAt -updatedAt",
-      })
-      .populate({
-        path: 'chooseAnswers',
-        populate: {
-          path: 'question',
-          select: "-__v -createdAt -updatedAt"
-        }
-      })
-      .exec();
+    try {
+        //Check permission
 
-    res.json({
-      success: true,
-      message: "Get take_tests successfully",
-      takeTests: take_tests,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
+        let take_tests = [];
+        take_tests = await TakeTest.find({ user: req.params.userId })
+            .populate({
+                path: 'test',
+                select: "-__v -createdAt -updatedAt",
+            })
+            .populate({
+                path: 'user',
+                select: "-__v -createdAt -updatedAt",
+            })
+            .populate({
+                path: 'chooseAnswers',
+                populate: {
+                    path: 'question',
+                    select: "-__v -createdAt -updatedAt"
+                }
+            })
+            .exec();
+
+        res.json({
+            success: true,
+            message: "Get take_tests successfully",
+            takeTests: take_tests,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
 });
 
-//@route GET v1/takeTest/user/:userId
+//@route GET v1/takeTest/test/:testId
 //@desc Get all take test by testId
 //@access public
 //@role any
-router.get("/test/:testId", verifyToken, async (req, res) => {
-  try {
-    //Check permission
+router.get("/test/:testId", verifyToken, async(req, res) => {
+    // #swagger.tags = ['takeTest']
+    // #swagger.security = [{ "bearerAuth": [] }] 
+    // #swagger.summary = 'Get all take test by testId
 
-    let take_tests = [];
-    take_tests = await TakeTest.find({ test: req.params.testId })
-      .populate({
-        path: 'test',
-        select: "-__v -createdAt -updatedAt",
-      })
-      .populate({
-        path: 'user',
-        select: "-__v -createdAt -updatedAt",
-      })
-      .populate({
-        path: 'chooseAnswers',
-        populate: {
-          path: 'question',
-          select: "-__v -createdAt -updatedAt"
-        }
-      })
-      .exec();
+    try {
+        //Check permission
 
-    res.json({
-      success: true,
-      message: "Get take_tests successfully",
-      takeTests: take_tests,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
+        let take_tests = [];
+        take_tests = await TakeTest.find({ test: req.params.testId })
+            .populate({
+                path: 'test',
+                select: "-__v -createdAt -updatedAt",
+            })
+            .populate({
+                path: 'user',
+                select: "-__v -createdAt -updatedAt",
+            })
+            .populate({
+                path: 'chooseAnswers',
+                populate: {
+                    path: 'question',
+                    select: "-__v -createdAt -updatedAt"
+                }
+            })
+            .exec();
+
+        res.json({
+            success: true,
+            message: "Get take_tests successfully",
+            takeTests: take_tests,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
 });
 
 module.exports = router;

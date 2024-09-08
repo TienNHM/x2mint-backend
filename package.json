@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index"
+    "start": "nodemon index",
+    "swagger": "node ./swagger.js"
   },
   "author": "",
   "license": "ISC",
@@ -29,11 +30,15 @@
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
     "qs": "^6.10.2",
+    "swagger-ui-express": "^5.0.1",
     "unique-username-generator": "^1.0.1",
     "username-generator": "^1.1.0",
     "vietnamese-slug": "^1.1.4"
   },
   "optionalDependencies": {
     "fsevents": "~2.3.2"
+  },
+  "devDependencies": {
+    "swagger-autogen": "^2.23.7"
   }
 }

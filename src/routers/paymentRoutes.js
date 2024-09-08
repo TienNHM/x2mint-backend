@@ -4,7 +4,10 @@ const User = require("../models/User");
 const { sortObject } = require("../utils/SortObj")
 const { datetimeFormat } = require("../utils/Timezone")
 
-router.post('/create_payment_url', function (req, res, next) {
+router.post('/create_payment_url', function(req, res, next) {
+    // #swagger.tags = ['payments']
+    // #swagger.summary = 'Endpoint to create payment url'
+
     var ipAddr = req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
@@ -65,6 +68,9 @@ router.post('/create_payment_url', function (req, res, next) {
 });
 
 router.get('/vnpay_return', function(req, res, next) {
+    // #swagger.tags = ['payments']
+    // #swagger.summary = 'Endpoint to handle return url from VNPAY'
+
     var vnp_Params = req.query;
     var secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -105,6 +111,9 @@ router.get('/vnpay_return', function(req, res, next) {
 });
 
 router.get('/vnpay_ipn', function(req, res, next) {
+    // #swagger.tags = ['payments']
+    // #swagger.summary = 'Endpoint to handle IPN from VNPAY'
+
     var vnp_Params = req.query;
     var secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -128,8 +137,7 @@ router.get('/vnpay_ipn', function(req, res, next) {
             RspCode: '00',
             Message: 'success'
         })
-    }
-    else {
+    } else {
         res.status(200).json({
             RspCode: '97',
             Message: 'Fail checksum'

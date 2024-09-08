@@ -113,6 +113,16 @@ Express server listening on port 5005 in development mode
  Mongoose connected 
 ```
 
+## Cập nhật swagger
+
+Chạy lệnh sau để cập nhật file `swagger-output.json`:
+
+```bash
+npm run swagger
+```
+
+Thông tin API sẽ được cập nhật trong file `swagger-output.json`. Bạn có thể xem Swagger UI tại đường dẫn `/doc`.
+
 ## Hướng dẫn deploy lên Heroku
 
 - Bước 1: Tạo tài khoản Heroku [tại đây](https://signup.heroku.com/login). Sau đó, tải và cài đặt Heroku CLI theo hướng dẫn [tại đây](https://devcenter.heroku.com/articles/heroku-cli).
