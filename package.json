@@ -25,7 +25,7 @@
     "google-auth-library": "^7.10.2",
     "googleapis": "^92.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.14",
+    "mongoose": "^6.13.8",
     "mongoose-plugin-autoinc": "^1.1.9",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
