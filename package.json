@@ -27,7 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.14",
     "mongoose-plugin-autoinc": "^1.1.9",
-    "nodemailer": "^6.7.2",
+    "nodemailer": "^7.0.11",
     "nodemon": "^2.0.15",
     "qs": "^6.10.2",
     "swagger-ui-express": "^5.0.1",
